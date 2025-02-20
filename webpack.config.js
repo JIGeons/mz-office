@@ -30,13 +30,21 @@ module.exports = {
                 use: ["style-loader", "css-loader"],
             },
             {
-                test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                test: /\.(woff|woff2|eot|ttf|svg)$/i,  // ✅ 폰트 및 SVG만 url-loader 사용
                 use: {
-                    loader: "url-loader",   // 작은 파일(100KB 이하)은 Base64 인코딩하여 번들에 포함
-                    options: {  // 100KB 이하의 파일은 Base64로 변환, 그 이상은 별도 파일로 저장
-                        limit: 100000,
-                    }
-                }
+                    loader: "url-loader",
+                    options: {
+                        limit: 100000,  // 100KB 이하의 파일은 Base64 변환
+                        name: "assets/fonts/[name].[hash].[ext]",  // 파일명 지정
+                    },
+                },
+            },
+            {
+                test: /\.(png|jpe?g|gif)$/i,  // 이미지 파일은 asset/resource 사용
+                type: "asset/resource",
+                generator: {
+                    filename: "assets/images/[name].[hash].[ext]",  // 파일 저장 경로 지정
+                },
             },
         ],
     },
