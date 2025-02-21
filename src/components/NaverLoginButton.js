@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import serverUrl from "../utils/ServerUrl";
 
-const naverClientId = "1Q4oNjyFPspRBv9VEIjq";
+// const naverClientId = "1Q4oNjyFPspRBv9VEIjq";
+const naverClientId = "eLN44zM0hC1cugQl6vH2";
 const naverCallbackUrl = `${serverUrl}/api/v1/auth/login/naver-callback`;
 
 const NaverLoginButton = () => {
@@ -9,12 +10,11 @@ const NaverLoginButton = () => {
         console.log("🚀 네이버 SDK 로딩 체크:", window.naver); // ✅ 콘솔 확인
 
         if (window.naver) {
-            console.log("✅ 네이버 SDK 로드 완료!");
             const naverLogin = new window.naver.LoginWithNaverId({
                 clientId: naverClientId,
                 callbackUrl: naverCallbackUrl,
                 isPopup: true,  // ✅ 팝업 비활성화
-                loginButton: { color: "green", type: 3, height: "50" },
+                loginButton: { color: "green", type: 3, height: "70" },
             });
             naverLogin.init();
         } else {

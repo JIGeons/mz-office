@@ -14,8 +14,11 @@ import {
 
 // Custom Hooks
 
+// Components
+import Sidebar from "./components/Sidebar";
+
 // CSS
-// import "./styles/root.css";
+import "./styles/common.css";
 
 const Root = () => {
     const dispatch = useDispatch();
@@ -24,6 +27,7 @@ const Root = () => {
 
     // 상태 관리 (useState)
     const [hasLoginData, setHasLoginData] = useState(false);
+    const [showSidebar, setShowSidebar] = useState(true);   // 사이드바 표시 여부 관리 (기본값: true)
 
     // Redux 상태 가져오기
     const { errorCode } = useSelector((state) => state.constant);
@@ -53,14 +57,29 @@ const Root = () => {
         }
     }, [userData]);
 
+    //  사이드바 토글 기능
+    const toggleSidebar = () => {
+        setShowSidebar(!showSidebar);
+    };
+
     return (
-        <Routes>
-            <Route path="/" element={
-                /* 로그인 정보가 없는 경우 /login 페이지로 이동 */
-                !hasLoginData ? <Navigate to="/login" replace />
-                    : <h1>Login Success</h1> } />
-            <Route path="/login" element={ <Login /> } />
-        </Routes>
+        <div id="wrap">
+            <div className="container">
+                { /* 로그인 이후에 sidebar 표시 */
+                    /*hasLoginData && */showSidebar && <Sidebar toggleSidebar={toggleSidebar} />
+                }
+
+                <div className={`content ${showSidebar ? "content-with-sidebar" : ""}`}>
+                    <Routes>
+                        <Route path="/" element={
+                            /* 로그인 정보가 없는 경우 /login 페이지로 이동 */
+                            !hasLoginData ? <Navigate to="/login" replace />
+                                : <h1>Login Success</h1> } />
+                        <Route path="/login" element={ <Login /> } />
+                    </Routes>
+                </div>
+            </div>
+        </div>
     );
 }
 

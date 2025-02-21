@@ -11,3 +11,34 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
 }
+
+/* ✅ 전체 레이아웃을 Flexbox로 설정 */
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ✅ Sidebar 스타일 */
+.sidebar {
+    width: 250px;  /* 사이드바 너비 설정 */
+    height: 100vh;
+    background: #333;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: width 0.3s ease-in-out;
+}
+
+/* ✅ 컨텐츠 영역 (기본: Sidebar 없는 상태) */
+.content {
+    flex: 1;  /* 나머지 공간을 차지하도록 설정 */
+    padding: 20px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* ✅ Sidebar가 보일 때 (컨텐츠 너비 조절) */
+.content-with-sidebar {
+    margin-left: 250px;  /* Sidebar 너비만큼 이동 */
+}

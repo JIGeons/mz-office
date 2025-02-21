@@ -3,11 +3,10 @@ html, body {
     width: 100vw;
     margin: 0;
     padding: 0;
-    overflow: hidden;  /* ✅ 기본적으로 스크롤 제거 */
     box-sizing: border-box;
 }
 
-#root, .App {
+#root, #wrap, .App {
     height: 100%;
     width: 100%;
     display: flex; /* ✅ Flex 사용 */
