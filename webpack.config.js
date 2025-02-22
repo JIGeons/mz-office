@@ -1,7 +1,9 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
+const Dotenv = require("dotenv-webpack");
 
 const outputDirectory = "dist";
 
@@ -82,9 +84,15 @@ module.exports = {
             template: "./public/index.html",
             favicon: "./public/favicon.ico",
         }),
+        new CopyWebpackPlugin({
+           patterns: [
+               { from: "public/404.html", to: "404.html" },
+           ]
+        }),
         new webpack.ProvidePlugin({
             $: "jquery",
             jQuery: "jquery",
         }),
+        new Dotenv(),   // dotenv-webpack 추가
     ],
 };

@@ -1,0 +1,18 @@
+{
+    "version": "0.0.1",
+    "description": "25.02.22",
+    
+    "title": "MZ-OFFICE ========",
+
+    "serverURL": "http://mz-office.com",
+
+    "endPointURL": "https://kr.object.ncloudstorage.com",
+    "endPointUrl": "https://kr.object.ncloudstorage.com",
+    "ncpAccessKeyId": "ncp_iam_BPAMKR23fN2wC9h4L07y",
+    "ncpSecretAccessKey": "ncp_iam_BPKMKRI3wNWM65fR5UxKNVP4ZL8sNbaA9L",
+    "bucketName": "mz-office",
+    "region": "kr-standard",
+    "localFolder": "dist",
+
+    "config_end": ""
+}
