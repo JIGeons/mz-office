@@ -11,6 +11,9 @@
 # production
 /build
 
+# 빌드된 dist 폴더 제외
+/dist
+
 # misc
 .DS_Store
 .env.local
