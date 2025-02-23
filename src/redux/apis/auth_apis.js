@@ -1,11 +1,12 @@
 // 로그인 관련 apis 파일
 import axiosInstance from "../AxiosInstance";
 import serverUrl from "../../utils/ServerUrl";
+import axios from "axios";
 
 // 네이버 로그인 요청
 export const linkNaver = async (code, state) => {
     try {
-        const response = await axiosInstance.get(
+        const response = await axios.get(
             `${serverUrl}/api/v1/auth/login/naver-callback?`
                 + `code=${code}&`
                 + `state=${state}`

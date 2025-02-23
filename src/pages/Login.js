@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import NaverLoginButton from "../components/NaverLoginButton";
 import {useNavigate} from "react-router-dom";
 
@@ -8,10 +8,30 @@ import '../styles/login.css';
 // images
 import cat from "../asset/images/cat.jpg";
 import mzLogo from "../asset/images/logo_mz.png";
+import {useSelector} from "react-redux";
 
 const Login = () => {
     const [user, setUser] = useState(null); // 네이버 로그인 성공 시 사용자 정보 저장
     const navigate = useNavigate();
+
+    // Redux State
+    const { userData } = useSelector((state) => state.auth);
+
+    // ComponentDidMount
+    useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
+
+        // accessToken이 존재하는 경우 /chat 페이지로 이동
+        if (accessToken) {
+            navigate("/chat");
+        }
+    }, []);
+
+    useEffect(() => {
+        if (userData.code == "SUCCESS") {
+            navigate("/chat");
+        }
+    }, [userData])
 
     return (
         <div className="login_container">

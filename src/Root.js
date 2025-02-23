@@ -64,20 +64,24 @@ const Root = () => {
         <div id="wrap">
             <div className="container">
                 { /* 로그인 이후에 sidebar 표시 */
-                    hasLoginData && showSidebar && <Sidebar toggleSidebar={toggleSidebar} />
+                    hasLoginData && <Sidebar toggleSidebar={toggleSidebar} />
                 }
 
-                <div className={`content ${hasLoginData && showSidebar ? "content-with-sidebar" : ""}`}>
+                <div className={`content ${hasLoginData ? "content-with-sidebar" : ""}`}>
                     <Routes>
+                        {/* 로그인 정보가 없는 경우 /login 페이지로 이동 */}
+                        <Route path="/" element={ !hasLoginData ?
+                                <Navigate to="/login" replace /> : <Navigate to="/chat" replace /> }
+                        />
+                        { /* 로그인 상태에서 login 페이지 접근 시 /chat페이지로 리다이렉트 */
+                            <Route path="/login" element={ <Login /> } />
+                        }
+                        <Route path="/chat" element={ <h1>Login Success</h1>} />
+
                         {/* 네이버 로그인 콜백 수행 */}
                         { !hasLoginData &&
                             <Route path="/naver-callback" element={ <NaverCallback /> } />
                         }
-                        <Route path="/" element={
-                            /* 로그인 정보가 없는 경우 /login 페이지로 이동 */
-                            !hasLoginData ? <Navigate to="/login" replace />
-                                : <h1>Login Success</h1> } />
-                        <Route path="/login" element={ <Login /> } />
                     </Routes>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 // API 호출
@@ -7,6 +7,7 @@ import * as AuthActions from "../redux/modules/AuthSlice";
 const NaverCallback = () => {
     const dispatch = useDispatch();
     const authState = useSelector((state) => state.auth);
+    const [ loginProcess, setLoginProcess ] = useState(true);
 
     // ComponentDidMount
     useEffect(() => {
@@ -24,13 +25,28 @@ const NaverCallback = () => {
 
     useEffect(() => {
         // Redux의 accessToken 값이 변경되면 팝업 닫기
-        if (authState.userData) {
-            console.log("Redux 업데이트 완료! 팝업 닫기");
+        if (authState.userData.code == "SUCCESS") {
+            // 네이버 로그인에 성공한 경우
+            localStorage.setItem("accessToken", authState.userData.content);
             window.close();
+        } else {
+            // 네이버 로그인에 실패한 경우
+            setLoginProcess(false);
         }
     }, [authState.userData]);
 
-    return <div> 네이버 로그인 처리 중... </div>
+    return (
+        <div>
+            {
+                loginProcess ?
+                    <div> 네이버 로그인 처리 중... </div>
+                    : <div className="login-fail">
+                        네이버 로그인 실패
+                    <button onClick={() => window.close()}> 확인 </button>
+                    </div>
+            }
+        </div>
+    );
 }
 
 export default NaverCallback;

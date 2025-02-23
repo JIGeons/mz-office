@@ -5,7 +5,8 @@ import serverUrl from "../utils/ServerUrl";
 import naverLoginButton from "../asset/images/naverLoginBtn.png";
 
 const naverClientId = process.env.NAVER_CLIENT_ID;
-const webUrl = "http://mz-office.s3-website.kr.object.ncloudstorage.com"
+// const webUrl = "http://mz-office.s3-website.kr.object.ncloudstorage.com"
+const webUrl ="http://localhost";
 const naverCallbackUrl = `${webUrl}/naver-callback`;
 
 const generateState = () => {

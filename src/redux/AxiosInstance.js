@@ -17,14 +17,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     (config) => {
         const accessToken = localStorage.getItem("accessToken");
-        const refreshToken = localStorage.getItem("refreshToken");
-
-        config.headers["x-access-token"] = accessToken;
-        config.headers["User-Token"] = {
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-        };
-
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
         return config;
     },
     (error) => Promise.reject(error)
@@ -48,10 +41,7 @@ axiosInstance.interceptors.response.use(
 
                     // 새 토큰으로 요청 재시도
                     originalRequest.headers["x-access-token"] = newTokens.accessToken;
-                    originalRequest.headers["User-Token"] = {
-                        accessToken: newTokens.accessToken,
-                        refreshToken: newTokens.refreshToken,
-                    };
+                    originalRequest.headers["Authorization"] = `Bearer ${newTokens.accessToken}`;
                     return axiosInstance(originalRequest);
                 }
             } catch (error) {
