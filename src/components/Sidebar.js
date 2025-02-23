@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from "react";
-
-import "../styles/components/sidebar.css"
+import { useNavigate } from "react-router-dom";
 import {useSelector} from "react-redux";
+
+// Component
 import NaverLogoutButton from "./NaverLogoutButton";
 
 // Image
 import sidebarToggle from "../asset/images/ico_leftmenu.png"
+
+// CSS
+import "../styles/components/sidebar.css"
+
 const Sidebar = ({ toggleSidebar, isCollapsed }) => {
+    const navigate = useNavigate();
     // const {} = useSelector();   // chat 내용을 받아온다.
     //
     // useEffect(() => {
     //
     // }, []);
+
+    const handleLogout = () => {
+        navigate("/login");
+    }
 
     return (
         <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
@@ -35,7 +45,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                     </ul>
 
                     <div className="logout_button">
-                        <NaverLogoutButton/>
+                        <NaverLogoutButton onLogout={handleLogout}/>
                     </div>
                 </nav>
 

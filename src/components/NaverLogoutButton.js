@@ -1,10 +1,11 @@
 import React from "react";
 import axios from "axios";
-
-const naverClientId = "1Q4oNjyFPspRBv9VEIjq";
-const naverSecret = "cNK9ATD9n3";
+import {useDispatch} from "react-redux";
+import { clearAuthState } from "../redux/modules/AuthSlice";
 
 const NaverLogoutButton = ({ onLogout }) => {
+    const dispatch = useDispatch();
+
     const handleNaverLogout = async () => {
         try {
             const accessToken = localStorage.getItem("accessToken");
@@ -14,15 +15,7 @@ const NaverLogoutButton = ({ onLogout }) => {
                 return ;
             }
 
-            await axios.get("https://nid.naver.com/oauth2.0/token", {
-                params: {
-                    grant_type: "delete",
-                    client_id: naverClientId,
-                    client_secret: naverSecret,
-                    access_token: accessToken,
-                    service_provider: "NAVER",
-                },
-            });
+            dispatch(clearAuthState());
 
             // 토큰 삭제 & 로그인 상태 변경
             localStorage.removeItem("accessToken");

@@ -42,11 +42,25 @@ const Root = () => {
         if (accessToken) {
             setHasLoginData(true);
         }
+
+        const handleStorageChange = (event) => {
+            if (event.key == "login") {
+                console.log("🚀 localStorage 변경 감지! 페이지 새로고침...");
+                window.location.reload();   // 페이지 새로고침
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
     }, []);
 
     // Redux 상태나 localStorage 변경 시 로그인 상태 업데이트
     useEffect(() => {
-        const loginData = localStorage.getItem("accessToken");
+
+        const loginData = userData?.code == "SUCCESS" ? userData.content : localStorage.getItem("accessToken");
         if ((loginData && !hasLoginData)) {
             setHasLoginData(true);
         } else if (!loginData && hasLoginData) {
@@ -67,7 +81,7 @@ const Root = () => {
                     hasLoginData && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
                 }
 
-                <div className={`content ${hasLoginData ? "content-with-sidebar" : ""}`}>
+                <div className={`content ${hasLoginData ? "content-with-sidebar" : "content-full"}`}>
                     <Routes>
                         {/* 로그인 정보가 없는 경우 /login 페이지로 이동 */}
                         <Route path="/" element={ !hasLoginData ?
@@ -85,8 +99,9 @@ const Root = () => {
                         }
                     </Routes>
 
-                    {/* 🏆 모든 페이지에서 Footer 표시 */}
-                    <Footer />
+                    { /* 🏆 모든 페이지에서 Footer 표시 (로그인 페이지에선 출력 X)*/
+                        hasLoginData && <Footer />
+                    }
                 </div>
             </div>
         </div>

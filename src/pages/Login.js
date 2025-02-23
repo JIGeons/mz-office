@@ -27,12 +27,6 @@ const Login = () => {
         }
     }, []);
 
-    useEffect(() => {
-        if (userData.code == "SUCCESS") {
-            navigate("/chat");
-        }
-    }, [userData])
-
     return (
         <div className="login_container">
             <section className="login_inner_fir">
