@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
 import serverUrl from "../utils/ServerUrl";
 
-// const naverClientId = "eLN44zM0hC1cugQl6vH2";
-// const naverClientId = "1Q4oNjyFPspRBv9VEIjq";
+// Image
+import naverLoginButton from "../asset/images/naverLoginBtn.png";
+
 const naverClientId = process.env.NAVER_CLIENT_ID;
-// const naverCallbackUrl = encodeURIComponent(`${serverUrl}/api/v1/auth/login/naver-callback`);
-const naverCallbackUrl = `${serverUrl}/api/v1/auth/login/naver-callback`;
+const webUrl = "http://mz-office.s3-website.kr.object.ncloudstorage.com"
+const naverCallbackUrl = `${webUrl}/naver-callback`;
 
 const generateState = () => {
     return Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성 (CSRF 방지)
 };
 
-console.log("naverClientId: ", naverClientId);
+// console.log("naverClientId: ", naverClientId);
 const NaverLoginButton = () => {
     const handleNaverLogin = () => {
         const state = Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성
@@ -37,7 +38,7 @@ const NaverLoginButton = () => {
 
     return (
         <button onClick={handleNaverLogin}>
-            <img height="50" src="http://static.nid.naver.com/oauth/small_g_in.PNG" alt="네이버 로그인" />
+            <img  height="67" src={naverLoginButton} alt="네이버 로그인" />
         </button>
     );
 /*

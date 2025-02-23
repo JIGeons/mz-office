@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import os
 import pathlib
 import shutil
@@ -36,6 +38,19 @@ build_folder_name = "dist"
 build_folder_path = project_path + "\\" + build_folder_name
 object_folder = "mz-office/"
 
+# ✅ CORS 설정 JSON (정확한 포맷 유지)
+cors_configuration = {
+    "CORSRules": [
+        {
+            "AllowedOrigins": ["*"],  # 모든 도메인 허용
+            "AllowedMethods": ["GET", 'PUT', "HEAD"],  # 허용할 메서드
+            "AllowedHeaders": ["*"],  # 모든 헤더 허용
+            "ExposeHeaders": ["ETag"],  # 노출할 응답 헤더
+            "MaxAgeSeconds": 3000  # 캐시 유지 시간
+        }
+    ]
+}
+
 print(f"ENDPOINT_URL: {ENDPOINT_URL}")
 print(f"ACCESS_KEY: {ACCESS_KEY}")
 print(f"SECRET_KEY: {SECRET_KEY}")
@@ -58,7 +73,7 @@ try:
     try:
         s3_client.put_bucket_acl(
             Bucket=BUCKET_NAME,
-            ACL="private"  # 또는 "public-read-write"
+            ACL="public-read"  # 또는 "public-read-write" 또는 "private"
         )
         print("✅ ACL 설정이 변경되었습니다!")
     except Exception as e:
@@ -87,7 +102,7 @@ try:
         
 except Exception as e:
     print(f"❌ Object Storage 연결 실패: {e}")
-    exit(1) # Object Storage 연결 실패 시 종료
+    # exit(1) # Object Storage 연결 실패 시 종료
 
 
 # --------------- 함수 정의 --------------- #
@@ -122,7 +137,10 @@ def upload_folder_to_s3(folder_path, bucket_name):
                 object_name = os.path.relpath(file_path, folder_path).replace("\\", "/")  # ✅ 업로드 경로 변환
 
                 try:
-                    s3_client.upload_file(file_path, bucket_name, object_name)
+                    s3_client.upload_file(
+                        file_path, bucket_name, object_name,
+                        ExtraArgs={'ACL': 'public-read'}  # ✅ 업로드 ACL 추가
+                    )
                     print(f"✅ 업로드 완료: {object_name}")
                     success_count += 1
                 except botocore.exceptions.ClientError as e:
@@ -162,7 +180,7 @@ def check_and_enable_static_website(bucket_name):
         response = s3_client.get_bucket_website(Bucket=bucket_name)
         print("✅ 정적 웹사이트 호스팅이 이미 활성화되어 있습니다. 설정을 건너뜁니다.")
         print(f"🌍 웹사이트 URL: https://{bucket_name}.kr.object.ncloudstorage.com")
-    except botocore.exception.ClientError as e:
+    except botocore.exceptions.ClientError as e:
         if e.response["Error"]["Code"] == "NoSuchWebsiteConfiguration":
             print("\n🚀 Step 3: 정적 웹사이트 호스팅이 설정되지 않음. 활성화 중...")
             website_configuration = {
@@ -210,56 +228,50 @@ def get_bucket_list():
 def put_owner_object_acl():
     print("1234")
 
-### Object List 조회
-def get_object_list():
-    max_keys = 300
-    response = s3_client.list_objects(Bucket=BUCKET_NAME, MaxKeys=max_keys)
+# ✅ CORS 설정 적용 함수
+def apply_cors_settings(bucket_name):
+    print(f"\n🚀 {bucket_name}에 CORS 설정 적용 중..")
 
-    print('list all in the bucket')
+    try:    
+        # 🔹 JSON 데이터를 정렬된 문자열로 변환 (들여쓰기 포함, 사람이 읽기 쉬운 형식)
+        cors_config_json = json.dumps(cors_configuration, indent=4)  # ✅ JSON 문자열 변환
+        cors_config_bytes = cors_config_json.encode("utf-8")  # ✅ 바이트 변환
 
-    while True:
-        print('IsTruncated=%r' % response.get('IsTruncated'))
-        print('Marker=%s' % response.get('Marker'))
-        print('NextMarker=%s' % response.get('NextMarker'))
+        # 🔹 MD5 해시값 생성 (Base64 인코딩)
+        md5_hash = hashlib.md5(cors_config_bytes).digest()
+        content_md5 = base64.b64encode(md5_hash).decode("utf-8")  # ✅ Base64 인코딩된 MD5 해시
 
-        print('Object List')
-        for content in response.get('Contents'):
-            print(' Name=%s, Size=%d, Owner=%s' % \
-                  (content.get('Key'), content.get('Size'), content.get('Owner').get('ID')))
+        # 🔹 `put_bucket_cors()` 호출 (ContentMD5 추가)
+        s3_client.put_bucket_cors(
+            Bucket=bucket_name,
+            CORSConfiguration=json.loads(cors_config_json),  # ✅ JSON을 파싱하여 전달
+            ContentMD5=content_md5  # ✅ 필수 Content-MD5 추가
+        )
 
-        if response.get('IsTruncated'):
-            response = s3_client.list_objects(Bucket=BUCKET_NAME, MaxKeys=max_keys,
-                                       Marker=response.get('NextMarker'))
+        corsResult = s3_client.get_bucket_cors(Bucket=BUCKET_NAME)
+        print(f"✅ CORS 설정이 성공적으로 적용되었습니다! ({bucket_name})\n{corsResult['CORSRules']}")
+    except botocore.exceptions.ClientError as e:
+        error_code = e.response["Error"]["Code"]
+        error_message = e.response["Error"]["Message"]
+        print(f"❌ CORS 설정 실패: {error_code} - {error_message}")
+        exit(1)
+    except Exception as e:
+        print(f"❌ 알 수 없는 오류 발생: {e}")
+
+### Cors 설정 조회
+def check_cors_settings(bucket_name):
+    try:
+        response = s3_client.get_bucket_cors(Bucket=bucket_name)
+        print("✅ 현재 CORS 설정:")
+        print(json.dumps(response["CORSRules"], indent=4))
+    except botocore.exceptions.ClientError as e:
+        error_code = e.response["Error"]["Code"]
+        if error_code == "NoSuchCORSConfiguration":
+            print("❌ 현재 CORS 설정이 없습니다.")
         else:
-            break
-
-    # top level folders and files in the bucket
-    delimiter = '/'
-    max_keys = 300
-
-    response = s3_client.list_objects(Bucket=BUCKET_NAME, Delimiter=delimiter, MaxKeys=max_keys)
-
-    print('top level folders and files in the bucket')
-
-    while True:
-        print('IsTruncated=%r' % response.get('IsTruncated'))
-        print('Marker=%s' % response.get('Marker'))
-        print('NextMarker=%s' % response.get('NextMarker'))
-
-        print('Folder List')
-        for folder in response.get('CommonPrefixes'):
-            print(' Name=%s' % folder.get('Prefix'))
-
-        print('File List')
-        for content in response.get('Contents'):
-            print(' Name=%s, Size=%d, Owner=%s' % \
-                  (content.get('Key'), content.get('Size'), content.get('Owner').get('ID')))
-
-        if response.get('IsTruncated'):
-            response = s3_client.list_objects(Bucket=BUCKET_NAME, Delimiter=delimiter, MaxKeys=max_keys,
-                                       Marker=response.get('NextMarker'))
-        else:
-            break
+            print(f"❌ CORS 설정 조회 실패: {error_code} - {e.response['Error']['Message']}")
+    except Exception as e:
+        print(f"❌ 알 수 없는 오류 발생: {e}")
 
 ### 4. 로컬 'dist' 폴더 삭제
 def delete_build_folder(folder_path):
@@ -273,7 +285,8 @@ def delete_build_folder(folder_path):
 ## 실행 순서
 if __name__ == "__main__":
     get_bucket_list()   # 버킷 리스트 조회
-    get_object_list()
+    check_cors_settings(BUCKET_NAME)
+    # apply_cors_settings(BUCKET_NAME)   # cors 설정 적용
 
     build_react_app()   # Step 1: React 빌드 실행
     upload_folder_to_s3(build_folder_path, BUCKET_NAME)  # Step 2: Object Storage 업로드

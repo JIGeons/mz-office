@@ -9,7 +9,8 @@ import * as authActions from "./redux/modules/AuthSlice";
 
 // 페이지 import
 import {
-    Login
+    Login,
+    NaverCallback
 } from "./pages/paths";
 
 // Custom Hooks
@@ -32,27 +33,24 @@ const Root = () => {
     // Redux 상태 가져오기
     const { errorCode } = useSelector((state) => state.constant);
     const { userData } = useSelector((state) => state.auth);
-    
+
 
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
         console.log("!--- Root ComponentDidMount ---!");
-
         const accessToken = localStorage.getItem("accessToken");
-
         if (accessToken) {
             setHasLoginData(true);
         }
     }, []);
 
-    // Redux state 변경 시 처리 (componentDidUpdate 역할)
+    // Redux 상태나 localStorage 변경 시 로그인 상태 업데이트
     useEffect(() => {
         const loginData = localStorage.getItem("accessToken");
         if ((loginData && !hasLoginData)) {
             setHasLoginData(true);
         } else if (!loginData && hasLoginData) {
             setHasLoginData(false);
-
             navigate("/login");
         }
     }, [userData]);
@@ -66,11 +64,15 @@ const Root = () => {
         <div id="wrap">
             <div className="container">
                 { /* 로그인 이후에 sidebar 표시 */
-                    /*hasLoginData && */showSidebar && <Sidebar toggleSidebar={toggleSidebar} />
+                    hasLoginData && showSidebar && <Sidebar toggleSidebar={toggleSidebar} />
                 }
 
-                <div className={`content ${showSidebar ? "content-with-sidebar" : ""}`}>
+                <div className={`content ${hasLoginData && showSidebar ? "content-with-sidebar" : ""}`}>
                     <Routes>
+                        {/* 네이버 로그인 콜백 수행 */}
+                        { !hasLoginData &&
+                            <Route path="/naver-callback" element={ <NaverCallback /> } />
+                        }
                         <Route path="/" element={
                             /* 로그인 정보가 없는 경우 /login 페이지로 이동 */
                             !hasLoginData ? <Navigate to="/login" replace />

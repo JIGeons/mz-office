@@ -1,6 +1,8 @@
 import json
+import mimetypes
 import os
 import pathlib
+import subprocess
 import boto3
 import hashlib
 import botocore.exceptions
@@ -55,6 +57,17 @@ except Exception as e:
     print(f"❌ 클라이언트 생성 실패: {e}")
     exit(1)
 
+
+### 1. React 프로젝트 빌드 실행
+def build_react_app():
+    print("\n🚀 Step 1: React 빌드 시작...")
+    try:
+        subprocess.run([r"C:/Program Files/nodejs/npm.cmd", "run", "build"], check=True)
+        print("✅ Step 1 완료: React 빌드 완료!")
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Step 1 실패: React 빌드 실패: {e}")
+        exit(1)
+
 # ✅ 1️⃣ S3에 있는 기존 파일 목록 가져오기
 def get_s3_files(bucket_name):
     existing_files = {}
@@ -106,8 +119,15 @@ def upload_updated_files(bucket_name, local_files, existing_files):
             continue
 
         try:
-            s3_client.upload_file(file_path, bucket_name, object_key)
-            print(f"✅ 업로드 완료: {object_key}")
+            content_type, _ = mimetypes.guess_type(file_path) # 파일 확장자로 Content-Type 추측
+            
+            s3_client.upload_file(
+                file_path, 
+                bucket_name, 
+                object_key,
+                ExtraArgs={'ContentType': content_type}
+            )
+            print(f"✅ 업로드 완료: {object_key}, ContentType: {content_type}")
             uploaded_files += 1
         except botocore.exceptions.ClientError as e:
             print(f"❌ 업로드 실패: {file_path}, 오류 코드: {e.response['Error']['Code']}")
@@ -120,7 +140,7 @@ def upload_updated_files(bucket_name, local_files, existing_files):
 
 # ✅ 4️⃣ S3에만 존재하는 파일 삭제 (로컬에 없는 파일 정리)
 def delete_removed_files(bucket_name, local_files, existing_files):
-    to_delete = [key for key in existing_files if key not in local_files]
+    to_delete = [key for key in existing_files if key not in local_files and not key.startswith('gcdn/')]   # gcdn/으로 시작하는 파일은 삭제 목록에서 제외
 
     if not to_delete:
         print("🔹 삭제할 파일이 없습니다.")
@@ -139,6 +159,8 @@ def delete_removed_files(bucket_name, local_files, existing_files):
 # ✅ 실행 순서
 if __name__ == "__main__":
     print("\n🚀 Object Storage 업데이트 시작...")
+
+    build_react_app()   # Step 1: React 빌드 실행
     
     # ✅ 1. 기존 파일 목록 가져오기
     existing_files = get_s3_files(BUCKET_NAME)

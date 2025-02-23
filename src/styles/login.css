@@ -8,15 +8,22 @@
 }
 
 .login_inner_fir {
-    width: 35%;
+    width: 50%;
     height: 100%;
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    background-color: #F0F4F7;
+}
 
-    border: 1px solid black;
-    margin-right: 10px;
+.login_inner_fir .mz-logo {
+    width: 170px;
+    height: 20px;
+
+    position: absolute;
+    top: 25px;
+    left: 30px;
 }
 
 .login_inner_fir .mz-office {
@@ -26,28 +33,47 @@
     justify-content: center;
     align-items: center;
 
-    font-size: 40px;
-    font-weight: bold;
+    font-weight: 500;
+    font-size: 50px;
+    line-height: 60px;
+    letter-spacing: calc(50px * -0.05);
+
+    padding-top: 100px;
+    margin-bottom: 150px;
 }
 
-.login_inner_fir .naver-login-button {
+.login_inner_fir .naver-login {
     width: 100%;
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
+.naver-login button {
+    border: none;
+    margin-bottom: 22px;
+}
+
+.naver-login p {
+    font-color: #767678;
+    font-weight: 200;
+    font-size: 12px;
+    line-height: 15px;
+    letter-spacing: calc(15px * -0.02);
+}
+
 .login_inner_sec {
-    width: 60%;
+    width: 50%;
     height: 100%;
 
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
 
-    border: 1px solid black;
+    background-color: #1F2531;
+    overflow: hidden;
 }
 
 .login_inner_sec img {

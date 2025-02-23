@@ -34,7 +34,6 @@ body {
 /* ✅ 컨텐츠 영역 (기본: Sidebar 없는 상태) */
 .content {
     flex: 1;  /* 나머지 공간을 차지하도록 설정 */
-    padding: 20px;
     transition: margin-left 0.3s ease-in-out;
 }
 
