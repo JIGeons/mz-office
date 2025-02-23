@@ -7,7 +7,7 @@ import '../styles/login.css';
 
 // images
 import cat from "../asset/images/cat.jpg";
-import mzLogo from "../asset/images/logo_mz.png";
+import mzLogo from "../asset/images/MZ_logo_black.png";
 import {useSelector} from "react-redux";
 
 const Login = () => {

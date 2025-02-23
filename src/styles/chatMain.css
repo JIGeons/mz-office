@@ -1,0 +1,44 @@
+.chat-main {
+    width: 100%;
+    height: 100%;
+
+    background-color: #1F2531;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+}
+
+.chat-main .mz-logo-white {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mz-logo-white img {
+    width: 200px;
+    margin-bottom: 50px;
+}
+
+.mz-logo-white h1 {
+    background: linear-gradient(to right, #FF4BD2, #12FFFF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    font-weight: 600;
+    font-size: 50px;
+    line-height: 65px;
+    letter-spacing: calc(60px * -0.02);
+}
+
+.mz-logo-white p {
+    font-weight: 250;
+    font-size: 20px;
+    line-height: 40px;
+    letter-spacing: calc(20px * -0.02);
+    color: #CBD3E3;
+}

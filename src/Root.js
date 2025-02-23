@@ -17,18 +17,18 @@ import {
 
 // Components
 import Sidebar from "./components/Sidebar";
+import Footer from "./components/Footer";
 
 // CSS
 import "./styles/common.css";
+import ChatMain from "./pages/ChatMain";
 
 const Root = () => {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
 
     // 상태 관리 (useState)
     const [hasLoginData, setHasLoginData] = useState(false);
-    const [showSidebar, setShowSidebar] = useState(true);   // 사이드바 표시 여부 관리 (기본값: true)
+    const [isCollapsed, setIsCollapsed] = useState(false);   // 사이드바 최소 너비 상태
 
     // Redux 상태 가져오기
     const { errorCode } = useSelector((state) => state.constant);
@@ -57,14 +57,14 @@ const Root = () => {
 
     //  사이드바 토글 기능
     const toggleSidebar = () => {
-        setShowSidebar(!showSidebar);
+        setIsCollapsed(!isCollapsed);
     };
 
     return (
         <div id="wrap">
-            <div className="container">
+            <div className={`container ${isCollapsed ? "sidebar-collapsed" : ""}`}>
                 { /* 로그인 이후에 sidebar 표시 */
-                    hasLoginData && <Sidebar toggleSidebar={toggleSidebar} />
+                    hasLoginData && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
                 }
 
                 <div className={`content ${hasLoginData ? "content-with-sidebar" : ""}`}>
@@ -76,13 +76,17 @@ const Root = () => {
                         { /* 로그인 상태에서 login 페이지 접근 시 /chat페이지로 리다이렉트 */
                             <Route path="/login" element={ <Login /> } />
                         }
-                        <Route path="/chat" element={ <h1>Login Success</h1>} />
+
+                        <Route path="/chat" element={ <ChatMain /> } />
 
                         {/* 네이버 로그인 콜백 수행 */}
                         { !hasLoginData &&
                             <Route path="/naver-callback" element={ <NaverCallback /> } />
                         }
                     </Routes>
+
+                    {/* 🏆 모든 페이지에서 Footer 표시 */}
+                    <Footer />
                 </div>
             </div>
         </div>

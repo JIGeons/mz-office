@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import serverUrl from "../utils/ServerUrl";
 
 // Image
-import naverLoginButton from "../asset/images/naverLoginBtn.png";
+import naverLoginButton from "../asset/images/naver_login_btn.png";
 
 const naverClientId = process.env.NAVER_CLIENT_ID;
 // const webUrl = "http://mz-office.s3-website.kr.object.ncloudstorage.com"
