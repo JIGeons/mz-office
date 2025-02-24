@@ -1,18 +1,26 @@
 import React, {useEffect, useState} from 'react';
 import NaverLoginButton from "../components/NaverLoginButton";
-import {useNavigate} from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 // CSS
 import '../styles/login.css';
 
 // images
-import cat from "../asset/images/cat.jpg";
 import mzLogo from "../asset/images/MZ_logo_black.png";
-import {useSelector} from "react-redux";
+import mzOfficeImage from "../asset/images/login/mz-office-image.png"
+import sectionBackground from "../asset/images/login/bg_mainright.png";
+import sideImage1 from "../asset/images/login/login_side_img-1.png";
+import sideImage2 from "../asset/images/login/login_side_img-2.png";
+
+const sideImages = [sideImage1, sideImage2];
 
 const Login = () => {
-    const [user, setUser] = useState(null); // 네이버 로그인 성공 시 사용자 정보 저장
     const navigate = useNavigate();
+
+    // State 관리
+    const [user, setUser] = useState(null); // 네이버 로그인 성공 시 사용자 정보 저장
+    const [currentSideImageIndex, setCurrentSideImageIndex] = useState(0);
 
     // Redux State
     const { userData } = useSelector((state) => state.auth);
@@ -25,22 +33,32 @@ const Login = () => {
         if (accessToken) {
             navigate("/chat");
         }
+
+        const Interval = setInterval(() => {
+            setCurrentSideImageIndex(prevIndex => (prevIndex + 1) % sideImages.length);
+        }, 5000);
+
+        return () => clearInterval(Interval);
     }, []);
 
     return (
         <div className="login_container">
             <section className="login_inner_fir">
                 <img className="mz-logo" src={mzLogo} alt={"MZ-Office.logo"} />
-                <div className="mz-office">
-                    <h1>MZ 오피스</h1>
-                </div>
+                <img className="mz-office" src={mzOfficeImage} alt="mz-office-image.png" />
                 <div className="naver-login">
                     <NaverLoginButton />
                     <p>Naver 로그인 시, 이용약관 및 개인정보처리방침에 동의하는 것으로 간주합니다.</p>
                 </div>
             </section>
-            <section className="login_inner_sec">
-                <img src={cat} alt="Cat" />
+            <section
+                className="login_inner_sec"
+                style={{
+                    backgroundImage: `url(${sectionBackground})`,
+                }}
+            >
+                {/* 5초마다 바뀌는 side 이미지 */}
+                <img className={`side-image-${currentSideImageIndex}`} src={sideImages[currentSideImageIndex]} alt={"side-image-1"} />
             </section>
         </div>
     );

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import serverUrl from "../utils/ServerUrl";
 
 // Image
-import naverLoginButton from "../asset/images/naver_login_btn.png";
+import naverLoginButton from "../asset/images/login/naver_login_btn.png";
 
 const naverClientId = process.env.NAVER_CLIENT_ID;
 const webUrl = process.env.REACT_APP_MZ_OFFICE_WEB_URL;
