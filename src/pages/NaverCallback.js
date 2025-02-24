@@ -29,7 +29,7 @@ const NaverCallback = () => {
             // 네이버 로그인에 성공한 경우 accessToken과 name으로 userData 형성
             const userData = {
                 accessToken: authState.userData.content,
-                name: authState.userData?.name,
+                name: authState.userData?.name || null,
             }
 
             // String으로 저장

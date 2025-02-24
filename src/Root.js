@@ -7,6 +7,7 @@ import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { persistor } from "./redux/Store";
 import * as authActions from "./redux/modules/AuthSlice";
 import * as chatActions from "./redux/modules/ChatSlice";
+import * as constantActions from "./redux/modules/ConstantSlice";
 
 // 페이지 import
 import {
@@ -25,6 +26,7 @@ import NotFound from "./components/NotFound";
 import "./styles/common.css";
 import ChatMain from "./pages/ChatMain";
 import {getChatList} from "./redux/modules/ChatSlice";
+import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 const Root = () => {
     const dispatch = useDispatch();
@@ -34,14 +36,15 @@ const Root = () => {
     const [hasLoginData, setHasLoginData] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);   // 사이드바 최소 너비 상태
     const [isLoading, setIsLoading] = useState(false);
-    const [chatList, setChatList] = useState(null);
+    const [chatList, setChatList] = useState([]);
+    const [dialogContent, setDialogContent] = useState(null);
     // 🚀 초기 경로 설정 (sessionStorage에서 가져오기)
     const [redirectPath, setRedirectPath] = useState(sessionStorage.getItem("redirectPath"));
 
     // Redux 상태 가져오기
-    const { errorCode } = useSelector((state) => state.constant);
     const { userData } = useSelector((state) => state.auth);
     const chatState = useSelector((state) => state.chat);
+    const constant = useSelector((state) => state.constant);
 
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
@@ -66,11 +69,11 @@ const Root = () => {
         const handleStorageChange = (event) => {
             if (event.key == "login") {
                 console.log("🚀 localStorage 변경 감지! 페이지 새로고침...");
-                // 로그인 성공 시 chatList API 호출
-                dispatch(chatActions.getChatList());
+                // 로그인 성공 시 chatList API 호출 (API 연결이 아직 안 됐기 때문에 주석 처리)
+                // dispatch(chatActions.getChatList());
                 setIsLoading(true);
                 // 화면 새로고침
-                // window.location.reload();
+                window.location.reload();
             }
         };
 
@@ -100,10 +103,25 @@ const Root = () => {
         }
     }, [chatState?.chatList]);
 
+    // Dialog
+    useEffect(() => {
+        if (constant.dialog?.isShowingDialog && constant.dialog?.dialogType == "CONFIRM") {
+            setDialogContent(constant?.dialog);
+        }
+        else if (!constant.dialog?.isShowingDialog) {
+            setDialogContent(null);
+        }
+    }, [constant?.dialog]);
+
     //  사이드바 토글 기능
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
     };
+
+    const hideDialog = () => {
+        setDialogContent(null);
+        dispatch(constantActions.onHideDialog());
+    }
 
     return (
         <div id="wrap">
@@ -137,6 +155,18 @@ const Root = () => {
                         hasLoginData && <Footer />
                     }
                 </div>
+
+                {
+                    (dialogContent?.isShowingDialog && dialogContent.dialogType == "CONFIRM") &&
+                    <DialogConfirmCancel
+                        title={dialogContent.dialogTitle}
+                        content={dialogContent.dialogContent}
+                        onClickPositiveBtn={dialogContent.positiveFunction}
+                        onClickNegativeBtn={hideDialog}
+                        positiveBtnContent={dialogContent.positiveBtnContent}
+                        negativeBtnContent={dialogContent.negativeBtnContent}
+                    />
+                }
             </div>
         </div>
     );

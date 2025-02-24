@@ -1,11 +1,15 @@
 .sidebar {
     width: 260px;
     height: 100vh;
+
     background: #333;
     color: white;
+    text-align: left;
+
     position: fixed;
     left: 0;
     top: 0;
+
     padding: 20px;
     transition: transform 0.3s ease-in-out;
 
@@ -79,4 +83,8 @@
     letter-spacing: 0.5px;
 
     color: #91c1F4;
+}
+
+.sidebar .naver-logout {
+
 }

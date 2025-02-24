@@ -42,15 +42,18 @@ export const reissueNaverToken = createAsyncThunk(
     }
 );
 
+// Redux State 초기 설정
+const initialState = {
+    userData: null,
+    sessionData: null,
+    reissueData: null,
+    error: null,
+    loading: false,
+}
+
 const authSlice = createSlice({
     name: "auth",
-    initialState: {
-        userData: null,
-        sessionData: null,
-        reissueData: null,
-        error: null,
-        loading: false,
-    },
+    initialState,
     reducers: {
         clearAuthState: (state) => {
             state.userData = null;
