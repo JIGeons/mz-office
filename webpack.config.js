@@ -56,6 +56,7 @@ module.exports = {
     devServer: {
         allowedHosts: "all",
         historyApiFallback: {
+            index: "/index.html",   // 모든 경로를 index.html로 리다이렉트
             disableDotRule: true,   // '.' 포함된 경로 요청 시 오류 방지
         },
         host: "0.0.0.0",
@@ -93,6 +94,10 @@ module.exports = {
             $: "jquery",
             jQuery: "jquery",
         }),
-        new Dotenv(),   // dotenv-webpack 추가
+        new Dotenv({
+            path: `./.env.${process.env.NODE_ENV}`, // 현재 환경에 맞는 .env 파일 로드
+            systemvars: true,   // OS 환경 변수도 사용할 수 있도록 설정
+            defaults: "./.env"  // 기본 .env 파일도 적용
+        }),   // dotenv-webpack 추가
     ],
 };

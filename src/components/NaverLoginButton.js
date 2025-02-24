@@ -5,15 +5,16 @@ import serverUrl from "../utils/ServerUrl";
 import naverLoginButton from "../asset/images/naver_login_btn.png";
 
 const naverClientId = process.env.NAVER_CLIENT_ID;
-// const webUrl = "http://mz-office.s3-website.kr.object.ncloudstorage.com"
-const webUrl ="http://localhost";
+const webUrl = process.env.REACT_APP_MZ_OFFICE_WEB_URL;
+// const webUrl ="http://localhost";
 const naverCallbackUrl = `${webUrl}/naver-callback`;
 
 const generateState = () => {
     return Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성 (CSRF 방지)
 };
 
-// console.log("naverClientId: ", naverClientId);
+console.log("callbackURL = ", naverCallbackUrl);
+
 const NaverLoginButton = () => {
     const handleNaverLogin = () => {
         const state = Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성

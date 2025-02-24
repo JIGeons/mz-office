@@ -34,7 +34,6 @@
     <!-- ✅ 폰트 추가 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Paperlogy&display=swap">
-
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -49,5 +48,13 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <script>
+      // 🚀 현재 경로(pathname)를 유지하도록 설정
+      if (window.location.pathname !== "/") {
+        const redirectPath = window.location.search ? window.location.pathname + window.location.search : window.location.pathname;
+        sessionStorage.setItem("redirectPath", redirectPath);
+      }
+    </script>
   </body>
 </html>

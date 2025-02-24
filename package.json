@@ -30,8 +30,8 @@
   },
   "scripts": {
     "start": "serve -s dist --listen 80",
-    "build": "webpack --mode production --devtool source-map",
-    "client": "webpack-dev-server --mode development --devtool eval --hot",
+    "build": "cross-env NODE_ENV=production webpack --mode production --devtool source-map",
+    "client": "cross-env NODE_ENV=development webpack-dev-server --mode development --devtool eval --hot",
     "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "clientshort": "webpack-dev-server --progress --inline --devtool eval --hot",

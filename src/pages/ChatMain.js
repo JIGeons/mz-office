@@ -1,10 +1,13 @@
-import React from "react";
+import React, {useEffect} from "react";
+
+import authSlice from "../redux/modules/AuthSlice";
 
 // Image
 import MZLogoWhite from "../asset/images/MZ_logo_white.png";
 
 // CSS
 import "../styles/chatMain.css";
+import {useSelector} from "react-redux";
 
 const ChatMain = (() => {
     return (
