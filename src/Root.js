@@ -6,6 +6,7 @@ import { Navigate, useNavigate, useLocation } from "react-router-dom";
 // Redux
 import { persistor } from "./redux/Store";
 import * as authActions from "./redux/modules/AuthSlice";
+import * as chatActions from "./redux/modules/ChatSlice";
 
 // 페이지 import
 import {
@@ -23,19 +24,24 @@ import NotFound from "./components/NotFound";
 // CSS
 import "./styles/common.css";
 import ChatMain from "./pages/ChatMain";
+import {getChatList} from "./redux/modules/ChatSlice";
 
 const Root = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     // 상태 관리 (useState)
     const [hasLoginData, setHasLoginData] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);   // 사이드바 최소 너비 상태
+    const [isLoading, setIsLoading] = useState(false);
+    const [chatList, setChatList] = useState(null);
     // 🚀 초기 경로 설정 (sessionStorage에서 가져오기)
     const [redirectPath, setRedirectPath] = useState(sessionStorage.getItem("redirectPath"));
 
     // Redux 상태 가져오기
     const { errorCode } = useSelector((state) => state.constant);
     const { userData } = useSelector((state) => state.auth);
+    const chatState = useSelector((state) => state.chat);
 
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
@@ -60,7 +66,11 @@ const Root = () => {
         const handleStorageChange = (event) => {
             if (event.key == "login") {
                 console.log("🚀 localStorage 변경 감지! 페이지 새로고침...");
-                window.location.reload();   // 페이지 새로고침
+                // 로그인 성공 시 chatList API 호출
+                dispatch(chatActions.getChatList());
+                setIsLoading(true);
+                // 화면 새로고침
+                // window.location.reload();
             }
         };
 
@@ -73,7 +83,6 @@ const Root = () => {
 
     // Redux 상태나 localStorage 변경 시 로그인 상태 업데이트
     useEffect(() => {
-
         const loginData = userData?.code == "SUCCESS" ? userData.content : localStorage.getItem("accessToken");
         if ((loginData && !hasLoginData)) {
             setHasLoginData(true);
@@ -82,6 +91,14 @@ const Root = () => {
             navigate("/login");
         }
     }, [userData]);
+
+    // chat List API의 응답을 받은 경우
+    useEffect(() => {
+        if (chatState?.chatList?.code == "SUCCESS") {
+            setIsLoading(false);
+            setChatList(chatState?.chatList?.content);
+        }
+    }, [chatState?.chatList]);
 
     //  사이드바 토글 기능
     const toggleSidebar = () => {
@@ -92,7 +109,7 @@ const Root = () => {
         <div id="wrap">
             <div className={`container ${isCollapsed ? "sidebar-collapsed" : ""}`}>
                 { /* 로그인 이후에 sidebar 표시 */
-                    hasLoginData && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
+                    hasLoginData && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} chatList={chatList} />
                 }
 
                 <div className={`content ${hasLoginData ? "content-with-sidebar" : "content-full"}`}>

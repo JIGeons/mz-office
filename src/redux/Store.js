@@ -6,6 +6,7 @@ import logger from "redux-logger";
 
 // Reducer
 import authReducer from "./modules/AuthSlice";
+import chatReducer from "./modules/ChatSlice";
 import constantReducer from "./modules/ConstantSlice";
 
 // Redux Persis 설정
@@ -17,6 +18,7 @@ const persistConfig = {
 // Redux Reducer 통합
 const rootReduce = combineReducers({
     auth: authReducer,
+    chat: chatReducer,
     constant: constantReducer
 });
 
