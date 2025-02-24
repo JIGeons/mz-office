@@ -45,7 +45,9 @@ const Root = () => {
             sessionStorage.removeItem("redirectPath"); // ✅ 한 번만 실행되도록 삭제
         }
 
-        const accessToken = localStorage.getItem("accessToken");
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        const accessToken = userData?.accessToken;
+
         if (accessToken) {
             setHasLoginData(true);
         } else {

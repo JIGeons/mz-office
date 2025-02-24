@@ -26,11 +26,17 @@ const NaverCallback = () => {
     useEffect(() => {
         // Redux의 accessToken 값이 변경되면 팝업 닫기
         if (authState.userData?.code == "SUCCESS") {
-            // 네이버 로그인에 성공한 경우
-            localStorage.setItem("accessToken", authState.userData.content);
+            // 네이버 로그인에 성공한 경우 accessToken과 name으로 userData 형성
+            const userData = {
+                accessToken: authState.userData.content,
+                name: authState.userData?.name,
+            }
+
+            // String으로 저장
+            localStorage.setItem("userData", JSON.stringify(userData));
 
             // LocalStorage 값 변경 -> storage 이벤트 트리거
-            localStorage.setItem("login", Date.now());
+            localStorage.setItem("login", String(Date.now()));
             
             window.close();
         } else {

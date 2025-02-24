@@ -27,7 +27,8 @@ const Login = () => {
 
     // ComponentDidMount
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        const accessToken = userData?.accessToken;
 
         // accessToken이 존재하는 경우 /chat 페이지로 이동
         if (accessToken) {

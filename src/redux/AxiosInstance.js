@@ -16,8 +16,9 @@ const axiosInstance = axios.create({
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
     (config) => {
-        const accessToken = localStorage.getItem("accessToken");
-        config.headers["Authorization"] = `Bearer ${accessToken}`;
+        const userData = JSON.parse(localStorage.getItem("userData"));
+
+        config.headers["Authorization"] = `Bearer ${userData.accessToken}`;
         return config;
     },
     (error) => Promise.reject(error)
@@ -36,8 +37,11 @@ axiosInstance.interceptors.response.use(
                 const newTokens = await store.dispatch(reissueNaverToken());
 
                 if (newTokens) {
-                    localStorage.setItem("accessToken", newTokens.accessToken);
-                    localStorage.setItem("refreshToken", newTokens.refreshToken);
+                    const userData = JSON.parse(localStorage.getItem("userData"));
+                    userData.accessToken = newTokens.accessToken;
+                    userData.refreshToken = newTokens.refreshToken;
+
+                    localStorage.setItem("userData", JSON.stringify(userData));
 
                     // 새 토큰으로 요청 재시도
                     originalRequest.headers["x-access-token"] = newTokens.accessToken;
@@ -46,7 +50,7 @@ axiosInstance.interceptors.response.use(
                 }
             } catch (error) {
                 console.error("토큰 갱신 실패, 로그아웃 처리", error);
-                store.dispatch(reissueNaverToken);   // Redux 상태 초기화
+                store.dispatch(reissueNaverToken());   // Redux 상태 초기화
                 await persistor.purge();  // Redux Persist 데이터 삭제
             }
         }
