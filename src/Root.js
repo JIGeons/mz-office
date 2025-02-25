@@ -25,7 +25,7 @@ import NotFound from "./components/NotFound";
 // CSS
 import "./styles/common.css";
 import ChatMain from "./pages/ChatMain";
-import {getChatList} from "./redux/modules/ChatSlice";
+import {getRecentChatList} from "./redux/modules/ChatSlice";
 import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 const Root = () => {
@@ -70,10 +70,17 @@ const Root = () => {
             if (event.key == "login") {
                 console.log("🚀 localStorage 변경 감지! 페이지 새로고침...");
                 // 로그인 성공 시 chatList API 호출 (API 연결이 아직 안 됐기 때문에 주석 처리)
-                // dispatch(chatActions.getChatList());
-                setIsLoading(true);
-                // 화면 새로고침
-                window.location.reload();
+                Promise.all([
+                    dispatch(chatActions.getTodayChatList()),
+                    dispatch(chatActions.getRecentChatList())
+                ]).then(() => {
+                    // 화면 새로고침
+                    window.location.reload();
+                }).catch(error => {
+                    alert("API 요청 실패! logout");
+                    localStorage.removeItem("userData");
+                    authActions.clearAuthState();
+                })
             }
         };
 

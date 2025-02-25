@@ -75,7 +75,7 @@ const authSlice = createSlice({
             })
             .addCase(linkNaver.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.error;
             })
             // Naver 로그인 연결 해제
             .addCase(unlinkNaver.fulfilled, (state, action) => {

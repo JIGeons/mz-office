@@ -2,14 +2,40 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as chat_apis from "../apis/chat_apis";
 
 // 액션 정의
-const GET_CHAT_LIST = "chat/getChatList";
+const GET_TODAY_CHAT_LIST = "chat/getTodayChatList"
+const GET_RECENT_CHAT_LIST = "chat/getRecentChatList";
+const GET_CHAT_DETAIL = "chat/getChatDetail";
 
-// 네이버 계정 연동
-export const getChatList = createAsyncThunk(
-    GET_CHAT_LIST,
+// 오늘 진행된 채팅 내역 조회
+export const getTodayChatList = createAsyncThunk(
+    GET_TODAY_CHAT_LIST,
     async(_, {rejectWithValue}) => {
         try {
-            return await chat_apis.getChatList();
+            return await chat_apis.getTodayChatList();
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
+// 최근 채팅 내역 조회
+export const getRecentChatList = createAsyncThunk(
+    GET_RECENT_CHAT_LIST,
+    async(_, {rejectWithValue}) => {
+        try {
+            return await chat_apis.getRecentChatList();
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
+// 채팅방 대화 조회
+export const getChatDetail = createAsyncThunk(
+    GET_CHAT_DETAIL,
+    async({chatId}, {rejectWithValue}) => {
+        try {
+            return await chat_apis.getChatDetail({chatId});
         } catch (error) {
             return rejectWithValue(error);
         }
@@ -17,7 +43,9 @@ export const getChatList = createAsyncThunk(
 )
 
 const initialState = {
-    chatList: [],
+    todayChatList: {},
+    recentChatList: [],
+    chatDetail: {},
     error: null,
 }
 
@@ -31,14 +59,41 @@ const chatSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // chatList 연결
-            .addCase(getChatList.fulfilled, (state, action) => {
-                state.chatList = action.payload;
+            // 오늘 채팅 내역 조회
+            .addCase(getTodayChatList.fulfilled, (state, action) => {
+                state.todayChatList = action.payload;
                 state.error = null;
             })
-            .addCase(getChatList.rejected, (state, action) => {
+            .addCase(getTodayChatList.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.todayChatList = {
+                    error: action.error
+                };
+            })
+            // 최근 채팅 내역 조회
+            .addCase(getRecentChatList.fulfilled, (state, action) => {
+                state.recentChatList = action.payload;
+                state.error = null;
+            })
+            .addCase(getRecentChatList.rejected, (state, action) => {
+                state.loading = false;
+                state.recentChatList = {
+                    error: action.error
+                };
+            })
+            // 채팅방 상세 대화 목록 조회
+            .addCase(getChatDetail.fulfilled, (state, action) => {
+                // chatId를 키로 저장
+                const chatData = action.payload;
+                state.chatDetail[chatData.chatId] = chatData;
+                state.error = null;
+            })
+            .addCase(getChatDetail.rejected, (state, action) => {
+                state.loading = false;
+                state.error = {
+                    type: "getChatDetail",
+                    content: action.error,
+                };
             })
     },
 });

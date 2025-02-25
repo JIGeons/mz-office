@@ -1,0 +1,11 @@
+.chat-guide {
+    width: 100%;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-guide-content {
+    width: 100%;
+}
