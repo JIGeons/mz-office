@@ -7,6 +7,8 @@ import Root from "./Root";
 
 // CSS
 import "./styles/index.css";
+import "./styles/fonts/paperlogy.css"
+import "./styles/fonts/pretendard.css";
 
 function App() {
   return (

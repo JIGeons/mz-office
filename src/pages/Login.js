@@ -7,11 +7,11 @@ import { useNavigate } from "react-router-dom";
 import '../styles/login.css';
 
 // images
-import mzLogo from "../asset/images/MZ_logo_black.png";
-import mzOfficeImage from "../asset/images/login/mz-office-image.png"
-import sectionBackground from "../asset/images/login/bg_mainright.png";
-import sideImage1 from "../asset/images/login/login_side_img-1.png";
-import sideImage2 from "../asset/images/login/login_side_img-2.png";
+import mzLogo from "../assets/images/MZ_logo_black.png";
+import mzOfficeImage from "../assets/images/login/mz-office-image.png"
+import sectionBackground from "../assets/images/login/bg_mainright.png";
+import sideImage1 from "../assets/images/login/login_side_img-1.png";
+import sideImage2 from "../assets/images/login/login_side_img-2.png";
 
 const sideImages = [sideImage1, sideImage2];
 

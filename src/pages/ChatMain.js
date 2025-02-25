@@ -8,7 +8,7 @@ import chatActions from "../redux/modules/ChatSlice";
 import ChatGuide from "../components/Chat/ChatGuide";
 
 // Image
-import MZLogoWhite from "../asset/images/MZ_logo_white.png";
+import MZLogoWhite from "../assets/images/MZ_logo_white.png";
 
 // CSS
 import "../styles/chatMain.css";

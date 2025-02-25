@@ -7,12 +7,14 @@ import * as authActions from "../redux/modules/AuthSlice";
 import * as constantActions from "../redux/modules/ConstantSlice";
 
 // Image
-import sidebarToggle from "../asset/images/sidebar/ico_leftmenu.png"
-import deleteIcon from "../asset/images/sidebar/delete.png"
-import logoutIcon from "../asset/images/sidebar/Logout.png"
+import sidebarToggle from "../assets/images/sidebar/ico_leftmenu.png"
+import deleteIcon from "../assets/images/sidebar/delete.png"
+import logoutIcon from "../assets/images/sidebar/Logout.png"
 
 // CSS
 import "../styles/components/sidebar.css"
+import "../styles/fonts/paperlogy.css"
+
 
 const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
     const dispatch = useDispatch();
@@ -83,7 +85,12 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
                         <h2>최근일자 채팅 내역</h2>
                         {
                             chatFolder.map((chatFolderDate, index) => {
-                                return <li key={index}><h3>{chatFolderDate}</h3></li>
+                                return (
+                                    <li key={index}>
+                                        <h3>{chatFolderDate}</h3>
+                                        <img src={deleteIcon} alt={"delete-icon.png"} />
+                                    </li>
+                                )
                             })
                         }
                     </ul>

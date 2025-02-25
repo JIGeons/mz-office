@@ -24,8 +24,8 @@ import NotFound from "./components/NotFound";
 
 // CSS
 import "./styles/common.css";
+
 import ChatMain from "./pages/ChatMain";
-import {getRecentChatList} from "./redux/modules/ChatSlice";
 import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 const Root = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Image
-import noticeIcon from "../../asset/images/chat/ico_Error.png";
+import noticeIcon from "../../assets/images/chat/ico_Error.png";
 // CSS
 import "../../styles/components/chat.css"
 

@@ -33,16 +33,13 @@ module.exports = {
             },
             {
                 test: /\.(woff|woff2|eot|ttf|svg)$/i,  // ✅ 폰트 및 SVG만 url-loader 사용
-                use: {
-                    loader: "url-loader",
-                    options: {
-                        limit: 100000,  // 100KB 이하의 파일은 Base64 변환
-                        name: "assets/fonts/[name].[hash].[ext]",  // 파일명 지정
-                    },
-                },
+                type: "asset/resource",
+                generator: {
+                    filename: "assets/fonts/[path][name].[ext]",
+                }
             },
             {
-                test: /\.(png|jpe?g|gif)$/i,  // 이미지 파일은 asset/resource 사용
+                test: /\.(png|jpe?g|gif)$/i,  // 이미지 파일은 assets/resource 사용
                 type: "asset/resource",
                 generator: {
                     filename: "assets/images/[name].[hash].[ext]",  // 파일 저장 경로 지정
