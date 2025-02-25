@@ -12,6 +12,7 @@ import * as constantActions from "./redux/modules/ConstantSlice";
 // 페이지 import
 import {
     Login,
+    ChatMain,
     NaverCallback
 } from "./pages/paths";
 
@@ -22,11 +23,11 @@ import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import NotFound from "./components/NotFound";
 
+// Dialog
+import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
+
 // CSS
 import "./styles/common.css";
-
-import ChatMain from "./pages/ChatMain";
-import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 const Root = () => {
     const dispatch = useDispatch();

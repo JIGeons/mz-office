@@ -1,11 +1,107 @@
+/* ---------- 가이드라인 CSS ---------- */
 .chat-guide {
     width: 100%;
     padding: 20px;
 
     display: flex;
-    flex-direction: column;
+    color: #1F2531;
+
+    font-family: 'Pretendard', sans-serif;
+
+    background-color: #E8F2FF;
+    border-radius: 0 12px 12px 12px;
+}
+
+.chat-guide img {
+    width: 15px;
+    height: 15px;
 }
 
 .chat-guide-content {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin-left: 5px;
+}
+
+
+.chat-guide-content h1 {
+    font-weight: 800;
+    font-size: 13px;
+    line-height: 15px;
+    letter-spacing: -0.02em;
+    color: #1F2531;
+}
+.chat-guide-content h2 {
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: -0.02em;
+    color: #18304A;
+    padding-top: 8px;
+}
+
+.chat-guide-content span {
+    align-self: flex-start;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: -0.03em;
+    color: #485360;
+}
+
+.chat-response {
+    display: flex;
+}
+
+.chat-response .chat-ai-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+}
+
+.chat-request {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chat-request .chat-request-button {
+    width: 200px;
+    height: 80px;
+
+    border: 1px solid #C3C5D3;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: calc(16px * -0.02);
+}
+
+.chat-request .chat-request-button span {
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+    letter-spacing: -0.06em;
+}
+
+.request-selected {
+    color: #FFFFFF !important;
+    background-color: #4865FF !important;
+    border: none !important;
+}
+
+.request-selected span {
+    color: #ACB8C5 !important;
 }

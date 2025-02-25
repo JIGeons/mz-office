@@ -9,13 +9,16 @@ import ChatGuide from "../components/Chat/ChatGuide";
 
 // Image
 import MZLogoWhite from "../assets/images/MZ_logo_white.png";
+import SearchIcon from "../assets/images/chat/search_icon.png";
 
 // CSS
 import "../styles/chatMain.css";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
+import ChatResponse from "../components/Chat/ChatResponse";
+import ChatRequest from "../components/Chat/ChatRequest";
 
-const ChatMain = (() => {
+const ChatMain = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -41,23 +44,38 @@ const ChatMain = (() => {
         }
     }, [chat.chatDetailList]);
 
+    const setRequestType = (requestType) => {
+        console.log("requestType: ", requestType);
+    }
+
     return (
         <div className="chat-main">
             <section className="mz-logo-white">
                 <img src={MZLogoWhite} alt="MZ-logo-white.png" />
-                <h1>{userInfo?.name}님, 안녕하세요.</h1>
-                <p>MZ오피스를 이용하여, 사내에서 문제를 해결해보세요!</p>
+                <div className="mz-logo-text">
+                    <h1>안녕하세요.</h1>
+                    <div className="mz-logo-text-description">
+                        <p>MZ오피스를 이용하여, 사내에서의 문제를 해결해보세요!</p>
+                    </div>
+                </div>
             </section>
             <section className="chatting_main">
-                {
-                    (chatList?.response == "FAIL") && <ChatGuide />
-                }
+                <div className="chatting_content_scroll">
+                    <ChatRequest setRequestType={setRequestType} />
+                    <ChatResponse guide={<ChatGuide />} />
+                    {
+                        (chatList?.response == "FAIL") && <ChatGuide />
+                    }
+                </div>
             </section>
             <section className="chat_input">
-
+                <input typeof={"text"} placeholder={"MZ오피스에게 물어보기"}></input>
+                <button className={"chat_sending"}>
+                    <img src={SearchIcon} alt={"search-icon.png"} />
+                </button>
             </section>
         </div>
     );
-});
+};
 
 export default ChatMain;
