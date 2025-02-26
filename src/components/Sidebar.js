@@ -24,6 +24,9 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
     // Component State
     const [chatFolder, setChatFolder] = useState([]);
 
+    // Redux State
+    const chatState = useSelector((state) => state.chat);
+
     useEffect(() => {
         // chatList 가 존재하는 경우
         if (chatList && chatList.length > 0) {
@@ -80,6 +83,30 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
         }
     }
 
+    const navigateToChat = (chatId, date) => {
+        // 오늘 날짜를 구한다.
+        const todayChatList = chatState.todayChatList?.content;
+        const newDate = new Date();
+        const year = newDate.getFullYear();
+        const month = String(newDate.getMonth() + 1).padStart(2, "0");
+        const day = String(newDate.getDate()).padStart(2, "0");
+        const today = `${year}-${month}-${day}`
+
+        const isToday = today == date ? "&date=today": "";
+
+        // chatId가 today인 경우 ChatState에 todayChatList가 존재하는지 확인
+        if (chatId == "today") {
+            // 오늘의 채팅 내용이 존재하는 경우
+            if (chatState.todayChatList?.code == "SUCCESS") {
+                navigate(`/chat?chatId=${todayChatList.chatId}${isToday}`);
+            } else {
+                navigate(`/chat?chatId=today&date=today`);
+            }
+        } else {
+            navigate(`/chat?chatId=${chatId}${isToday}`);
+        }
+    }
+
     return (
         <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
             {/* 사이드바 닫기 버튼 */}
@@ -96,7 +123,11 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
                             chatFolder.map((chatFolderDate, index) => {
                                 return (
                                     <li key={index}>
-                                        <h3>{chatFolderDate.date}</h3>
+                                        <h3 style={{cursor: "pointer"}}
+                                            onClick={() => navigateToChat(chatFolderDate.chatId, chatFolderDate.date)}
+                                        >
+                                            {chatFolderDate.date}
+                                        </h3>
                                         <img
                                             src={deleteIcon}
                                             alt={"delete-icon.png"}

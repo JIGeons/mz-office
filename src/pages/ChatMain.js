@@ -62,14 +62,14 @@ const ChatMain = () => {
     // Redux State
     const chatState = useSelector((state) => state.chat);
 
+    const params = new URLSearchParams(window.location.search);
+    const chatId = params.get("chatId");
+    const date = params.get("date");    // date가 today가 아닌 경우 chatting 비활성화
+
     // ComponentDidMount
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem("userData"));
         userInfo.name = userData?.name || "ㅇㅇ";
-
-        const params = new URLSearchParams(window.location.search);
-        const chatId = params.get("chatId");
-        const date = params.get("date");    // date가 today가 아닌 경우 chatting 비활성화
 
         // 오늘 메세지 조회
         if (chatId == "today") {
@@ -206,7 +206,9 @@ const ChatMain = () => {
             <section className="mz-logo-white">
                 <img src={MZLogoWhite} alt="MZ-logo-white.png" />
                 <div className="mz-logo-text">
-                    <h1>안녕하세요.</h1>
+                    { chatId == "today" &&
+                        <h1>안녕하세요.</h1>
+                    }
                     <div className="mz-logo-text-description">
                         <p>MZ오피스를 이용하여, 사내에서의 문제를 해결해보세요!</p>
                     </div>
