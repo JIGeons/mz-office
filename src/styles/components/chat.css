@@ -64,36 +64,47 @@
 
 .chat-request {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row-reverse;
+    margin-top: 15px;
 }
 
-.chat-request .chat-request-button {
-    width: 200px;
-    height: 80px;
-
-    border: 1px solid #C3C5D3;
-    border-radius: 12px;
-    background-color: #FFFFFF;
-
-    padding: 10px;
-
+.chat-request .chat-user-message {
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: start;
+    align-items: center;
+
+    background-color: #1F2531;
+
+    width: 150px;
+    height: 40px;
+    max-width: 100%;
+    padding: 0 20px;
 
     font-family: 'Pretendard', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 20px;
-    letter-spacing: calc(16px * -0.02);
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 24px;
+    letter-spacing: -0.04em;
+    color: #FFFFFF;
+
+    border-radius: 15px 0 15px 15px;
 }
 
-.chat-request .chat-request-button span {
-    font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
-    letter-spacing: -0.06em;
+.chat-request .chat-user-icon {
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+}
+
+.request {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 30px;
+}
+
+.request img {
+    width: 215px;
 }
 
 .request-selected {

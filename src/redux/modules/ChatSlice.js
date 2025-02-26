@@ -34,9 +34,9 @@ export const getRecentChatList = createAsyncThunk(
 // 채팅방 대화 조회
 export const getChatDetail = createAsyncThunk(
     GET_CHAT_DETAIL,
-    async({chatId}, {rejectWithValue}) => {
+    async({ chatId }, {rejectWithValue}) => {
         try {
-            return await chat_apis.getChatDetail({chatId});
+            return await chat_apis.getChatDetail(chatId);
         } catch (error) {
             return rejectWithValue(error);
         }
@@ -80,9 +80,7 @@ const chatSlice = createSlice({
             })
             .addCase(getTodayChatList.rejected, (state, action) => {
                 state.loading = false;
-                state.todayChatList = {
-                    error: action.error
-                };
+                state.todayChatList = action.payload;
             })
             // 최근 채팅 내역 조회
             .addCase(getRecentChatList.fulfilled, (state, action) => {
@@ -91,22 +89,20 @@ const chatSlice = createSlice({
             })
             .addCase(getRecentChatList.rejected, (state, action) => {
                 state.loading = false;
-                state.recentChatList = {
-                    error: action.error
-                };
+                state.recentChatList = action.payload;
             })
             // 채팅방 상세 대화 목록 조회
             .addCase(getChatDetail.fulfilled, (state, action) => {
                 // chatId를 키로 저장
                 const chatData = action.payload;
-                state.chatDetail[chatData.chatId] = chatData;
+                state.chatDetail = chatData;
                 state.error = null;
             })
             .addCase(getChatDetail.rejected, (state, action) => {
                 state.loading = false;
                 state.error = {
                     type: "getChatDetail",
-                    content: action.error,
+                    content: action.payload
                 };
             })
             // 채팅방 삭제
@@ -116,10 +112,7 @@ const chatSlice = createSlice({
             })
             .addCase(deleteChatRoom.rejected, (state, action) => {
                 state.loading = false;
-                state.deleteChatRoom = {
-                    code: "FAILED",
-                    content: action.error,
-                }
+                state.deleteChatRoom = action.payload;
             })
     },
 });

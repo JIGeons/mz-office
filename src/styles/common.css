@@ -20,19 +20,45 @@ body {
     padding: 0;
 }
 
+.sidebar {
+    width: 260px;
+    height: 100vh;
+
+    background: #4865FF;
+    color: white;
+    text-align: left;
+
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    padding: 20px;
+    transition: transform 0.3s ease-in-out 0.1s;
+
+    z-index: 10;
+
+    overflow: hidden;
+}
+
+/* ✅ Sidebar가 보일 때 (컨텐츠 너비 조절) */
+.sidebar-collapsed .content {
+    margin-left: 80px;  /* 사이드바 최소 너비 적용 시 콘텐츠 위치 조정 */
+    transition: margin-left 0.3s ease-in-out;
+}
+
 .sidebar.collapsed {
     width: 80px; /* 최소 너비 */
+    transform: translateX(0);
 }
 
 /* ✅ 컨텐츠 영역 (기본: Sidebar 없는 상태) */
 .content {
     margin-left: 260px;  /* 나머지 공간을 차지하도록 설정 */
     transition: margin-left 0.3s ease-in-out;
-}
-
-/* ✅ Sidebar가 보일 때 (컨텐츠 너비 조절) */
-.sidebar-collapsed .content {
-    margin-left: 80px;  /* 사이드바 최소 너비 적용 시 콘텐츠 위치 조정 */
 }
 
 .content-with-sidebar {

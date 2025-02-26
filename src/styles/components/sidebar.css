@@ -1,27 +1,3 @@
-.sidebar {
-    width: 260px;
-    height: 100vh;
-
-    background: #4865FF;
-    color: white;
-    text-align: left;
-
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-
-    position: fixed;
-    left: 0;
-    top: 0;
-
-    padding: 20px;
-    transition: transform 0.3s ease-in-out;
-
-    z-index: 10;
-
-    overflow: hidden;
-}
-
 .sidebar-toggle {
     position: sticky !important;
     background: none;

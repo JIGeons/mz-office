@@ -32,6 +32,7 @@ import "./styles/common.css";
 const Root = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // 상태 관리 (useState)
     const [hasLoginData, setHasLoginData] = useState(false);
@@ -70,18 +71,19 @@ const Root = () => {
         const handleStorageChange = (event) => {
             if (event.key == "login") {
                 console.log("🚀 localStorage 변경 감지! 페이지 새로고침...");
+                getChatData();
                 // 로그인 성공 시 chatList API 호출 (API 연결이 아직 안 됐기 때문에 주석 처리)
-                Promise.all([
-                    dispatch(chatActions.getTodayChatList()),
-                    dispatch(chatActions.getRecentChatList())
-                ]).then(() => {
-                    // 화면 새로고침
-                    window.location.reload();
-                }).catch(error => {
-                    alert("API 요청 실패! logout");
-                    localStorage.removeItem("userData");
-                    authActions.clearAuthState();
-                })
+                // Promise.all([
+                //     dispatch(chatActions.getTodayChatList()),
+                //     dispatch(chatActions.getRecentChatList())
+                // ]).then(() => {
+                //     // 화면 새로고침
+                //     navigate("/chat?chatId=today&date=today");
+                // }).catch(error => {
+                //     alert("API 요청 실패! logout");
+                //     localStorage.removeItem("userData");
+                //     authActions.clearAuthState();
+                // })
             }
         };
 
@@ -131,6 +133,52 @@ const Root = () => {
         dispatch(constantActions.onHideDialog());
     }
 
+    const getChatData = async () => {
+        try {
+            const [todayChatListResult, recentChatListResult] = await Promise.all([
+                dispatch(chatActions.getTodayChatList()),
+                dispatch(chatActions.getRecentChatList())
+            ]);
+
+            console.log("📌 getTodayChatList 결과:", todayChatListResult);
+            console.log("📌 getRecentChatList 결과:", recentChatListResult);
+
+            const todayChatResult = todayChatListResult?.payload;
+            const recentChatResult = recentChatListResult?.payload;
+
+            // 두개의 응답이 모두 성공한 경우
+            if (todayChatResult?.code == "SUCCESS"
+                && recentChatResult?.code == "SUCCESS") {
+
+                // 오늘 진행된 chatId가 존재하지 않는 경우
+                if (!todayChatResult?.content?.chatId) {
+                    navigate("/chat?chatId=today&date=today");
+                }
+                // 오늘 진행된 chatId가 존재하는 경우
+                else {
+                    navigate(`/chat?chatId=${todayChatResult?.content?.chatId}&date=today`);
+                }
+            }
+            // 페이지 이동
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // url 변동 감지
+    useEffect(() => {
+        // accessToken이 localStorage에 저장되면 state를 변경
+        console.log("url 변경!", location);
+
+        const loginData = localStorage.getItem("login");
+        const userData = JSON.parse(localStorage.getItem("userData"));
+
+        if ((loginData && userData?.accessToken)) {
+            setHasLoginData(true);
+        }
+
+    }, [location])
+
     return (
         <div id="wrap">
             <div className={`container ${isCollapsed ? "sidebar-collapsed" : ""}`}>
@@ -145,7 +193,7 @@ const Root = () => {
 
                         {/* 로그인 정보가 없는 경우 /login 페이지로 이동 */}
                         <Route path="/" element={ !hasLoginData ?
-                                <Navigate to="/login" replace /> : <Navigate to="/chat" replace /> }
+                                <Navigate to="/login" replace /> : <Navigate to="/chat?chatId=today&date=today" replace /> }
                         />
                         { /* 로그인 상태에서 login 페이지 접근 시 /chat페이지로 리다이렉트 */ }
                         <Route path="/login" element={ <Login /> } />
@@ -171,8 +219,8 @@ const Root = () => {
                         content={dialogContent.dialogContent}
                         onClickPositiveBtn={dialogContent.positiveFunction}
                         onClickNegativeBtn={hideDialog}
-                        positiveBtnContent={dialogContent.positiveBtnContent}
-                        negativeBtnContent={dialogContent.negativeBtnContent}
+                        positiveBtnContent={"예"}
+                        negativeBtnContent={"아니오"}
                     />
                 }
             </div>

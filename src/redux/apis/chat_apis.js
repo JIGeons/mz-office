@@ -25,7 +25,7 @@ export const getRecentChatList = async () => {
 // 채팅방 대화 조회
 export const getChatDetail = async (chatId) => {
     try {
-        const response = await axiosInstance.get(`${serverUrl}/api/v1/chat/${chatId}/?`);
+        const response = await axiosInstance.get(`${serverUrl}/api/v1/chat/${chatId}`);
         return response.data;
     } catch (error) {
         throw error.response?.data || error;

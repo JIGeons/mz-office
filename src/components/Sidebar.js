@@ -50,6 +50,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
 
     const handleNaverLogout = () => {
         try {
+            console.log("logout");
             const userData = JSON.parse(localStorage.getItem("userData"));
             const accessToken = userData?.accessToken;
 

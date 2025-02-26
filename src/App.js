@@ -14,7 +14,7 @@ function App() {
   return (
       <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-              <Router>
+              <Router basename="/">
                   <Root />
               </Router>
           </PersistGate>
