@@ -17,7 +17,7 @@ import "../styles/components/sidebar.css"
 import "../styles/fonts/paperlogy.css"
 
 
-const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
+const Sidebar = ({ toggleSidebar, isCollapsed }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -28,6 +28,12 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
     const chatState = useSelector((state) => state.chat);
 
     useEffect(() => {
+        let chatList = [];
+        if (chatState.recentChatList?.code !== "SUCCESS") {
+            console.error("최근 대화 내역을 불러오는데 실패하였습니다.");
+        } else {
+            chatList = chatState.recentChatList?.content;
+        }
         // chatList 가 존재하는 경우
         if (chatList && chatList.length > 0) {
             console.log("채팅 내역이 존재");

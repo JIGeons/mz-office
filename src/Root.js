@@ -28,6 +28,7 @@ import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 // CSS
 import "./styles/common.css";
+import AccountDelete from "./components/AccountDelete";
 
 const Root = () => {
     const dispatch = useDispatch();
@@ -96,7 +97,10 @@ const Root = () => {
 
     // Redux 상태나 localStorage 변경 시 로그인 상태 업데이트
     useEffect(() => {
-        const loginData = userData?.code == "SUCCESS" ? userData.content : localStorage.getItem("accessToken");
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        const loginData = userData?.accessToken;
+        console.log("loginData", loginData);
+
         if ((loginData && !hasLoginData)) {
             setHasLoginData(true);
         } else if (!loginData && hasLoginData) {
@@ -158,10 +162,15 @@ const Root = () => {
                 else {
                     navigate(`/chat?chatId=${todayChatResult?.content?.chatId}&date=today`);
                 }
+            } else {
+                console.error("채팅 리스트를 불러오는데 실패하였습니다. 로그아웃 합니다. failed: ");
+                // localStorage.removeItem("userData");
+
             }
             // 페이지 이동
         } catch (error) {
-            console.log(error);
+            console.error("채팅 리스트를 불러오는데 실패하였습니다. 로그아웃 합니다. (error: ", error);
+            localStorage.removeItem("userData");
         }
     }
 
@@ -179,14 +188,15 @@ const Root = () => {
 
     }, [location])
 
+    const isNonFooter = !(window.location.href.includes("/chat") || window.location.href.includes("/account-delete"));
     return (
         <div id="wrap">
             <div className={`container ${isCollapsed ? "sidebar-collapsed" : ""}`}>
                 { /* 로그인 이후에 sidebar 표시 */
-                    hasLoginData && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} chatList={chatList} />
+                    hasLoginData && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
                 }
 
-                <div className={`content ${hasLoginData ? "content-with-sidebar" : "content-full"}`}>
+                <div className={`content ${hasLoginData ? "content-with-sidebar" : "content-full"} ${ !isNonFooter ? "none-footer" : ""}`}>
                     <Routes>
                         {/* 🚀 처음 진입 시, sessionStorage에 저장된 경로가 있다면 해당 경로로 리디렉트 */}
                         {redirectPath && <Route path="*" element={<Navigate to={redirectPath} replace />} />}
@@ -205,10 +215,11 @@ const Root = () => {
                             <Route path="/naver-callback" element={ <NaverCallback /> } />
                         }
                         <Route path="*" element={ <NotFound />} />
+                        <Route path="/account-delete" element={ <AccountDelete /> } />
                     </Routes>
 
                     { /* 🏆 모든 페이지에서 Footer 표시 (로그인 페이지에선 출력 X)*/
-                        hasLoginData && <Footer />
+                        (hasLoginData && isNonFooter) && <Footer />
                     }
                 </div>
 

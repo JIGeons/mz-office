@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import { SocketUrl } from "../utils/ServerUrl";
+import ScrollToBottom from "react-scroll-to-bottom";
 
 // Actions
 import * as authActions from "../redux/modules/AuthSlice";
@@ -158,7 +159,7 @@ const ChatMain = () => {
         }
 
         ws.onerror = (error) => {
-            console.log('WebSocket 오류: ', error);;
+            console.log('WebSocket 오류: ', error);
         };
 
         setSocket(ws);  // WebSocket 객체를 상태로 관리
@@ -215,7 +216,7 @@ const ChatMain = () => {
                 </div>
             </section>
             <section className="chatting_main">
-                <div className="chatting_content_scroll">
+                <ScrollToBottom className="chatting_content_scroll" scrollBehavior={"auto"}>
                     <ChatResponse guide={<ChatGuide />} />
                     {
                         sessionList && sessionList.length > 0
@@ -227,25 +228,25 @@ const ChatMain = () => {
                                 return [<Request setRequestType={setRequestType} key={`request-${index}`} />];
                             }
 
-                            return messages.messages.flatMap((msg, indes) => {
+                            return messages.messages.flatMap((msg, depth) => {
                                 // console.log(`${indes+1}= `, msg);
                                 if (msg?.sender == "USER") {
                                     if (msg?.inquiryType == "REQUEST_TYPE") {
                                         if (msg?.content == "PARSE") {
                                             // console.log("여기 나와야 하는거 아냐?");
-                                            return [<ChatRequest content={"문구 해석"} key={`request-parse-${index}-${indes}`} />];
+                                            return [<ChatRequest content={"문구 해석"} key={`request-parse-${index}-${depth}`} />];
                                         } else {
-                                            return [<ChatRequest key={`request-${index}-${indes}`} />];
+                                            return [<ChatRequest content={"문장 작성"} key={`request-${index}-${depth}`} />];
                                         }
                                     }
                                 } else if (msg?.sender == "AI") {
-                                    return [<ChatResponse message={msg} key={`response-${index}-${indes}`} />];
+                                    return [<ChatResponse message={msg} key={`response-${index}-${depth}`} />];
                                 }
                                 return [];
                             });
                         })
                     }
-                </div>
+                </ScrollToBottom>
             </section>
             <section className="chat_input">
                 <input id="chat-input-content" typeof={"text"} placeholder={"MZ오피스에게 물어보기"}></input>
@@ -255,6 +256,9 @@ const ChatMain = () => {
                         : <img src={SearchIcon} alt={"search-icon.png"} onClick={() => sendRequest()} />
                     }
                 </button>
+            </section>
+            <section className="privacy-policy">
+                <p>개인정보 이용 처리 방침 확인하기</p>
             </section>
         </div>
     );

@@ -37,7 +37,7 @@ body {
     top: 0;
 
     padding: 20px;
-    transition: transform 0.3s ease-in-out 0.1s;
+    transition: width 0.3s ease-in-out;
 
     z-index: 10;
 
@@ -53,6 +53,7 @@ body {
 .sidebar.collapsed {
     width: 80px; /* 최소 너비 */
     transform: translateX(0);
+    transition: width 0.3s ease-in-out
 }
 
 /* ✅ 컨텐츠 영역 (기본: Sidebar 없는 상태) */
@@ -70,4 +71,18 @@ body {
     margin-left: 0px;
     width: 100%;
     height: 100%;
+}
+
+.none-footer {
+    height: 100%;
+}
+
+.privacy-policy {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -0.05em;
+    text-decoration: underline;
+    color: #4A5262;
+    padding: 10px 0 15px 0;
 }
