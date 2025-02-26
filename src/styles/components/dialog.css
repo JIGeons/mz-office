@@ -43,6 +43,8 @@
     line-height: 34px;
     letter-spacing: -0.05em;
     margin-bottom: 50px;
+
+    white-space: pre-line;
 }
 
 .dialog_btn_group {

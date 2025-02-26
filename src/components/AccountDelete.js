@@ -1,16 +1,22 @@
 import React, {useState} from "react";
+import {useDispatch} from "react-redux";
 
 // CSS
 import "../styles/components/accountDelete.css";
 
+// Actions
+import * as constantActions from "../redux/modules/ConstantSlice";
+
 const AccountDelete = () => {
+    const dispatch = useDispatch();
+
     const [isChecked, setIsChecked] = useState(false);
 
     const handleChange = (event) => {
         setIsChecked(event.target.checked);
     };
 
-    const handleSubmit = () => {
+    const handleDeleteAccount = () => {
         console.log("ㅊㅔ크박스 확인: ", isChecked);
     }
 
@@ -40,7 +46,7 @@ const AccountDelete = () => {
                 </div>
                 <button className={isChecked ? "clickable" : ""}
                         disabled={!isChecked}
-                        onClick={() => { handleSubmit() }}
+                        onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "", dialogContent: "정말 탈퇴하시겠습니까?\n탈퇴 시, 탈퇴 전의 데이터는 돌릴 수 없습니다.", positiveFunction: handleDeleteAccount }))}
                 >
                     확인
                 </button>
