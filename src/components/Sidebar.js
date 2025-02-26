@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 // Actions
 import * as authActions from "../redux/modules/AuthSlice";
+import * as chatActions from "../redux/modules/ChatSlice";
 import * as constantActions from "../redux/modules/ConstantSlice";
 
 // Image
@@ -26,24 +27,24 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
     useEffect(() => {
         // chatList 가 존재하는 경우
         if (chatList && chatList.length > 0) {
-            for (let chatInfo in chatList) {
-                const chatDate = new Date(chatInfo?.date);
-                const year = chatDate.getFullYear();
-                const month = chatDate.getMonth() + 1;
-                const date = chatDate.getDate();
-                const chatFolderDate = `${year}-${month}-${date}`;
-                setChatFolder([...chatFolder, chatFolderDate]);
-            }
+            console.log("채팅 내역이 존재");
+            setChatFolder(chatList);
         }
         // chatList가 존재하지 않는 경우
         else {
+            console.log("채팅 내역이 존재하지 않음!");
             // 현재 날짜를 받아온다.
             const today = new Date();
             const year = today.getFullYear();
-            const month = today.getMonth() + 1;
-            const date = today.getDate();
-            const todayDate = `${year}-${month}-${date}`;
-            setChatFolder([todayDate]);
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const date = String(today.getDate()).padStart(2, "0");
+            const todayObj = {
+                chatId: "today",
+                date: `${year}-${month}-${date}`
+            };
+
+            console.log("Today Object: ", todayObj);
+            setChatFolder([todayObj]);
         }
     }, []);
 
@@ -71,6 +72,13 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
         }
     };
 
+    const handleChatRoomDelete = (chatId) => {
+        console.log("Delete chat: ", chatId);
+        if (chatId !== "today") {
+            dispatch(chatActions.deleteChatRoom(chatId));
+        }
+    }
+
     return (
         <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
             {/* 사이드바 닫기 버튼 */}
@@ -87,8 +95,13 @@ const Sidebar = ({ toggleSidebar, isCollapsed, chatList }) => {
                             chatFolder.map((chatFolderDate, index) => {
                                 return (
                                     <li key={index}>
-                                        <h3>{chatFolderDate}</h3>
-                                        <img src={deleteIcon} alt={"delete-icon.png"} />
+                                        <h3>{chatFolderDate.date}</h3>
+                                        <img
+                                            src={deleteIcon}
+                                            alt={"delete-icon.png"}
+                                            onClick={() => handleChatRoomDelete(chatFolderDate.chatId)}
+                                            style={{ cursor: "pointer" }}
+                                        />
                                     </li>
                                 )
                             })
