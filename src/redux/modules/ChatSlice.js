@@ -5,6 +5,7 @@ import * as chat_apis from "../apis/chat_apis";
 const GET_TODAY_CHAT_LIST = "chat/getTodayChatList"
 const GET_RECENT_CHAT_LIST = "chat/getRecentChatList";
 const GET_CHAT_DETAIL = "chat/getChatDetail";
+const DELETE_CHAT_ROOM = "chat/deleteChatRoom";
 
 // 오늘 진행된 채팅 내역 조회
 export const getTodayChatList = createAsyncThunk(
@@ -42,10 +43,23 @@ export const getChatDetail = createAsyncThunk(
     }
 )
 
+// 채팅방 삭제
+export const deleteChatRoom = createAsyncThunk(
+    DELETE_CHAT_ROOM,
+    async ({ chatId }, {rejectWithValue}) => {
+        try {
+            return await chat_apis.deleteChatRoom(chatId);
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
 const initialState = {
     todayChatList: {},
     recentChatList: [],
     chatDetail: {},
+    deleteChatRoom: {},
     error: null,
 }
 
@@ -94,6 +108,18 @@ const chatSlice = createSlice({
                     type: "getChatDetail",
                     content: action.error,
                 };
+            })
+            // 채팅방 삭제
+            .addCase(deleteChatRoom.fulfilled, (state, action) => {
+                state.loading = false;
+                state.deleteChatRoom = action.payload;
+            })
+            .addCase(deleteChatRoom.rejected, (state, action) => {
+                state.loading = false;
+                state.deleteChatRoom = {
+                    code: "FAILED",
+                    content: action.error,
+                }
             })
     },
 });

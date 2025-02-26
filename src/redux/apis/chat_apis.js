@@ -31,3 +31,12 @@ export const getChatDetail = async (chatId) => {
         throw error.response?.data || error;
     }
 }
+
+export const deleteChatRoom = async (chatId) => {
+    try {
+        const response = await axiosInstance.delete(`${serverUrl}/api/v1/chat/${chatId}`);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error;
+    }
+}
