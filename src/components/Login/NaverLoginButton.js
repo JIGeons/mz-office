@@ -13,7 +13,7 @@ const generateState = () => {
     return Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성 (CSRF 방지)
 };
 
-console.log("callbackURL = ", naverCallbackUrl);
+// console.log("callbackURL = ", naverCallbackUrl);
 
 const NaverLoginButton = () => {
     const handleNaverLogin = () => {

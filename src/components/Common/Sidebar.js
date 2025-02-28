@@ -3,18 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 // Actions
-import * as authActions from "../redux/modules/AuthSlice";
-import * as chatActions from "../redux/modules/ChatSlice";
-import * as constantActions from "../redux/modules/ConstantSlice";
+import * as authActions from "../../redux/modules/AuthSlice";
+import * as chatActions from "../../redux/modules/ChatSlice";
+import * as constantActions from "../../redux/modules/ConstantSlice";
 
 // Image
-import sidebarToggle from "../assets/images/sidebar/ico_leftmenu.png"
-import deleteIcon from "../assets/images/sidebar/delete.png"
-import logoutIcon from "../assets/images/sidebar/Logout.png"
+import sidebarToggle from "../../assets/images/sidebar/ico_leftmenu.png"
+import deleteIcon from "../../assets/images/sidebar/delete.png"
+import logoutIcon from "../../assets/images/sidebar/Logout.png"
 
 // CSS
-import "../styles/components/sidebar.css"
-import "../styles/fonts/paperlogy.css"
+import "../../styles/components/sidebar.css"
+
+// Utils
+import {getTodayDate} from "../../utils/Utils";
 
 
 const Sidebar = ({ toggleSidebar, isCollapsed }) => {
@@ -26,36 +28,60 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
 
     // Redux State
     const chatState = useSelector((state) => state.chat);
+    const { todayChatList, recentChatList } = useSelector((state) => state.chat);
 
-    useEffect(() => {
+    // 오늘 날짜를 불러온다.
+    const todayDate = getTodayDate();
+
+    // componentDidMount
+    useEffect( () => {
         let chatList = [];
-        if (chatState.recentChatList?.code !== "SUCCESS") {
-            console.error("최근 대화 내역을 불러오는데 실패하였습니다.");
-        } else {
-            chatList = chatState.recentChatList?.content;
-        }
-        // chatList 가 존재하는 경우
-        if (chatList && chatList.length > 0) {
-            console.log("채팅 내역이 존재");
-            setChatFolder(chatList);
-        }
-        // chatList가 존재하지 않는 경우
-        else {
+
+        const todayChat = todayChatList?.code == "SUCCESS" && (todayChatList?.content?.length > 0) ? todayChatList?.content : null;
+
+        // 오늘 채팅한 내역이 존재하지 않는 경우 오늘의 chatList를 생성한다.
+        if (!todayChat) {
             console.log("채팅 내역이 존재하지 않음!");
             // 현재 날짜를 받아온다.
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, "0");
-            const date = String(today.getDate()).padStart(2, "0");
+            const today = getTodayDate();
             const todayObj = {
-                chatId: "today",
-                date: `${year}-${month}-${date}`
+                chatId: todayChatList?.content?.chatId || "today",
+                date: today
             };
 
-            console.log("Today Object: ", todayObj);
-            setChatFolder([todayObj]);
+            chatList = [todayObj];
+        } else {
+            const todayChat = todayChatList?.content;
+            chatList = [{
+                chatId: todayChat.chatId,
+                date: todayChat.date
+            }];
         }
-    }, []);
+
+        // 최근 채팅 리스트가 존재하는 경우
+        if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
+            console.log("최근 챗 리스트 삽입!!");
+            // chatList에 최근 채팅 리스트를 삽입한다.
+            chatList = [...chatList, ...recentChatList?.content.slice().reverse()];
+        } else {
+            console.log("최근 챗 리스트가 존재하지 않음");
+        }
+
+        setChatFolder(chatList);
+    }, [ todayChatList, recentChatList ]);
+
+    // // 오늘 날짜의 채팅이 생기면 chatId를 변경하기 위함
+    // useEffect(() => {
+    //     const todayChatList = chatState.todayChatList?.content;
+    //     const newChatFolder = chatFolder;
+    //
+    //     // ChatState의 todayChatList가 변경이 된 경우. 오늘의 chatFolder의 chatId를 설정한다.
+    //     if (chatState.todayChatList?.code == "SUCCESS" && chatState.todayChatList?.content?.chatId) {
+    //         newChatFolder[0].chatId = todayChatList?.chatId;
+    //         setChatFolder(newChatFolder);
+    //     }
+    //
+    // }, [ todayChatList. recentChatList ]);
 
     const handleNaverLogout = () => {
         try {
@@ -69,6 +95,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
             }
 
             dispatch(authActions.clearAuthState());
+            dispatch(chatActions.clearChatState());
 
             // 토큰 삭제 & 로그인 상태 변경
             localStorage.removeItem("userData");
@@ -85,33 +112,18 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
     const handleChatRoomDelete = (chatId) => {
         console.log("Delete chat: ", chatId);
         if (chatId !== "today") {
-            dispatch(chatActions.deleteChatRoom(chatId));
+            dispatch(chatActions.deleteChatRoom({chatId}));
         }
     }
 
     const navigateToChat = (chatId, date) => {
-        // 오늘 날짜를 구한다.
-        const todayChatList = chatState.todayChatList?.content;
-        const newDate = new Date();
-        const year = newDate.getFullYear();
-        const month = String(newDate.getMonth() + 1).padStart(2, "0");
-        const day = String(newDate.getDate()).padStart(2, "0");
-        const today = `${year}-${month}-${day}`
+        console.log("chatId: ", chatId, " date: ", date);
 
-        const isToday = today == date ? "&date=today": "";
-
-        // chatId가 today인 경우 ChatState에 todayChatList가 존재하는지 확인
-        if (chatId == "today") {
-            // 오늘의 채팅 내용이 존재하는 경우
-            if (chatState.todayChatList?.code == "SUCCESS") {
-                navigate(`/chat?chatId=${todayChatList.chatId}${isToday}`);
-            } else {
-                navigate(`/chat?chatId=today&date=today`);
-            }
-        } else {
-            navigate(`/chat?chatId=${chatId}${isToday}`);
-        }
+        // 채팅 페이지로 이동
+        navigate(`/chat?chatId=${chatId}&date=${date}`);
     }
+
+    console.log("chatFolder", chatFolder);
 
     return (
         <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
