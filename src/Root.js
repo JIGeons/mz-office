@@ -13,7 +13,8 @@ import * as constantActions from "./redux/modules/ConstantSlice";
 import {
     Login,
     ChatMain,
-    NaverCallback
+    NaverCallback,
+    Vocabulary
 } from "./pages/paths";
 
 // Custom Hooks
@@ -72,8 +73,7 @@ const Root = () => {
         } else {
             // accessToken이 존재하지 않고 "/naver-callback" 경로가 아닌 경우 /login으로 이동
             if (!(redirectPath && redirectPath.includes("/naver-callback"))) {
-                // TODO:: 활성화 할 것
-                // navigate("/login");
+                navigate("/login");
             }
         }
 
@@ -95,15 +95,14 @@ const Root = () => {
     // Redux 상태나 localStorage 변경 시 로그인 상태 업데이트
     useEffect(() => {
         const userAccessData = JSON.parse(localStorage.getItem("userData"));
-        const loginData = userAccessData?.accessToken;
+        const loginData = userAccessData?.accessToken && userData?.code == "SUCCESS" ? true : false;
         console.log("loginData", loginData);
 
         if ((loginData && !hasLoginData)) {
             setHasLoginData(true);
         } else if (!loginData && hasLoginData) {
             setHasLoginData(false);
-            // TODO:: 활성화 할 것!
-            // navigate("/login");
+            navigate("/login");
         }
     }, [ userData ]);
 
@@ -115,9 +114,11 @@ const Root = () => {
         }
 
         // 둘 다 호출에 성공한 경우 -> 로그인 시 chatList API 호출 후 /chat 페이지로 이동하는 로직
-        if (/*todayChatList?.code == "SUCCESS" && */recentChatList?.code == "SUCCESS") {
+        if (todayChatList?.code == "SUCCESS" && recentChatList?.code == "SUCCESS") {
             console.log("recentChatList 업데이트 실행")
             const loginKey = localStorage.getItem("login") || null;
+
+            console.log("loginKey", loginKey);
 
             // 로그인 키가 존재하면 로그인 후 요청 한 API 이므로 login을 localStorage에서 제거한 후 chat 페이지로 navigate
             if (loginKey) {
@@ -172,7 +173,7 @@ const Root = () => {
     return (
         <div id="wrap">
             <div className={`container ${isCollapsed ? "sidebar-collapsed" : ""}`}>
-                { /* 로그인 이후에 sidebar 표시 */
+                { /* 로그인 이후에 sidebar 표시 TODO:: 활성화 하기*/
                     hasLoginData && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
                 }
 
@@ -182,13 +183,15 @@ const Root = () => {
                         {redirectPath && <Route path="*" element={<Navigate to={redirectPath} replace />} />}
 
                         {/* 로그인 정보가 없는 경우 /login 페이지로 이동 */}
-                        {/*<Route path="/" element={ !hasLoginData ?*/}
-                        {/*        <Navigate to="/login" replace /> : <Navigate to={`/chat?chatId=${todayChatId}&date=${todayDate}`} replace /> }*/}
-                        {/*/>*/}
+                        <Route path="/" element={ hasLoginData ?
+                            <Navigate to={`/chat?chatId=${todayChatId}&date=${todayDate}`} replace /> : <Login /> }
+                        />
+
                         { /* 로그인 상태에서 login 페이지 접근 시 /chat페이지로 리다이렉트 */ }
                         <Route path="/login" element={ <Login /> } />
 
                         <Route path="/chat" element={ <ChatMain /> } />
+                        <Route path="/vocabulary" element={ <Vocabulary /> } />
 
                         {/* 네이버 로그인 콜백 수행 */}
                         { !hasLoginData &&

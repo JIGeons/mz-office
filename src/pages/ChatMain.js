@@ -87,16 +87,16 @@ const ChatMain = () => {
         // TODO:: 활성화 할 것
         if (!userData) {
             console.error("❌ User data not found! 페이지를 새로고침합니다.");
-            // window.location.reload();   // 🔄 새로고침
+            window.location.reload();   // 🔄 새로고침
             return ;
         }
 
         // TODO:: 활성화 할 것
-        // if (!paramChatId && !paramDate) {
-        //     console.error("❌ paramChatId, Date data not found! 페이지를 새로고침합니다.");
-        //     window.location.reload();   // 🔄 새로고침
-        //     return ;
-        // }
+        if (!paramChatId && !paramDate) {
+            console.error("❌ paramChatId, Date data not found! 페이지를 새로고침합니다.");
+            window.location.reload();   // 🔄 새로고침
+            return ;
+        }
 
         // date가 오늘인 경우 API 호출 및 소캣 연결
         if (paramDate === todayDate) {
@@ -116,46 +116,13 @@ const ChatMain = () => {
         else {
             dispatch(chatActions.getChatDetail({chatId: paramChatId}));
         }
-
-    /*
-        // 오늘 메세지 조회
-        if (chatId == "today") {
-            // chatId가 today인 경우 오늘 채팅 내역이 없는 것이므로 initialSessionChat 으로 초기화
-            if (chatState.todayChatList?.code == "SUCCESS") {
-                setSessionList = initialMessage;
-            }
-        } else {
-            console.log("chatId 챗 리스트 조회: " + chatId);
-            dispatch(chatActions.getChatDetail({chatId}))
-                .then(res => {
-                    const response = res?.payload;
-                    // chatId 리스트 조회의 성공 한 경우
-                    if (response?.code == "SUCCESS") {
-                        console.log("리스트 조회 성공: ", response?.content);
-                        // chatSessionList 배열에 initialSessionMessage 을 추가한다.
-                        const chatSessionList = response?.content?.chatSessionList;
-
-                        if (date == "today") {
-                            // 오늘인 경우 다음 질문을 위해 비어있는 chat 객체를 추가한다.
-                            setSessionList = [...chatSessionList, initialSession];
-                        } else {
-                            // 오늘이 아닌 경우 그냥 출력한다.
-                            setSessionList = chatSessionList;
-                        }
-                    } else {
-                        console.log("리스트 조회 실패: ", response?.content);
-                    }
-                })
-                .catch(err => console.log(err));
-        }
-    */
     }, [ paramChatId, paramDate, dispatch ]);
 
     // API 응답 시 처리
     useEffect(() => {
         // date가 오늘인 경우
         if (paramDate === todayDate) {
-            if (/*todayChatList?.code == "SUCCESS"*/ true) {
+            if (todayChatList?.code == "SUCCESS") {
                 const chatSessionList = todayChatList?.content?.chatSessionList || null;
 
                 // 오늘 채팅 목록이 있는 경우, 마지막에 비어있는 질문 추가
@@ -182,22 +149,6 @@ const ChatMain = () => {
         }
 
     }, [ todayChatList, chatDetail, paramDate ]);
-
-
-
-
-    // Chat Date를 불러오는 API 호출
-    // useEffect(() => {
-    //     if (!chatId || !date) return;
-    //
-    //     if (date === todayDate) {
-    //         dispatch(chatActions.getTodayChatList())
-    //     } else {
-    //         dispatch(chatActions.getChatDetail({ chatId }));
-    //     }
-    // }, [chatId, date, dispatch, todayDate]);
-
-    // Redux state가 변경되면 useRef에 저장
 
 
     // ✅ 1. 웹 소켓 연결을 처리하는 함수
@@ -310,36 +261,12 @@ const ChatMain = () => {
             }
 
             sessionListRef.current = [...newSessionList, lastSessionChat];   // 응답을 추가한 Session을 추가한다.
-            // socketMessageRef.current = initialSocketMessage;
             setShowRequestButton(true); // AI 응답을 받으면 버튼 활성화
         }
 
         console.log("~~~~ 강제 렌더링: ");
         setRender(prev => prev + 1);
     };
-
-    // ✅ 3. 채팅 데이터를 불러오는 함수
-    // const fetchChatData = async (chatId, date) => {
-    //     try {
-    //         const res = await dispatch(chatActions.getChatDetail({ chatId }));
-    //         const response = res?.payload;
-    //
-    //         if (response?.code === "SUCCESS") {
-    //             console.log("리스트 조회 성공: ", response?.content);
-    //             const chatSessionList = response?.content?.chatSessionList;
-    //
-    //             sessionList = date === "today"
-    //                 ? [...chatSessionList, initialSession] // 오늘인 경우
-    //                 : chatSessionList; // 과거 데이터
-    //         } else {
-    //             console.log("리스트 조회 실패: ", response?.content);
-    //         }
-    //     } catch (error) {
-    //         console.log("API 호출 오류: ", error);
-    //     }
-    // };
-
-
 
     // 텍스트를 입력한 경우 제출 버튼이 활성화되도록 설정
     const handlerOnChangeInput = (e) => {
@@ -504,66 +431,6 @@ const ChatMain = () => {
                         // SocketMessage에 따라 버튼 출력
                         (showRequestButton && socketMessageRef.current) &&
                             <RequestButton inquiryType={socketMessageRef.current.inquiryType} content={socketMessageRef.current.content} user={user} messageType={messageType} setRequestType={setRequestType} />
-                    }
-
-                    { /* 삭제 해야하는 코드 */ /*
-                        <>
-                            <RequestButton inquiryType={socketMessage?.inquiryType} setRequestType={setRequestType}/>
-                            <ChatRequest content={"문구 해석"} />
-                            <ChatRequest content={"삼가 고인의 명복을 빈다는 말이 뭐야?"} />
-                            <ChatResponse content={'"삼가 고인의 명복을 빕니다"라는 표현은 고인의 죽음을 애도하며, 그분의 영혼이 좋은 곳에서 평안하기를 기원하는 말이에요.'} />
-                            <h1 style={{color: "black", fontSize: "20px", paddingTop: "30px"}}>여기부터 밑으로는 피그마랑 똑같은 사이즈</h1>
-                            <Request type={"AI_REQUEST"} />
-                            <RequestButton inquiryType={"AI_REQUEST"} setRequestType={setRequestType} />
-
-                            <RequestButton inquiryType={socketMessage?.inquiryType} setRequestType={setRequestType}/>
-                            <ChatRequest content={"문장 작성"} />
-                            <Request step={"step_1"} type={"MESSAGE_TYPE"} messageType={""} />
-                            <RequestButton inquiryType={"REQUEST_TYPE"} setRequestType={setRequestType} />
-                            <ChatRequest content={"문자 작성"} />
-                            <Request step={"step_2"} messageType={""} />
-                            <Request type={"INPUT_METHOD"} messageType={"MESSAGE"} />
-                            <RequestButton inquiryType={"INPUT_METHOD"} messageType={"MESSAGE"} setRequestType={setRequestType} />
-                            <ChatRequest content={"이전에 받은 문자 입력"} />
-                            <Request step={"step_3"} messageType={""} />
-                            <Request type={"WITHOUT_PREVIOUS_EMAIL"} messageType={"MESSAGE"} />
-                            <ChatRequest content={"제목 : [T클래스] 기획서 초안에 대한 피드백 전달 건\n" +
-                                "\n" +
-                                "안녕하세요, 사업팀 김원필입니다.\n" +
-                                "기획서 초안에 대한 피드백을 파일로 첨부하였습니다.\n" +
-                                "PPT 페이지 33p, 22p, 55p에 확인 후, 수정본으로 공유 부탁드립니다.\n" +
-                                "감사합니다.\n" +
-                                "\n" +
-                                "김원필 드림"} />
-                            <RequestButton inquiryType={"SENTENCE_GENERATION_TYPE"} messageType={"EMAIL"} setRequestType={setRequestType} />
-                            <ChatResponse content={'블라블라블라 응답응답 응답~~~~~'} />
-                            <Request type={"AI_REQUEST"} messageType={"MESSAGE"} />
-                            <RequestButton inquiryType={"AI_REQUEST"} messageType={"EMAIL"} setRequestType={setRequestType} />
-
-                            <RequestButton inquiryType={socketMessage?.inquiryType} setRequestType={setRequestType}/>
-                            <ChatRequest content={"문장 작성"} />
-                            <Request step={"step_1"} type={"MESSAGE_TYPE"} messageType={""} />
-                            <RequestButton inquiryType={"REQUEST_TYPE"} setRequestType={setRequestType} />
-                            <ChatRequest content={"메일 작성"} />
-                            <Request step={"step_2"} messageType={""} />
-                            <Request type={"INPUT_METHOD"} messageType={"EMAIL"} />
-                            <RequestButton inquiryType={"INPUT_METHOD"} messageType={"EMAIL"} setRequestType={setRequestType} />
-                            <ChatRequest content={"이전에 받은 메일 입력"} />
-                            <Request step={"step_3"} messageType={""} />
-                            <Request type={"WITHOUT_PREVIOUS_EMAIL"} messageType={"EMAIL"} />
-                            <ChatRequest content={"제목 : [T클래스] 기획서 초안에 대한 피드백 전달 건\n" +
-                                "\n" +
-                                "안녕하세요, 사업팀 김원필입니다.\n" +
-                                "기획서 초안에 대한 피드백을 파일로 첨부하였습니다.\n" +
-                                "PPT 페이지 33p, 22p, 55p에 확인 후, 수정본으로 공유 부탁드립니다.\n" +
-                                "감사합니다.\n" +
-                                "\n" +
-                                "김원필 드림"} />
-                            <RequestButton inquiryType={"SENTENCE_GENERATION_TYPE"} messageType={"EMAIL"} setRequestType={setRequestType} />
-                            <ChatResponse content={'블라블라블라 응답응답 응답~~~~~'} />
-                            <Request type={"AI_REQUEST"} messageType={"EMAIL"} />
-                            <RequestButton inquiryType={"AI_REQUEST"} messageType={"EMAIL"} setRequestType={setRequestType} />
-                        </> */
                     }
                 </ScrollToBottom>
             </section>

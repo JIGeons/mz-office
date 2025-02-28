@@ -102,9 +102,11 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
             console.log("logout!");
 
             dispatch(constantActions.onHideDialog());
-            // navigate("/login");
-            window.location.reload();
+
+            // 🚀 직접 로그인 페이지로 이동 (useNavigate 대신 사용)
+            window.location.href = "/login";
         } catch (error) {
+
             console.error("네이버 로그아웃 실패: ", error);
         }
     };
@@ -119,8 +121,13 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
     const navigateToChat = (chatId, date) => {
         console.log("chatId: ", chatId, " date: ", date);
 
-        // 채팅 페이지로 이동
-        navigate(`/chat?chatId=${chatId}&date=${date}`);
+        if (chatId == "voca") {
+            navigate("/vocabulary");
+        }
+        else {
+            // 채팅 페이지로 이동
+            navigate(`/chat?chatId=${chatId}&date=${date}`);
+        }
     }
 
     console.log("chatFolder", chatFolder);
@@ -159,7 +166,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                     </ul>
 
                     <ul>
-                        <h1>MZ오피스 단어장</h1>
+                        <h1 style={{cursor: "pointer"}} onClick={() => {navigateToChat("voca", "")}}>MZ오피스 단어장</h1>
                     </ul>
 
                     <div className="naver-logout">
