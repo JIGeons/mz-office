@@ -68,17 +68,21 @@
     border-radius: 20px;
     width: 80%;
     height: 100%;
-    max-width: 600px;
-    padding: 20px 8px;
+    max-width: 840px;
+    padding: 20px 5px 20px 20px;
 
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
 
     overflow: hidden;
 }
 
 .chatting_content_scroll {
-    width: 100%;
+    width: calc(100% - 20px);
     height: 100%;
+    padding-left: 10px;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-gutter: stable; /* 스크롤바 공간을 항상 확보 */

@@ -72,7 +72,8 @@ const Root = () => {
         } else {
             // accessToken이 존재하지 않고 "/naver-callback" 경로가 아닌 경우 /login으로 이동
             if (!(redirectPath && redirectPath.includes("/naver-callback"))) {
-                navigate("/login");
+                // TODO:: 활성화 할 것
+                // navigate("/login");
             }
         }
 
@@ -101,7 +102,8 @@ const Root = () => {
             setHasLoginData(true);
         } else if (!loginData && hasLoginData) {
             setHasLoginData(false);
-            navigate("/login");
+            // TODO:: 활성화 할 것!
+            // navigate("/login");
         }
     }, [ userData ]);
 
@@ -180,9 +182,9 @@ const Root = () => {
                         {redirectPath && <Route path="*" element={<Navigate to={redirectPath} replace />} />}
 
                         {/* 로그인 정보가 없는 경우 /login 페이지로 이동 */}
-                        <Route path="/" element={ !hasLoginData ?
-                                <Navigate to="/login" replace /> : <Navigate to={`/chat?chatId=${todayChatId}&date=${todayDate}`} replace /> }
-                        />
+                        {/*<Route path="/" element={ !hasLoginData ?*/}
+                        {/*        <Navigate to="/login" replace /> : <Navigate to={`/chat?chatId=${todayChatId}&date=${todayDate}`} replace /> }*/}
+                        {/*/>*/}
                         { /* 로그인 상태에서 login 페이지 접근 시 /chat페이지로 리다이렉트 */ }
                         <Route path="/login" element={ <Login /> } />
 

@@ -83,17 +83,19 @@ const ChatMain = () => {
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem("userData"));
 
-        if (!userData) {
-            console.error("❌ User data not found! 페이지를 새로고침합니다.");
-            window.location.reload();   // 🔄 새로고침
-            return ;
-        }
+        // TODO:: 활성화 할 것
+        // if (!userData) {
+        //     console.error("❌ User data not found! 페이지를 새로고침합니다.");
+        //     // window.location.reload();   // 🔄 새로고침
+        //     return ;
+        // }
 
-        if (!paramChatId && !paramDate) {
-            console.error("❌ paramChatId, Date data not found! 페이지를 새로고침합니다.");
-            window.location.reload();   // 🔄 새로고침
-            return ;
-        }
+        // TODO:: 활성화 할 것
+        // if (!paramChatId && !paramDate) {
+        //     console.error("❌ paramChatId, Date data not found! 페이지를 새로고침합니다.");
+        //     window.location.reload();   // 🔄 새로고침
+        //     return ;
+        // }
 
         // API 호출 전 SessionList 초기화
         setSessionList([]);
@@ -415,7 +417,7 @@ const ChatMain = () => {
             </section>
             <section className="chatting_main">
                 <ScrollToBottom className="chatting_content_scroll" scrollBehavior={"auto"}>
-                    <ChatResponse guide={<ChatGuide />} />
+                    <ChatResponse isGuide={true} />
                     {
                         sessionList && sessionList.length > 0
                         && sessionList.flatMap((messages, index) => {
@@ -492,7 +494,6 @@ const ChatMain = () => {
                                     return [<ChatResponse message={msg} key={`response-${index}-${depth}`} />];
                                 }
 
-                                msgComponent.push(<Request type={"MESSAGE_TYPE"} messageType={messageType} />);
                                 // 질문 컴포넌트 없이 출력
                                 if (msg?.content == "PARSE") {
                                     return msgComponent;
@@ -507,6 +508,66 @@ const ChatMain = () => {
                                 return [<RequestButton inquiryType={socketMessage.inquiryType} setRequestType={setRequestType} key={`request-${index}`} />];
                             }
                         })
+                    }
+
+                    { /* 삭제 해야하는 코드 */
+                        <>
+                            <RequestButton inquiryType={socketMessage?.inquiryType} setRequestType={setRequestType}/>
+                            <ChatRequest content={"문구 해석"} />
+                            <ChatRequest content={"삼가 고인의 명복을 빈다는 말이 뭐야?"} />
+                            <ChatResponse content={'"삼가 고인의 명복을 빕니다"라는 표현은 고인의 죽음을 애도하며, 그분의 영혼이 좋은 곳에서 평안하기를 기원하는 말이에요.'} />
+                            <h1 style={{color: "black", fontSize: "20px", paddingTop: "30px"}}>여기부터 밑으로는 피그마랑 똑같은 사이즈</h1>
+                            <Request type={"AI_REQUEST"} />
+                            <RequestButton inquiryType={"AI_REQUEST"} setRequestType={setRequestType} />
+
+                            <RequestButton inquiryType={socketMessage?.inquiryType} setRequestType={setRequestType}/>
+                            <ChatRequest content={"문장 작성"} />
+                            <Request step={"step_1"} type={"MESSAGE_TYPE"} messageType={""} />
+                            <RequestButton inquiryType={"REQUEST_TYPE"} setRequestType={setRequestType} />
+                            <ChatRequest content={"문자 작성"} />
+                            <Request step={"step_2"} messageType={""} />
+                            <Request type={"INPUT_METHOD"} messageType={"MESSAGE"} />
+                            <RequestButton inquiryType={"INPUT_METHOD"} messageType={"MESSAGE"} setRequestType={setRequestType} />
+                            <ChatRequest content={"이전에 받은 문자 입력"} />
+                            <Request step={"step_3"} messageType={""} />
+                            <Request type={"WITHOUT_PREVIOUS_EMAIL"} messageType={"MESSAGE"} />
+                            <ChatRequest content={"제목 : [T클래스] 기획서 초안에 대한 피드백 전달 건\n" +
+                                "\n" +
+                                "안녕하세요, 사업팀 김원필입니다.\n" +
+                                "기획서 초안에 대한 피드백을 파일로 첨부하였습니다.\n" +
+                                "PPT 페이지 33p, 22p, 55p에 확인 후, 수정본으로 공유 부탁드립니다.\n" +
+                                "감사합니다.\n" +
+                                "\n" +
+                                "김원필 드림"} />
+                            <RequestButton inquiryType={"SENTENCE_GENERATION_TYPE"} messageType={"EMAIL"} setRequestType={setRequestType} />
+                            <ChatResponse content={'블라블라블라 응답응답 응답~~~~~'} />
+                            <Request type={"AI_REQUEST"} messageType={"MESSAGE"} />
+                            <RequestButton inquiryType={"AI_REQUEST"} messageType={"EMAIL"} setRequestType={setRequestType} />
+
+                            <RequestButton inquiryType={socketMessage?.inquiryType} setRequestType={setRequestType}/>
+                            <ChatRequest content={"문장 작성"} />
+                            <Request step={"step_1"} type={"MESSAGE_TYPE"} messageType={""} />
+                            <RequestButton inquiryType={"REQUEST_TYPE"} setRequestType={setRequestType} />
+                            <ChatRequest content={"메일 작성"} />
+                            <Request step={"step_2"} messageType={""} />
+                            <Request type={"INPUT_METHOD"} messageType={"EMAIL"} />
+                            <RequestButton inquiryType={"INPUT_METHOD"} messageType={"EMAIL"} setRequestType={setRequestType} />
+                            <ChatRequest content={"이전에 받은 메일 입력"} />
+                            <Request step={"step_3"} messageType={""} />
+                            <Request type={"WITHOUT_PREVIOUS_EMAIL"} messageType={"EMAIL"} />
+                            <ChatRequest content={"제목 : [T클래스] 기획서 초안에 대한 피드백 전달 건\n" +
+                                "\n" +
+                                "안녕하세요, 사업팀 김원필입니다.\n" +
+                                "기획서 초안에 대한 피드백을 파일로 첨부하였습니다.\n" +
+                                "PPT 페이지 33p, 22p, 55p에 확인 후, 수정본으로 공유 부탁드립니다.\n" +
+                                "감사합니다.\n" +
+                                "\n" +
+                                "김원필 드림"} />
+                            <RequestButton inquiryType={"SENTENCE_GENERATION_TYPE"} messageType={"EMAIL"} setRequestType={setRequestType} />
+                            <ChatResponse content={'블라블라블라 응답응답 응답~~~~~'} />
+                            <Request type={"AI_REQUEST"} messageType={"EMAIL"} />
+                            <RequestButton inquiryType={"AI_REQUEST"} messageType={"EMAIL"} setRequestType={setRequestType} />
+                        </>
                     }
                 </ScrollToBottom>
             </section>

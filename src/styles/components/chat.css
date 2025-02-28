@@ -6,48 +6,48 @@
     display: flex;
     color: #1F2531;
 
-    font-family: 'Pretendard', sans-serif;
-
     background-color: #E8F2FF;
     border-radius: 0 12px 12px 12px;
 }
 
 .chat-guide img {
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
 }
 
 .chat-guide-content {
-    width: 100%;
+    width: calc(100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     margin-left: 5px;
+
+    font-family: 'Pretendard', sans-serif;
 }
 
 
 .chat-guide-content h1 {
     font-weight: 800;
-    font-size: 13px;
-    line-height: 15px;
-    letter-spacing: -0.02em;
+    font-size: 18px;
+    line-height: 21.48px;
+    letter-spacing: -0.03em;
     color: #1F2531;
 }
 .chat-guide-content h2 {
     font-weight: 700;
-    font-size: 11px;
-    line-height: 15px;
-    letter-spacing: -0.02em;
+    font-size: 15px;
+    line-height: 20px;
+    letter-spacing: -0.03em;
     color: #18304A;
     padding-top: 8px;
 }
 
 .chat-guide-content span {
     align-self: flex-start;
-    font-weight: 500;
-    font-size: 11px;
-    line-height: 15px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
     letter-spacing: -0.03em;
     color: #485360;
     text-align: start;
@@ -55,7 +55,8 @@
 
 .chat-response {
     display: flex;
-    padding-right: 45px;
+    padding-right: 60px;
+    margin-bottom: 15px;
 }
 
 .chat-response .chat-ai-icon {
@@ -64,11 +65,30 @@
     margin-right: 5px;
 }
 
+.chat-response .chat-response-content {
+    width: 100%;
+    padding: 20px;
+
+    display: flex;
+    color: #1F2531;
+
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: -0.04em;
+    text-align: left;
+
+    background-color: #E8F2FF;
+    border-radius: 0 12px 12px 12px;
+}
+
 .chat-request {
     display: flex;
     flex-direction: row-reverse;
-    margin-top: 15px;
+    margin: 15px 0;
     padding-left: 45px;
+    padding-right: 15px;
 }
 
 .chat-request .chat-user-message {
@@ -78,16 +98,14 @@
 
     background-color: #1F2531;
 
-    width: 150px;
-    height: 40px;
-    max-width: 100%;
-    padding: 0 20px;
+    padding: 10px 40px;
 
     font-family: 'Pretendard', sans-serif;
     font-weight: 500;
-    font-size: 13px;
-    line-height: 24px;
+    font-size: 20px;
+    line-height: 28px;
     letter-spacing: -0.04em;
+    text-align: right;
     color: #FFFFFF;
 
     border-radius: 15px 0 15px 15px;
@@ -106,25 +124,51 @@
     padding: 15px 30px;
 }
 
-.request-button img {
-    width: 215px;
+.request-parse-write {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 15px;
+    padding: 0 60px 0 0;
+}
+
+.request-parse-write img {
+    width: 300px;
+    margin-left: 10px;
+}
+
+.request-message-type {
+    width: 100%;
+    display: flex;
+    margin-top: 15px;
 }
 
 .request-message-type button {
     width: 170px;
     height: 54px;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     background-color: #1F2531;
 
-    border: 1px solid #4865FF;
+    border: none;
     border-radius: 50px;
 
     margin-right: 10px;
+
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23.87px;
+    letter-spacing: -0.04em;
+    color: #FFFFFF;
 }
 
 .request-message-type img {
     width: 25px;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 
@@ -139,7 +183,7 @@
 }
 
 .request {
-    width: calc(100% - 45px);
+    width: calc(100% - 60px);
 
     display: flex;
     flex-direction: row;
@@ -153,7 +197,18 @@
 
 .request-choose-message-type {
     display: flex;
+    flex-direction: column;
     margin: 15px 45px 0 0;
+}
+
+.request-step {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+}
+.request-step-img {
+    width: calc(100% - 15px);
+    margin-top: 15px;
 }
 
 .request-choose-message-type h1 {
@@ -163,6 +218,7 @@
     line-height: 35.33px;
     letter-spacing: -0.02em;
     color: #1F2531;
+    text-align: left;
 }
 
 .request-choose-message-type h1 span {
@@ -176,11 +232,107 @@
     margin: 4px 5px 0 0;
 }
 
-.request-content h2 {
+.request-content {
     font-family: 'Pretendard', sans-serif;
+    text-align: left;
+}
+
+.request-content h2 {
     font-weight: 500;
     font-size: 18px;
     line-height: 28px;
     letter-spacing: -0.04em;
     color: #1F2531;
+
+    white-space: pre-line;
+}
+
+.request-content h3 {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+    color: #444444;
+    margin-top: 2px;
+}
+
+.request-content span {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+    color: #878787;
+}
+
+.request-generation {
+    width: calc(100% - 60px);
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.request-generation-type {
+    width: 420px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+}
+
+.request-generation-type .chat-generation-type {
+    width: 94px;
+    height: 44px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: -0.04em;
+    color: #006EE8;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #298CF9;
+    border-radius: 40px;
+
+    padding: 10px 0;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+.request-input-method {
+    width: calc(100% - 60px);
+    text-align: right;
+    margin-top: 15px;
+}
+.request-input-method button {
+    height: 44px;
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 21.48px;
+    letter-spacing: -0.04em;
+
+    padding: 10px 20px;
+    margin-left: 10px;
+    border-radius: 30px;
+}
+
+.chat-input-prev {
+    color: #FFFFFF;
+    background-color: #298CF9;
+    border: 1px solid #298CF9;
+}
+
+.chat-input-prev-none {
+    font-weight: 500 !important;
+    color: #0D7AF2;
+    background-color: #FFFFFF;
+    border: 1px solid #298CF9;
 }
