@@ -27,6 +27,7 @@ import "../styles/chatMain.css";
 
 // Utils
 import { getTodayDate } from "../utils/Utils";
+import { GenerateType} from "../utils/Enums";
 
 const initialMessage = {
     sender: "USER",
@@ -66,15 +67,15 @@ const ChatMain = () => {
     const [socket, setSocket] = useState(null);
     const [disabledButton, setDisAbledButton] = useState(true);
     const [chatId, setChatId] = useState(null);
-    const [sessionList, setSessionList] = useState([]);
-    const [socketMessage, setSocketMessage] = useState(isToday ? initialSocketMessage : null);
+    // const [sessionList, setSessionList] = useState([]);
     const [showRequestButton, setShowRequestButton] = useState(true);
 
     // Redux State
     const chatState = useSelector((state) => state.chat);
     const { todayChatList, chatDetail } = useSelector((state) => state.chat);
 
-    // useRef로 message Ref 정의
+    // useRef로 sessionList, socketMessage Ref 정의
+    const sessionListRef = useRef([initialSession]);
     const socketMessageRef = useRef(initialSocketMessage);
 
     const [_, setRender] = useState(0);    // 강제 리렌더링용 state
@@ -84,11 +85,11 @@ const ChatMain = () => {
         const userData = JSON.parse(localStorage.getItem("userData"));
 
         // TODO:: 활성화 할 것
-        // if (!userData) {
-        //     console.error("❌ User data not found! 페이지를 새로고침합니다.");
-        //     // window.location.reload();   // 🔄 새로고침
-        //     return ;
-        // }
+        if (!userData) {
+            console.error("❌ User data not found! 페이지를 새로고침합니다.");
+            // window.location.reload();   // 🔄 새로고침
+            return ;
+        }
 
         // TODO:: 활성화 할 것
         // if (!paramChatId && !paramDate) {
@@ -96,9 +97,6 @@ const ChatMain = () => {
         //     window.location.reload();   // 🔄 새로고침
         //     return ;
         // }
-
-        // API 호출 전 SessionList 초기화
-        setSessionList([]);
 
         // date가 오늘인 경우 API 호출 및 소캣 연결
         if (paramDate === todayDate) {
@@ -157,17 +155,17 @@ const ChatMain = () => {
     useEffect(() => {
         // date가 오늘인 경우
         if (paramDate === todayDate) {
-            if (todayChatList?.code == "SUCCESS") {
+            if (/*todayChatList?.code == "SUCCESS"*/ true) {
                 const chatSessionList = todayChatList?.content?.chatSessionList || null;
 
                 // 오늘 채팅 목록이 있는 경우, 마지막에 비어있는 질문 추가
                 if (chatSessionList) {
                     setChatId(todayChatList?.content?.chatId);
-                    setSessionList([...chatSessionList, initialSession]);
+                    sessionListRef.current = [...chatSessionList, initialSession];
                 }
                 // 오늘 채팅 목록이 없는 경우, 비어있는 질문으로 sessionListRef 초기화
                 else {
-                    setSessionList([initialSession]);
+                    sessionListRef.current = [initialSession];
                 }
             }
         } else {
@@ -175,8 +173,8 @@ const ChatMain = () => {
                 console.log("chatDetail: ", chatDetail.content.chatSessionList);
                 // date가 오늘이 아닌경우 chatDetail에서 채팅 목록 조회
                 setChatId(chatDetail.content.chatId);
-                setSessionList(chatDetail.content.chatSessionList);
-                console.log("Updated sessionList: ", sessionList);
+                sessionListRef.current = chatDetail.content.chatSessionList;
+                console.log("Updated sessionList: ", sessionListRef.current);
             } else {
                 console.error("### chatDetail 응답 오류. (error: ", chatDetail);
                 return;
@@ -229,16 +227,19 @@ const ChatMain = () => {
     // ✅ 2. WebSocket 메시지 처리 함수
     const handleWebSocketMessage = (event) => {
         console.log("서버에서 받은 메시지: ", JSON.parse(event.data));
+        console.log("### sessionList: ", sessionListRef.current);
         const receivedMessage = JSON.parse(event.data);
 
         // 새로운 chat은 저장하기 위해 newChatList생성
-        const newSessionList = sessionList.length > 0 ? sessionList.slice(0,-1) : [];
-        const deepSessionList = JSON.parse(JSON.stringify(sessionList));
-        const lastSession = deepSessionList[deepSessionList.length - 1];
+        const newSessionList = sessionListRef.current.length > 0 ? sessionListRef.current.slice(0,-1) : [];
+        const deepSessionList = JSON.parse(JSON.stringify(sessionListRef.current));
+        console.log("### deepSessionList: ", deepSessionList);
+        const lastSession = deepSessionList.length == 0 ? initialSession : deepSessionList[deepSessionList.length - 1];
+        // const lastSession = deepSessionList[deepSessionList.length - 1];
 
         // 채팅으로 질문을 해야하는 과정에서는 버튼 비활성화
-        if (socketMessage.content == "PARSE"
-            || socketMessage.inquiryType == "SENTENCE_GENERATION_TYPE") {
+        if (socketMessageRef.current.content == "PARSE"
+            || (socketMessageRef.current.inquiryType == "INPUT_METHOD" && socketMessageRef.current.content == "WITH_PREVIOUS")) {
             setShowRequestButton(false);
         }
 
@@ -247,75 +248,74 @@ const ChatMain = () => {
 
             // chatSessionId가 존재하지 않는 경우, 처음 버튼을 누른 경우 -> initSessionMessage를 생성
             // InquiryType == REQUEST_TYPE
-            if (!socketMessage.chatSessionId) {
+            if (!socketMessageRef.current?.chatSessionId) {
                 // chatId, chatSessionId 업데이트
-                setSocketMessage(prev => ({
-                    ...prev,
-                    chatId: receivedMessage.chatId,
-                    chatSessionId: receivedMessage.chatSessionId,
-                }));
+                socketMessageRef.current.chatId = receivedMessage.chatId;
+                socketMessageRef.current.chatSessionId = receivedMessage.chatSessionId;
 
                 // 신규 메세지 추가
                 const newMessage = {
                     sender: "USER",
-                    inquiryType: socketMessage.inquiryType,
-                    content: socketMessage.content,
+                    inquiryType: socketMessageRef.current.inquiryType,
+                    content: socketMessageRef.current.content,
                     sendAt: new Date(),
                 }
+
+                console.log("### lastSession: ", lastSession);
                 lastSession.chatSessionId = receivedMessage.chatSessionId;
                 lastSession.createdAt = new Date();
                 lastSession.messages = [newMessage];
+
+                sessionListRef.current = [...newSessionList, lastSession];   // 응답을 추가한 Session을 추가한다.
             } else {
                 const newMessage = {
-                    sender: "USER",
-                    inquiryType: socketMessage.inquiryType,
-                    content: socketMessage.content,
-                    sendAt: new Date(),
-                }
-                lastSession.messages = [...lastSession.messages, newMessage];
-            }
-
-            /*console.log("\n\n message: ", socketMessageRef.current);
-
-            if (sessionList.length > 0) {
-                const renewSessionMessage = sessionList[sessionList.length - 1];
-                renewSessionMessage.chatSessionId = receivedMessage.chatSessionId;
-                renewSessionMessage.createdAt = new Date();
-                renewSessionMessage.messages = [{
                     sender: "USER",
                     inquiryType: socketMessageRef.current.inquiryType,
                     content: socketMessageRef.current.content,
                     sendAt: new Date(),
-                }];
-                sessionList[sessionList.length - 1] = renewSessionMessage;
-            } else {
-                setSessionList([initSessionMessage]);  // 빈 배열일 경우 추가
+                }
+                lastSession.messages = [...lastSession.messages, newMessage];
+
+                sessionListRef.current = [...newSessionList, lastSession];   // 응답을 추가한 Session을 추가한다.
             }
-
-            socketMessageRef.current.chatId = receivedMessage.chatId;
-            socketMessageRef.current.chatSessionId = receivedMessage.chatSessionId;
-
-            setSessionList([...sessionList, initSessionMessage]);
-            setRender((prev) => prev + 1);  // 강제 리렌더링*/
         }
         // content가 존재하는 경우 질문에 대한 응답.
         else {
+            const lastMessage = lastSession.messages[lastSession.messages.length - 1];
+            let newMessage = null;
+            if (lastMessage.inquiryType == "INPUT_METHOD" && lastMessage.content == "WITH_PREVIOUS") {
+                newMessage = {
+                    sender: "USER",
+                    inquiryType: socketMessageRef.current.inquiryType,
+                    content: socketMessageRef.current.content,
+                    sendAt: new Date(),
+                }
+            }
+            else {
+                newMessage = {
+                    // 새로운 message 추가
+                    sender: "AI",
+                    inquiryType: sessionListRef.current.inquiryType,
+                    content: receivedMessage.content,
+                    sendAt: new Date(),
+                }
+            }
+
             const lastSessionChat = {
-                ...sessionList[sessionList.length - 1],
+                ...sessionListRef.current[sessionListRef.current.length - 1],
                 messages:[
-                    ...sessionList[sessionList.length - 1].messages,
-                    {   // 새로운 message 추가
-                        sender: "AI",
-                        inquiryType: receivedMessage.inquiryType,
-                        content: receivedMessage.content,
-                        sendAt: new Date(),
-                    }
+                    ...sessionListRef.current[sessionListRef.current.length - 1].messages,
+                    newMessage
                 ]
             }
-            setSessionList([...newSessionList, lastSessionChat]);   // 응답을 추가한 Session을 추가한다.
-            setSocketMessage(initialSocketMessage);
+
+            sessionListRef.current = [...newSessionList, lastSessionChat];   // 응답을 추가한 Session을 추가한다.
+            // socketMessageRef.current = initialSocketMessage;
             setShowRequestButton(true); // AI 응답을 받으면 버튼 활성화
         }
+
+        console.log("~~~~ 강제 렌더링: ");
+        setRender(prev => prev + 1);
     };
 
     // ✅ 3. 채팅 데이터를 불러오는 함수
@@ -343,11 +343,12 @@ const ChatMain = () => {
 
     // 텍스트를 입력한 경우 제출 버튼이 활성화되도록 설정
     const handlerOnChangeInput = (e) => {
-        console.log("input: ", e.target.value);
         // socketMessage.content가 PARSE 이거나 inquiryType이 SENTENCE_GENERATION_TYPE인 경우
         // text를 전송해야 하므로 button을 활성화
-        if (socketMessage.content == "PARSE"
-            || socketMessage.inquiryType == "SENTENCE_GENERATION_TYPE") {
+        if (socketMessageRef.current.content == "PARSE"
+            || (socketMessageRef.current.inquiryType == "INPUT_METHOD" && socketMessageRef.current.content == "WITH_PREVIOUS")
+            || (socketMessageRef.current.inquiryType == "SENTENCE_GENERATION_TYPE")
+        ) {
             if (e.target.value.trim() != "") {
                 setDisAbledButton(false);
             } else {
@@ -359,7 +360,15 @@ const ChatMain = () => {
 
     const setRequestType = (requestType, content) => {
         console.log("requestType: ", requestType);
-        sendMessage(requestType, content);
+
+        if (requestType == "RESET") {
+            socketMessageRef.current = initialSocketMessage;
+            // 강제 렌더링
+            setRender(prev => prev + 1);
+            return;
+        } else {
+            sendMessage(requestType, content);
+        }
     }
 
     // 메시지 전송 함수
@@ -367,7 +376,7 @@ const ChatMain = () => {
         if (socket) {
             let newChatId = false;
             // sessionId가 없는 경우 -> 챗이 시작하기 전
-            if (!socketMessage.chatSessionId) {
+            if (!socketMessageRef.current?.chatSessionId) {
                 const todayDate = getTodayDate();
                 // 질문을 시작하는 날짜가 오늘이 아니면 새로운 채팅방을 생성
                 if (paramDate != todayDate) {
@@ -375,23 +384,36 @@ const ChatMain = () => {
                 }
             }
 
-            // 소캣 메세지 set
-            setSocketMessage(prev => ({
-                ...prev,
-                chatId: newChatId ? null : socketMessage.chatId,
-                chatSessionId: socketMessage.chatSessionId,
-                inquiryType: inquiryType,
-                content: content,
-            }));
+            console.log("inquiryType: ", inquiryType, " content: ", content);
 
-            console.log("\n\n\n\n보낸 메시지: ", JSON.stringify(socketMessage));
-            socket.send(JSON.stringify(socketMessage));  // 서버로 메시지 전송
+            // 소캣 메세지 set
+            socketMessageRef.current.inquiryType = inquiryType;
+            socketMessageRef.current.content = content;
+
+            if (inquiryType == "AI_REQUEST") {
+                const newMessage = {
+                    sender: "USER",
+                    inquiryType: socketMessageRef.current.inquiryType,
+                    content: socketMessageRef.current.content,
+                    sendAt: new Date(),
+                }
+                sessionListRef.current[sessionListRef.current.length - 1].messages.push(newMessage);
+                setRender(prev => prev + 1);    // 강제 렌더링
+            }
+
+            console.log("### socketMessageRef.current: ", JSON.stringify(socketMessageRef.current));
+            socket.send(JSON.stringify(socketMessageRef.current));  // 서버로 메시지 전송
         }
     };
 
     const sendRequest = () => {
+        setDisAbledButton(true);
+
         // 이전 작업이 문장 해석 버튼 클릭이 경우
-        if (socketMessageRef.current.content == "PARSE") {
+        if (socketMessageRef.current.content == "PARSE"
+            || (socketMessageRef.current.content == "WITH_PREVIOUS" && socketMessageRef.current.inquiryType == "INPUT_METHOD")
+            || socketMessageRef.current.inquiryType == "SENTENCE_GENERATION_TYPE"
+        ) {
             console.log("메세지 전송");
             const chatContent = document.getElementById("chat-input-content").value;
             document.getElementById("chat-input-content").value = "";
@@ -400,8 +422,12 @@ const ChatMain = () => {
         }
     }
 
+    const sessionList = sessionListRef.current;
     console.log("=== Session List: ", sessionList);
+    console.log("=== showRequestButton: ", showRequestButton, " socketMessageRef.current: ", socketMessageRef.current);
+    let messageType = null;
 
+    let user = "";
     return (
         <div className="chat-main">
             <section className="mz-logo-white">
@@ -421,8 +447,9 @@ const ChatMain = () => {
                     {
                         sessionList && sessionList.length > 0
                         && sessionList.flatMap((messages, index) => {
+                            messageType = null;
+                            user = null;
                             return messages.messages.flatMap((msg, depth) => {
-                                let messageType = null;
                                 const msgComponent = [];
 
                                 if (msg?.sender == "USER") {
@@ -431,86 +458,55 @@ const ChatMain = () => {
                                             msgComponent.push(<ChatRequest content={"문구 해석"} key={`request-parse-${index}-${depth}`} />)
                                         } else {
                                             msgComponent.push(<ChatRequest content={"문장 작성"} key={`request-${index}-${depth}`} />);
+                                            msgComponent.push(<Request step={"step_1"} type={msg?.inquiryType} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         }
                                     }
 
                                     else if (msg?.inquiryType == "MESSAGE_TYPE") {
                                         messageType = msg?.content;
-                                        return [
-                                            <h1 key={`message-type-title-${index}-${depth}`}>문자와 메일 중에 유형을 작성해주세요!</h1>,
-                                            msg?.content == "MESSAGE" ? (
-                                                <ChatRequest content={"문자 작성"} key={`request-parse-${index}-${depth}`} />
-                                            ) : (
-                                                <ChatRequest content={"메일 작성"} key={`request-parse-${index}-${depth}`} />
-                                            )
-                                        ];
+                                        if (msg?.content == "MESSAGE") {
+                                            msgComponent.push(<ChatRequest content={"문자 작성"} key={`request-parse-${index}-${depth}`} />)
+                                        } else {
+                                            msgComponent.push(<ChatRequest content={"메일 작성"} key={`request-parse-${index}-${depth}`} />)
+                                        }
+                                        msgComponent.push(<Request step={"step_2"} type={msg?.inquiryType} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                     }
 
                                     else if (msg?.inquiryType == "INPUT_METHOD") {
-                                        if (msg?.content == "WITH_PREVIOUS_EMAIL") {
-                                            return [<ChatRequest content={"메일 작성"} key={`request-parse-${index}-${depth}`} />];
+                                        if (msg?.content == "WITH_PREVIOUS") {
+                                            msgComponent.push(<ChatRequest content={`이전에 받은 ${messageType == "MESSAGE" ? "문자" : "메일"} 입력`} key={`request-parse-${index}-${depth}`} />);
+                                            msgComponent.push(<Request step={"step_3"} type={msg?.content} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         } else {
-                                            return [<ChatRequest content={"메일 작성"} key={`request-parse-${index}-${depth}`} />];
+                                            msgComponent.push(<ChatRequest content={`이전에 받은 ${messageType == "MESSAGE" ? "문자" : "메일"} 없이 입력`} key={`request-parse-${index}-${depth}`} />);
+                                            msgComponent.push(<Request step={"step_3"} type={msg?.content} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         }
                                     }
 
                                     else if (msg?.inquiryType == "SENTENCE_GENERATION_TYPE") {
-                                        // 문자 타입의 경우
-                                        if (msg?.content == "CONGRATULATION") {
-                                            return [<ChatRequest content={"경사"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "INQUIRY") {
-                                            return [<ChatRequest content={"조사"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "APPRECIATION") {
-                                            return [<ChatRequest content={"감사"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "APOLOGY") {
-                                            return [<ChatRequest content={"사과"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "SCHEDULE_CONFIRMATION") {
-                                            return [<ChatRequest content={"일정 확인"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "ANNOUNCEMENT") {
-                                            return [<ChatRequest content={"공지"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "WORK_REQUEST") {
-                                            return [<ChatRequest content={"업무 요청"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "FOLLOW_UP") {
-                                            return [<ChatRequest content={"팔로우업"} key={`request-parse-${index}-${depth}`} />];
-                                        }
-                                        // 메일 작성의 경우
-                                        else if (msg?.content == "FEEDBACK_REQUEST") {
-                                            return [<ChatRequest content={"피드백 요청"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "REMINDER") {
-                                            return [<ChatRequest content={"리마인딩 알림"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "THANK_YOU") {
-                                            return [<ChatRequest content={"감사"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "APOLOGY") {
-                                            return [<ChatRequest content={"사과"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "GREETING") {
-                                            return [<ChatRequest content={"인사"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "SUGGESTION") {
-                                            return [<ChatRequest content={"제안"} key={`request-parse-${index}-${depth}`} />];
-                                        } else if (msg?.content == "FOLLOW_UP") {
-                                            return [<ChatRequest content={"팔로업"} key={`request-parse-${index}-${depth}`} />];
-                                        }
+                                        msgComponent.push(<ChatRequest content={ GenerateType(msg?.content)} key={`request-parse-${index}-${depth}`} />);
+                                    }
+
+                                    else if (msg?.inquiryType == "AI_REQUEST") {
+                                        msgComponent.push(<ChatRequest content={ GenerateType(msg?.content)} key={`request-parse-${index}-${depth}`} />);
                                     }
                                 } else if (msg?.sender == "AI") {
-                                    return [<ChatResponse message={msg} key={`response-${index}-${depth}`} />];
+                                    user = "AI";
+                                    msgComponent.push(<ChatResponse content={msg?.content} key={`response-${index}-${depth}`} />);
+                                    msgComponent.push(<Request type={msg?.inquiryType} messageType={messageType} />);
                                 }
 
-                                // 질문 컴포넌트 없이 출력
-                                if (msg?.content == "PARSE") {
-                                    return msgComponent;
-                                }
-                                // 질문 컴포넌트 추가 후 출력
-                                msgComponent.push(<Request type={msg?.inquiryType} messageType={messageType} />);
+                                // 메세지 컴포넌트 출력
                                 return msgComponent;
                             });
-
-                            // SocketMessage에 따라 버튼 출력
-                            if (showRequestButton && socketMessage) {
-                                return [<RequestButton inquiryType={socketMessage.inquiryType} setRequestType={setRequestType} key={`request-${index}`} />];
-                            }
                         })
                     }
+                    {
+                        // SocketMessage에 따라 버튼 출력
+                        (showRequestButton && socketMessageRef.current) &&
+                            <RequestButton inquiryType={socketMessageRef.current.inquiryType} content={socketMessageRef.current.content} user={user} messageType={messageType} setRequestType={setRequestType} />
+                    }
 
-                    { /* 삭제 해야하는 코드 */
+                    { /* 삭제 해야하는 코드 */ /*
                         <>
                             <RequestButton inquiryType={socketMessage?.inquiryType} setRequestType={setRequestType}/>
                             <ChatRequest content={"문구 해석"} />
@@ -567,7 +563,7 @@ const ChatMain = () => {
                             <ChatResponse content={'블라블라블라 응답응답 응답~~~~~'} />
                             <Request type={"AI_REQUEST"} messageType={"EMAIL"} />
                             <RequestButton inquiryType={"AI_REQUEST"} messageType={"EMAIL"} setRequestType={setRequestType} />
-                        </>
+                        </> */
                     }
                 </ScrollToBottom>
             </section>

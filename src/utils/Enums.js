@@ -45,7 +45,7 @@ const GenerateType = (type) => {
             break;
     }
 
-    console.log("messageType : ", messageType, "");
+    // console.log("messageType : ", messageType, "");
     return messageType;
 }
 

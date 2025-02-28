@@ -42,17 +42,6 @@ const NaverCallback = () => {
         } else {
             // 네이버 로그인에 실패한 경우
             setLoginProcess(false);
-
-            const userData = {
-                accessToken: "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzQwNjc3MTAzfQ.WPhNSrZ_QJ9rm1pEp8GWAI1wXgLFe14wYSGw68oKuYPDfPQmxAH7DnfFr5T1XcsbxrZ_uTrbMKHYh4moeNEHIQ"
-            }
-            // String으로 저장
-            localStorage.setItem("userData", JSON.stringify(userData));
-
-            // LocalStorage 값 변경 -> storage 이벤트 트리거
-            localStorage.setItem("login", String(Date.now()));
-
-            window.close();
         }
     }, [authState.userData]);
 

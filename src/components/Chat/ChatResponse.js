@@ -1,11 +1,12 @@
 import React from 'react';
+import ReactMarkdown from "react-markdown";
 
 // Image
 import chatAiIcon from "../../assets/images/chat/chat_ai_icon.png";
 import ChatGuide from "./ChatGuide";
 
 const ChatResponse = ({isGuide, content} ) => {
-    console.log("isGuide: ", isGuide, ", content: ", content);
+    // console.log("isGuide: ", isGuide, ", content: ", content);
 
     return (
       <div className="chat-response">
@@ -13,7 +14,7 @@ const ChatResponse = ({isGuide, content} ) => {
           { isGuide && <ChatGuide /> }
           { content  &&
               <div className="chat-response-content">
-                  { content }
+                  <ReactMarkdown>{ content }</ReactMarkdown>
               </div>
           }
       </div>

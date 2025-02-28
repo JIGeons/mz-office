@@ -20,26 +20,26 @@ const Request = ({ type, messageType, step }) => {
     const requestType = RequestType(messageType);
 
     switch ( type ) {
-        case "INPUT_METHOD":
-            title = `이전에 받은 ${requestType}이 있으신가요?`
-            content = `받은 메일을 입력 후 ${requestType} '유형'만 선택하면, 별도의 질문 입력 필요없이 답변해드려요!`
+        case "MESSAGE_TYPE":
+            title = `이전에 받은 ${requestType == "문자" ? "문자가" : "메일이"} 있으신가요?`
+            content = `받은 ${requestType == "문자" ? "문자를" : "메일을"} 입력 후 ${requestType} '유형'만 선택하면, 별도의 질문 입력 필요없이 답변해드려요!`
             subContent = `(단, 이전에 받은 ${requestType} 미입력시, 질문은 필수입니다.)`
             break;
-        case "WITH_PREVIOUS_EMAIL": // 이전에 받은 문자/메일을 붙여넣는 경우
-            title = `${requestType} 내용을 붙여넣고, ${requestType} 유형을 선택하면 자동으로 제목 및 내용을 알려드립니다.\n${requestType} 내용없이 ${requestType} 유형을 선택하면 상황을 설명해주세요~`
+        case "WITHOUT_PREVIOUS": // 이전에 받은 문자/메일을 붙여넣는 경우
+            title = `${requestType} 유형을 선택하고, ${requestType} 내용을 붙여넣으면 자동으로 제목 및 내용을 알려드립니다.`;
             break;
-        case "WITHOUT_PREVIOUS_EMAIL":
+        case "WITH_PREVIOUS":
             title = `${requestType == "문자" ? "문자를" : "메일을"} 채팅 창에 텍스트로 입력해주세요!`;
             break;
         case "SENTENCE_GENERATION_TYPE":
             title = `어떤 ${requestType} 작성을 원하세요?`
             break;
-        case "AI_REQUEST":
+        default :
             if (!requestType) title = "받아보신 해석 내용에 만족하셨나요?";
             else title = `받아보신 ${requestType} 내용에 만족하셨나요?`
             break;
-        default:
-            break;
+        // default:
+        //     break;
     }
 
     let stepImage = null;
@@ -56,7 +56,7 @@ const Request = ({ type, messageType, step }) => {
         default:
             break;
     }
-    console.log("step: ", step, ", stepImage : ", stepImage);
+
     return (
         <>
             {   step &&
@@ -64,14 +64,14 @@ const Request = ({ type, messageType, step }) => {
                     <img className={"request-step-img"} src={ stepImage } alt="stepImage.png" />
                 </div>
             }
-            {   type == "MESSAGE_TYPE" &&
+            {   type == "REQUEST_TYPE" &&
                 <div className="request-choose-message-type">
                     <h1><span>문자</span>와 <span>메일</span> 중에 유형을 작성해주세요! </h1>
                 </div>
             }
-            {   !step && type != "MESSAGE_TYPE" &&
+            {   step && (type == "MESSAGE_TYPE" || type == "WITH_PREVIOUS" || type == "WITHOUT_PREVIOUS")&&
                 <div className="request">
-                    {   type != "INPUT_METHOD" &&
+                    {   (type == "WITH_PREVIOUS" || type == "WITHOUT_PREVIOUS") &&
                         <>
                             <img src={important} alt="important.png" />
                             <div className="request-content">
@@ -79,7 +79,7 @@ const Request = ({ type, messageType, step }) => {
                             </div>
                         </>
                     }
-                    {   type == "INPUT_METHOD" &&
+                    {   type == "MESSAGE_TYPE" &&
                         <>
                             <img src={important} alt="important.png" />
                             <div className="request-content">
