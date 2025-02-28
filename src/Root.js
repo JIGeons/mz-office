@@ -19,16 +19,19 @@ import {
 // Custom Hooks
 
 // Components
-import Sidebar from "./components/Sidebar";
-import Footer from "./components/Footer";
-import NotFound from "./components/NotFound";
+import Sidebar from "./components/Common/Sidebar";
+import Footer from "./components/Common/Footer";
+import NotFound from "./components/Common/NotFound";
 
 // Dialog
 import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 // CSS
 import "./styles/common.css";
-import AccountDelete from "./components/AccountDelete";
+import AccountDelete from "./pages/AccountDelete";
+
+// Utils
+import { getTodayDate } from "./utils/Utils";
 
 const Root = () => {
     const dispatch = useDispatch();
@@ -39,7 +42,7 @@ const Root = () => {
     const [hasLoginData, setHasLoginData] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);   // 사이드바 최소 너비 상태
     const [isLoading, setIsLoading] = useState(false);
-    const [chatList, setChatList] = useState([]);
+    const [todayChatId, setTodayChatId] = useState("today");
     const [dialogContent, setDialogContent] = useState(null);
     // 🚀 초기 경로 설정 (sessionStorage에서 가져오기)
     const [redirectPath, setRedirectPath] = useState(sessionStorage.getItem("redirectPath"));
@@ -47,7 +50,11 @@ const Root = () => {
     // Redux 상태 가져오기
     const { userData } = useSelector((state) => state.auth);
     const chatState = useSelector((state) => state.chat);
+    const { todayChatList, recentChatList } = useSelector((state) => state.chat);
     const constant = useSelector((state) => state.constant);
+
+    // 오늘 날짜 불러오기
+    const todayDate = getTodayDate();
 
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
@@ -57,8 +64,8 @@ const Root = () => {
             sessionStorage.removeItem("redirectPath"); // ✅ 한 번만 실행되도록 삭제
         }
 
-        const userData = JSON.parse(localStorage.getItem("userData"));
-        const accessToken = userData?.accessToken;
+        const userAccessData = JSON.parse(localStorage.getItem("userData"));
+        const accessToken = userAccessData?.accessToken;
 
         if (accessToken) {
             setHasLoginData(true);
@@ -69,22 +76,11 @@ const Root = () => {
             }
         }
 
-        const handleStorageChange = (event) => {
+        const handleStorageChange = async (event) => {
             if (event.key == "login") {
                 console.log("🚀 localStorage 변경 감지! 페이지 새로고침...");
-                getChatData();
-                // 로그인 성공 시 chatList API 호출 (API 연결이 아직 안 됐기 때문에 주석 처리)
-                // Promise.all([
-                //     dispatch(chatActions.getTodayChatList()),
-                //     dispatch(chatActions.getRecentChatList())
-                // ]).then(() => {
-                //     // 화면 새로고침
-                //     navigate("/chat?chatId=today&date=today");
-                // }).catch(error => {
-                //     alert("API 요청 실패! logout");
-                //     localStorage.removeItem("userData");
-                //     authActions.clearAuthState();
-                // })
+                dispatch(chatActions.getTodayChatList());
+                dispatch(chatActions.getRecentChatList());
             }
         };
 
@@ -97,8 +93,8 @@ const Root = () => {
 
     // Redux 상태나 localStorage 변경 시 로그인 상태 업데이트
     useEffect(() => {
-        const userData = JSON.parse(localStorage.getItem("userData"));
-        const loginData = userData?.accessToken;
+        const userAccessData = JSON.parse(localStorage.getItem("userData"));
+        const loginData = userAccessData?.accessToken;
         console.log("loginData", loginData);
 
         if ((loginData && !hasLoginData)) {
@@ -107,15 +103,32 @@ const Root = () => {
             setHasLoginData(false);
             navigate("/login");
         }
-    }, [userData]);
+    }, [ userData ]);
 
     // chat List API의 응답을 받은 경우
     useEffect(() => {
-        if (chatState?.chatList?.code == "SUCCESS") {
-            setIsLoading(false);
-            setChatList(chatState?.chatList?.content);
+        console.log("todayChatList, recentChatList 변경 useEffect 실행")
+        if (todayChatList?.code == "SUCCESS") {
+            setTodayChatId(todayChatList?.content?.chatId || "today");
         }
-    }, [chatState?.chatList]);
+
+        // 둘 다 호출에 성공한 경우 -> 로그인 시 chatList API 호출 후 /chat 페이지로 이동하는 로직
+        if (/*todayChatList?.code == "SUCCESS" && */recentChatList?.code == "SUCCESS") {
+            console.log("recentChatList 업데이트 실행")
+            const loginKey = localStorage.getItem("login") || null;
+
+            // 로그인 키가 존재하면 로그인 후 요청 한 API 이므로 login을 localStorage에서 제거한 후 chat 페이지로 navigate
+            if (loginKey) {
+                localStorage.removeItem("login");
+                setHasLoginData(true);
+                navigate("/chat?chatId=" + todayChatId + "&date=" + todayDate);
+            }
+        }
+        // 둘 다 호출에 실패한 경우
+        else {
+            console.error("API 호출에 실패함")
+        }
+    }, [ todayChatList, recentChatList, navigate, todayChatId, todayDate ]);
 
     // Dialog
     useEffect(() => {
@@ -137,43 +150,6 @@ const Root = () => {
         dispatch(constantActions.onHideDialog());
     }
 
-    const getChatData = async () => {
-        try {
-            const [todayChatListResult, recentChatListResult] = await Promise.all([
-                dispatch(chatActions.getTodayChatList()),
-                dispatch(chatActions.getRecentChatList())
-            ]);
-
-            console.log("📌 getTodayChatList 결과:", todayChatListResult);
-            console.log("📌 getRecentChatList 결과:", recentChatListResult);
-
-            const todayChatResult = todayChatListResult?.payload;
-            const recentChatResult = recentChatListResult?.payload;
-
-            // 두개의 응답이 모두 성공한 경우
-            if (todayChatResult?.code == "SUCCESS"
-                && recentChatResult?.code == "SUCCESS") {
-
-                // 오늘 진행된 chatId가 존재하지 않는 경우
-                if (!todayChatResult?.content?.chatId) {
-                    navigate("/chat?chatId=today&date=today");
-                }
-                // 오늘 진행된 chatId가 존재하는 경우
-                else {
-                    navigate(`/chat?chatId=${todayChatResult?.content?.chatId}&date=today`);
-                }
-            } else {
-                console.error("채팅 리스트를 불러오는데 실패하였습니다. 로그아웃 합니다. failed: ");
-                // localStorage.removeItem("userData");
-
-            }
-            // 페이지 이동
-        } catch (error) {
-            console.error("채팅 리스트를 불러오는데 실패하였습니다. 로그아웃 합니다. (error: ", error);
-            localStorage.removeItem("userData");
-        }
-    }
-
     // url 변동 감지
     useEffect(() => {
         // accessToken이 localStorage에 저장되면 state를 변경
@@ -188,7 +164,9 @@ const Root = () => {
 
     }, [location])
 
+    // /chat, /account-delete 경로에서는 footer를 보여주지 않는다.
     const isNonFooter = !(window.location.href.includes("/chat") || window.location.href.includes("/account-delete"));
+
     return (
         <div id="wrap">
             <div className={`container ${isCollapsed ? "sidebar-collapsed" : ""}`}>
@@ -203,7 +181,7 @@ const Root = () => {
 
                         {/* 로그인 정보가 없는 경우 /login 페이지로 이동 */}
                         <Route path="/" element={ !hasLoginData ?
-                                <Navigate to="/login" replace /> : <Navigate to="/chat?chatId=today&date=today" replace /> }
+                                <Navigate to="/login" replace /> : <Navigate to={`/chat?chatId=${todayChatId}&date=${todayDate}`} replace /> }
                         />
                         { /* 로그인 상태에서 login 페이지 접근 시 /chat페이지로 리다이렉트 */ }
                         <Route path="/login" element={ <Login /> } />
