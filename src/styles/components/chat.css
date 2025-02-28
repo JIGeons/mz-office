@@ -50,10 +50,12 @@
     line-height: 15px;
     letter-spacing: -0.03em;
     color: #485360;
+    text-align: start;
 }
 
 .chat-response {
     display: flex;
+    padding-right: 45px;
 }
 
 .chat-response .chat-ai-icon {
@@ -66,6 +68,7 @@
     display: flex;
     flex-direction: row-reverse;
     margin-top: 15px;
+    padding-left: 45px;
 }
 
 .chat-request .chat-user-message {
@@ -96,16 +99,34 @@
     margin-left: 5px;
 }
 
-.request {
+.request-button {
     display: flex;
     justify-content: space-between;
     width: 100%;
     padding: 15px 30px;
 }
 
-.request img {
+.request-button img {
     width: 215px;
 }
+
+.request-message-type button {
+    width: 170px;
+    height: 54px;
+
+    background-color: #1F2531;
+
+    border: 1px solid #4865FF;
+    border-radius: 50px;
+
+    margin-right: 10px;
+}
+
+.request-message-type img {
+    width: 25px;
+    margin-right: 5px;
+}
+
 
 .request-selected {
     color: #FFFFFF !important;
@@ -115,4 +136,51 @@
 
 .request-selected span {
     color: #ACB8C5 !important;
+}
+
+.request {
+    width: calc(100% - 45px);
+
+    display: flex;
+    flex-direction: row;
+
+    background-color: #EDF0F4;
+    border-radius: 20px;
+
+    padding: 15px 30px;
+    margin: 15px 45px 0 0;
+}
+
+.request-choose-message-type {
+    display: flex;
+    margin: 15px 45px 0 0;
+}
+
+.request-choose-message-type h1 {
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 35.33px;
+    letter-spacing: -0.02em;
+    color: #1F2531;
+}
+
+.request-choose-message-type h1 span {
+    font-weight: 700;
+    color: #007AFF;
+}
+
+.request img {
+    width: 20px;
+    height: 20px;
+    margin: 4px 5px 0 0;
+}
+
+.request-content h2 {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: -0.04em;
+    color: #1F2531;
 }
