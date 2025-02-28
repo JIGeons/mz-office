@@ -32,6 +32,7 @@
     font-size: 18px;
     line-height: 21.48px;
     letter-spacing: -0.03em;
+    text-align: start;
     color: #1F2531;
 }
 .chat-guide-content h2 {
