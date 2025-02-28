@@ -12,8 +12,9 @@ import mzOfficeImage from "../assets/images/login/mz-office-image.png"
 import sectionBackground from "../assets/images/login/bg_mainright.png";
 import sideImage1 from "../assets/images/login/login_side_img-1.png";
 import sideImage2 from "../assets/images/login/login_side_img-2.png";
+import sideImage3 from "../assets/images/login/login_side_img-3.png";
 
-const sideImages = [sideImage1, sideImage2];
+const sideImages = [sideImage1, sideImage2, sideImage3];
 
 const Login = () => {
     const navigate = useNavigate();
