@@ -10,4 +10,7 @@ import NaverCallback from "./NaverCallback";
 // 단어장
 import Vocabulary from "./Vocabulary";
 
-export { Login, ChatMain, NaverCallback, Vocabulary };
+// 모바일로 접근 시 막는 페이지
+import Mobile from "./Mobile";
+
+export { Login, ChatMain, NaverCallback, Vocabulary, Mobile };

@@ -14,7 +14,8 @@ import {
     Login,
     ChatMain,
     NaverCallback,
-    Vocabulary
+    Vocabulary,
+    Mobile,
 } from "./pages/paths";
 
 // Custom Hooks
@@ -56,6 +57,16 @@ const Root = () => {
 
     // 오늘 날짜 불러오기
     const todayDate = getTodayDate();
+
+    // ✅ 모바일 기기 확인 후 강제 리디렉트
+    useEffect(() => {
+        const userAgent = navigator.userAgent;
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+
+        if (mobileRegex.test(userAgent)) {
+            navigate("/mobile"); // 모바일 기기면 /mobile로 이동
+        }
+    }, [navigate]);
 
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
@@ -192,6 +203,7 @@ const Root = () => {
 
                         <Route path="/chat" element={ <ChatMain /> } />
                         <Route path="/vocabulary" element={ <Vocabulary /> } />
+                        <Route path="/mobile" element={ <Mobile /> } />
 
                         {/* 네이버 로그인 콜백 수행 */}
                         { !hasLoginData &&
