@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef, useReducer} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 
 // Actions
 import * as vocaActions from "../redux/modules/VocaSlice";
+import * as constantActions from "../redux/modules/ConstantSlice";
 
 // Images
 import vocaImage from "../assets/images/voca/voca_img.png";
 
 // CSS
 import "../styles/vocabulary.css";
+import rightIcon from "../assets/images/voca/answer_icon.png";
+import wrongIcon from "../assets/images/voca/wrong_icon.png";
 
 const Vocabulary = () => {
     const dispatch = useDispatch();
@@ -21,6 +24,13 @@ const Vocabulary = () => {
     // Component State
     const [ quiz, setQuiz ] = useState(null);
     const [ word, setWord ] = useState(null);
+    const [ quizSentence, setQuizSentence ] = useState(null);
+    const [ answerButton, setAnswerButton ] = useState([]);
+    const [ onShowAnswer, setOnShowAnswer ] = useState(false);
+    const [ _, forceUpdate ] = useReducer(x => x + 1, 0);
+
+    // useRef
+    const selectedAnswerRef = useRef(null);
 
 
     useEffect(() => {
@@ -31,12 +41,44 @@ const Vocabulary = () => {
     useEffect(() => {
         if (vocaQuiz.code == "SUCCESS") {
             setQuiz(vocaQuiz.content);
+
+            const quiz = {...vocaQuiz.content };
+            console.log("@@@@ ", quiz);
+
+            // 정답 버튼 생성
+            const wrongWordList = quiz.wrongWordList;
+            // 랜덤한 인덱스 생성 (0부터 wrongWordList.length 사이)
+            quiz.answerIndex = Math.floor(Math.random() * (wrongWordList.length + 1));
+
+            // 새로운 배열을 생성하여 삽입
+            quiz.wrongWordList = [
+                ...wrongWordList.slice(0, quiz.answerIndex),  // 앞쪽 배열 유지
+                vocaQuiz.content.word,                         // 랜덤한 위치에 새로운 객체 추가
+                ...wrongWordList.slice(quiz.answerIndex)      // 뒷쪽 배열 유지
+            ];
+
+            // 단어 길이만큼 'ㅇ' 생성
+            const clearWord = "ㅇ".repeat(quiz.word.length);
+
+            // 정규식을 사용하여 모든 해당 단어를 대체
+            quiz.explanation = vocaQuiz.content.explanation.replace(new RegExp(quiz.word, "g"), clearWord);
+            quiz.exampleSentence = vocaQuiz.content.exampleSentence.replace(new RegExp(quiz.word, "g"), clearWord);
+
+            setQuiz(quiz);
         }
 
         if (vocaWord.code == "SUCCESS") {
             setWord(vocaWord.content);
         }
     }, [ vocaQuiz, vocaWord ])
+
+    // 정답을 확인하고 Dialog를 띄우는 메서드
+    const handleAnswerCheck = (index) => {
+        selectedAnswerRef.current = index;
+        setOnShowAnswer(true);
+
+        forceUpdate();    // 강제 렌더링
+    }
 
     return (
         <div className="vocabulary">
@@ -66,10 +108,15 @@ const Vocabulary = () => {
                         <h1>Q. {quiz?.explanation}</h1>
                         <div className="voca-quiz-button">
                             {
-                                quiz?.wrongWordList && quiz?.wrongWordList.length > 0 &&
-                                quiz?.wrongWordList.map((voca, index) => {
+                                quiz && quiz.wrongWordList &&
+                                quiz.wrongWordList.map((voca, index) => {
                                     return (
-                                        <button>{voca}</button>
+                                        <button
+                                            className={( index == selectedAnswerRef.current) ? ( (index == quiz.answerIndex) ? "answer-selected" : "selected" ) : ""}
+                                            onClick={() => { handleAnswerCheck(index) }}
+                                        >
+                                            {voca}
+                                        </button>
                                     )
                                 })
                             }
@@ -77,6 +124,30 @@ const Vocabulary = () => {
                     </div>
                 </section>
             </div>
+
+            {/* 정답 확인 모달 */}
+            {   onShowAnswer &&
+                <modal className="dialog-modal">
+                    <div className="dialog_inner">
+                        {   quiz.answerIndex == selectedAnswerRef.current ?
+                            <div className="dialog_content">
+                                <img className="dialog_icon" src={ rightIcon } alt="rightIcon.png" />
+                                <h3 className="dialog-answer-content">정답입니다!</h3>
+                            </div>
+                            :   <div className="dialog_content">
+                                    <img className="dialog_icon" src={ wrongIcon } alt="rightIcon.png" />
+                                    <h3 className="dialog-answer-content">오답입니다.</h3>
+                                    <h3 className="dialog-answer-content">다시 선택해 주세요!</h3>
+                                </div>
+                        }
+                        <button
+                            className="dialog_answer_button"
+                            onClick={() => setOnShowAnswer(false)}>
+                            확인
+                        </button>
+                    </div>
+                </modal>
+            }
         </div>
     );
 }

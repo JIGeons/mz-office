@@ -13,7 +13,6 @@ import step3 from "../../assets/images/chat/STEPS3.png"
 import "../../styles/components/chat.css"
 
 const Request = ({ type, messageType, step }) => {
-    console.log("type : ", type, " messageType : ", messageType, "");
     let title = null;
     let content = null;
     let subContent = null;
