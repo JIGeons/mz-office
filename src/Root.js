@@ -58,16 +58,6 @@ const Root = () => {
     // 오늘 날짜 불러오기
     const todayDate = getTodayDate();
 
-    // ✅ 모바일 기기 확인 후 강제 리디렉트
-    useEffect(() => {
-        const userAgent = navigator.userAgent;
-        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
-
-        if (mobileRegex.test(userAgent)) {
-            navigate("/mobile"); // 모바일 기기면 /mobile로 이동
-        }
-    }, [navigate]);
-
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
         console.log("!--- Root ComponentDidMount ---!");
@@ -154,16 +144,6 @@ const Root = () => {
         }
     }, [constant?.dialog]);
 
-    //  사이드바 토글 기능
-    const toggleSidebar = () => {
-        setIsCollapsed(!isCollapsed);
-    };
-
-    const hideDialog = () => {
-        setDialogContent(null);
-        dispatch(constantActions.onHideDialog());
-    }
-
     // url 변동 감지
     useEffect(() => {
         // accessToken이 localStorage에 저장되면 state를 변경
@@ -177,6 +157,26 @@ const Root = () => {
         }
 
     }, [location])
+
+    // ✅ 모바일 기기 확인 후 강제 리디렉트
+    useEffect(() => {
+        const userAgent = navigator.userAgent;
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+
+        if (mobileRegex.test(userAgent)) {
+            navigate("/mobile"); // 모바일 기기면 /mobile로 이동
+        }
+    }, [navigate]);
+
+    //  사이드바 토글 기능
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+    };
+
+    const hideDialog = () => {
+        setDialogContent(null);
+        dispatch(constantActions.onHideDialog());
+    }
 
     // /chat, /account-delete 경로에서는 footer를 보여주지 않는다.
     const isNonFooter = !(window.location.href.includes("/chat") || window.location.href.includes("/account-delete"));

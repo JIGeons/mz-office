@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import '../styles/login.css';
 
 // images
-import mzLogo from "../assets/images/MZ_logo_black.png";
+import mzLogo from "../assets/images/mz_logo_black.png";
 import mzOfficeImage from "../assets/images/login/mz-office-image.png"
 import sectionBackground from "../assets/images/login/bg_mainright.png";
 import sideImage1 from "../assets/images/login/login_side_img-1.png";

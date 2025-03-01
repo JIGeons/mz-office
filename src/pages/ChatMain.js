@@ -18,7 +18,7 @@ import {
 } from "../components/ComponentsPath";
 
 // Image
-import MZLogoWhite from "../assets/images/MZ_logo_white.png";
+import MZLogoWhite from "../assets/images/mz_logo_white.png";
 import SearchIcon from "../assets/images/chat/search_icon.png";
 import DisabledSearchIcon from "../assets/images/chat/disabled_search_icon.png";
 
