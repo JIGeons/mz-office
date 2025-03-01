@@ -60,6 +60,7 @@ const RequestType = (type) => {
             requestType = "문자";
             break;
         default:
+            requestType = null;
             break;
     }
 

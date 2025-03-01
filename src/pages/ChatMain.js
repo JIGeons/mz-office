@@ -400,6 +400,7 @@ const ChatMain = () => {
                                     if (msg?.inquiryType == "REQUEST_TYPE") {
                                         if (msg?.content == "PARSE") {
                                             msgComponent.push(<ChatRequest content={"문구 해석"} key={`request-parse-${index}-${depth}`} />)
+                                            msgComponent.push(<Request type={"INPUT_TEXT"} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         } else {
                                             msgComponent.push(<ChatRequest content={"문장 작성"} key={`request-${index}-${depth}`} />);
                                             msgComponent.push(<Request step={"step_1"} type={msg?.inquiryType} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
@@ -428,6 +429,7 @@ const ChatMain = () => {
 
                                     else if (msg?.inquiryType == "SENTENCE_GENERATION_TYPE") {
                                         msgComponent.push(<ChatRequest content={ GenerateType(msg?.content)} key={`request-parse-${index}-${depth}`} />);
+                                        msgComponent.push(<Request type={"INPUT_TEXT"} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                     }
 
                                     else if (msg?.inquiryType == "AI_REQUEST") {
