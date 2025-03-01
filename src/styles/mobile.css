@@ -1,0 +1,62 @@
+.mobile {
+    width: 100%;   /* 너비 */
+    height: 100%;  /* 높이 */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-image: url("../assets/images/mobile_bg.png");  /* ✅ 배경 이미지 설정 */
+    background-size: cover;  /* ✅ 이미지가 div를 꽉 채우도록 조정 */
+    background-position: center;  /* ✅ 이미지 중앙 정렬 */
+    background-repeat: no-repeat;  /* ✅ 이미지 반복 방지 */
+}
+
+.mobile img {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+.mobile p {
+    font-family: "Paperlogy", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 40px;
+}
+
+.mobile-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 100px;
+}
+
+.mobile-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mobile-inner h1 {
+    font-family: "Paperlogy", sans-serif;
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 40px;
+}
+
+.mobile-inner h1 span {
+    font-family: "Paperlogy", sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    line-height: 40px;
+
+    background-color: #FFFFFF;
+    color: #7A49FC;
+
+    padding: 0 1px;
+}

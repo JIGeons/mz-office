@@ -18,7 +18,7 @@ import {
 } from "../components/ComponentsPath";
 
 // Image
-import MZLogoWhite from "../assets/images/MZ_logo_white.png";
+import MZLogoWhite from "../assets/images/mz_logo_white.png";
 import SearchIcon from "../assets/images/chat/search_icon.png";
 import DisabledSearchIcon from "../assets/images/chat/disabled_search_icon.png";
 
@@ -172,8 +172,11 @@ const ChatMain = () => {
             handleWebSocketMessage(event);
         };
 
-        ws.onclose = () => {
+        ws.onclose = (event) => {
             console.log("WebSocket 연결 종료");
+            console.log("🔴 종료 코드:", event.code);
+            console.log("🔴 종료 이유:", event.reason);
+            console.log("🔴 연결이 정상 종료되었나?", event.wasClean ? "✅ 예" : "❌ 아니요");
         };
 
         ws.onerror = (error) => {
@@ -292,6 +295,22 @@ const ChatMain = () => {
         }
     }
 
+    // 🔹 Enter 키 입력 이벤트 추가
+    const handlerOnKeyDown = (e) => {
+        if (e.key === "Enter") {
+            if (e.shiftKey) {
+                // Shift + Enter: 줄 바꿈
+                return;
+            } else {
+                // Enter: 메시지 전송
+                e.preventDefault(); // 기본 Enter 동작(개행) 방지
+
+                // 전송 가능한 경우에 enter 처리
+                if (!disabledButton) sendRequest();
+            }
+        }
+    };
+
 
     const setRequestType = (requestType, content) => {
         console.log("requestType: ", requestType);
@@ -302,8 +321,9 @@ const ChatMain = () => {
             setRender(prev => prev + 1);
             return;
         } else if (requestType == "MORE_REQUEST") {
-            socketMessageRef.current.chatSessionId = null;
-            sessionListRef.current = [...sessionListRef.current, initialSession];
+            //
+            // socketMessageRef.current.chatSessionId = null;
+            // sessionListRef.current = [...sessionListRef.current, initialSession];
 
             if (!content) {
                 sendMessage("REQUEST_TYPE", "PARSE");
@@ -400,6 +420,7 @@ const ChatMain = () => {
                                     if (msg?.inquiryType == "REQUEST_TYPE") {
                                         if (msg?.content == "PARSE") {
                                             msgComponent.push(<ChatRequest content={"문구 해석"} key={`request-parse-${index}-${depth}`} />)
+                                            msgComponent.push(<Request type={"INPUT_TEXT"} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         } else {
                                             msgComponent.push(<ChatRequest content={"문장 작성"} key={`request-${index}-${depth}`} />);
                                             msgComponent.push(<Request step={"step_1"} type={msg?.inquiryType} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
@@ -428,6 +449,7 @@ const ChatMain = () => {
 
                                     else if (msg?.inquiryType == "SENTENCE_GENERATION_TYPE") {
                                         msgComponent.push(<ChatRequest content={ GenerateType(msg?.content)} key={`request-parse-${index}-${depth}`} />);
+                                        msgComponent.push(<Request type={"INPUT_TEXT"} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                     }
 
                                     else if (msg?.inquiryType == "AI_REQUEST") {
@@ -452,12 +474,13 @@ const ChatMain = () => {
                 </ScrollToBottom>
             </section>
             <section className="chat_input">
-                <input
+                <textarea
                     id="chat-input-content"
-                    typeof={"text"}
+                    typeof={"textarea"}
                     onChange={(e) => handlerOnChangeInput(e)}
+                    onKeyDown={handlerOnKeyDown} // ✅ 엔터 및 Shift + Enter 이벤트 처리
                     placeholder={"MZ오피스에게 물어보기"}
-                ></input>
+                ></textarea>
                 <button className={"chat_sending"}>
                     { disabledButton ?
                         <img src={DisabledSearchIcon} alt={"search-icon.png"} style={{cursor: "no-drop"}}/>

@@ -13,7 +13,6 @@ import step3 from "../../assets/images/chat/STEPS3.png"
 import "../../styles/components/chat.css"
 
 const Request = ({ type, messageType, step }) => {
-    console.log("type : ", type, " messageType : ", messageType, "");
     let title = null;
     let content = null;
     let subContent = null;
@@ -33,6 +32,9 @@ const Request = ({ type, messageType, step }) => {
             break;
         case "SENTENCE_GENERATION_TYPE":
             title = `어떤 ${requestType} 작성을 원하세요?`
+            break;
+        case "INPUT_TEXT":
+            title = `${!requestType ? "해석을 원하는 문장을" : requestType == "문자" ? "문자를" : "메일을"} 채팅 창에 텍스트로 입력해주세요!`;
             break;
         default :
             if (!requestType) title = "받아보신 해석 내용에 만족하셨나요?";
@@ -69,7 +71,15 @@ const Request = ({ type, messageType, step }) => {
                     <h1><span>문자</span>와 <span>메일</span> 중에 유형을 작성해주세요! </h1>
                 </div>
             }
-            {   step && (type == "MESSAGE_TYPE" || type == "WITH_PREVIOUS" || type == "WITHOUT_PREVIOUS")&&
+            {   type == "INPUT_TEXT" &&
+                <div className = "request">
+                    <img src={important} alt="important.png" />
+                    <div className="request-content">
+                        <h2>{ title }</h2>
+                    </div>
+                </div>
+            }
+            {   step && (type == "MESSAGE_TYPE" || type == "WITH_PREVIOUS" || type == "WITHOUT_PREVIOUS") &&
                 <div className="request">
                     {   (type == "WITH_PREVIOUS" || type == "WITHOUT_PREVIOUS") &&
                         <>

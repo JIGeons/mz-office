@@ -12,8 +12,8 @@
 }
 
 .dialog_inner {
-    width: 538px;
-    height: 287px;
+    min-width: 538px;
+    min-height: 287px;
 
     display: flex;
     flex-direction: column;
@@ -47,6 +47,18 @@
     white-space: pre-line;
 }
 
+.dialog_icon {
+    margin-bottom: -20px;
+}
+
+.dialog_content .dialog-answer-content {
+    font-family: "Paperlogy", sans-serif;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 42px;
+    letter-spacing: -0.02em;
+}
+
 .dialog_btn_group {
     width: 100%;
     display: flex;
@@ -77,4 +89,19 @@
 
 .dialog_btn_negative {
     background-color: #C6C8D1;
+}
+
+.dialog_answer_button {
+    width: 100%;
+    height: 60px;
+    background-color: #4865FF;
+    border: none;
+    border-radius: 6px;
+
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 26px;
+    letter-spacing: 0;
+    color: #FFFFFF;
 }

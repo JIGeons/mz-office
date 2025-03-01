@@ -3,6 +3,7 @@
     height: 100px;
     background-color: #282D39;
     color: white;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -13,4 +14,67 @@
 
     white-space: nowrap;
     overflow: hidden;
+}
+
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-right: 100px;
+}
+
+.footer-left img {
+    width: 160px;
+    margin-bottom: 24px;
+}
+
+.footer-left-text {
+    display: flex;
+}
+
+.footer-left-text h3 {
+    font-family: "Pretendard", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+
+    margin-right: 30px;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.footer-right h4 {
+    font-family: "Pretendard", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+
+    margin-bottom: 20px;
+}
+
+.footer-right h4 img {
+    width: 15px;
+    margin-right: 7px;
+}
+
+.footer-right p {
+    font-family: "Pretendard", sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    letter-spacing: -0.03em;
+    color: #656B74;
+}
+
+.footer-right div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
 }

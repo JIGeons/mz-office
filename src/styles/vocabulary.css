@@ -43,7 +43,10 @@
 
 .vocabulary_inner {
     width: 100%;
+    min-width: fit-content;
     display: flex;
+
+    flex: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -87,6 +90,20 @@
     padding: 15px 25px;
 }
 
+.answer-selected {
+    border: none !important;
+    background-color: #4865FF !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+.selected {
+    border: none !important;
+    background-color: #E02B1A !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
 .voca-word {
     display: flex;
     flex-direction: column;
@@ -118,6 +135,8 @@
     font-size: 16px;
     line-height: 20px;
     letter-spacing: -0.02em;
+    text-align: left;
+
     margin-bottom: 18px;
     color: #000000;
 }
