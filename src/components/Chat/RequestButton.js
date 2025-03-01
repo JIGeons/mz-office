@@ -39,6 +39,8 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
         if (inquiryType == "AI_REQUEST") {
             if (content == "RESET") setRequestType("RESET", content);
             else setRequestType("RESET", content);
+        } else if (inquiryType == "MORE_REQUEST") {
+            setRequestType(inquiryType, content);
         } else {
             setRequestType(inquiryType, content);
         }
@@ -67,6 +69,7 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
             }
             { inquiryType == "MESSAGE_TYPE" &&
                 <div className="request-input-method">
+                    {/* 이전에 받은 */}
                     <button className={"chat-input-prev"} onClick={() => requestButtonClick("INPUT_METHOD", 'WITH_PREVIOUS')}>
                         { buttonType[0] }
                     </button>
@@ -118,7 +121,7 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
                         {buttonType[0]}
                     </button>
                     {/* 더 문의 하기 */}
-                    <button className={"chat-input-prev-none"} onClick={() => requestButtonClick("AI_REQUEST", 'WITHOUT_PREVIOUS_EMAIL')}>
+                    <button className={"chat-input-prev-none"} onClick={() => requestButtonClick("MORE_REQUEST", messageType)}>
                         {buttonType[1]}
                     </button>
                 </div>

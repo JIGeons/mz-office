@@ -68,7 +68,7 @@ const ChatMain = () => {
     const [disabledButton, setDisAbledButton] = useState(true);
     const [chatId, setChatId] = useState(null);
     // const [sessionList, setSessionList] = useState([]);
-    const [showRequestButton, setShowRequestButton] = useState(true);
+    const [showRequestButton, setShowRequestButton] = useState(false);
 
     // Redux State
     const chatState = useSelector((state) => state.chat);
@@ -100,6 +100,7 @@ const ChatMain = () => {
 
         // date가 오늘인 경우 API 호출 및 소캣 연결
         if (paramDate === todayDate) {
+            setShowRequestButton(true);
             dispatch(chatActions.getTodayChatList())
 
             // 웹 소켓 연결 실행
@@ -115,6 +116,7 @@ const ChatMain = () => {
         // date가 오늘이 아닌 경우 chatData request API만 호출
         else {
             dispatch(chatActions.getChatDetail({chatId: paramChatId}));
+            setShowRequestButton(false);
         }
     }, [ paramChatId, paramDate, dispatch ]);
 
@@ -134,6 +136,9 @@ const ChatMain = () => {
                 else {
                     sessionListRef.current = [initialSession];
                 }
+
+                // socketMessage 초기화
+                socketMessageRef.current = initialSocketMessage;
             }
         } else {
             if (chatDetail.code == "SUCCESS") {
@@ -142,6 +147,9 @@ const ChatMain = () => {
                 setChatId(chatDetail.content.chatId);
                 sessionListRef.current = chatDetail.content.chatSessionList;
                 console.log("Updated sessionList: ", sessionListRef.current);
+
+                // socketMessage 초기화
+                socketMessageRef.current = initialSocketMessage;
             } else {
                 console.error("### chatDetail 응답 오류. (error: ", chatDetail);
                 return;
@@ -293,6 +301,15 @@ const ChatMain = () => {
             // 강제 렌더링
             setRender(prev => prev + 1);
             return;
+        } else if (requestType == "MORE_REQUEST") {
+            socketMessageRef.current.chatSessionId = null;
+            sessionListRef.current = [...sessionListRef.current, initialSession];
+
+            if (!content) {
+                sendMessage("REQUEST_TYPE", "PARSE");
+            } else {
+                sendMessage("MESSAGE_TYPE", content);
+            }
         } else {
             sendMessage(requestType, content);
         }
