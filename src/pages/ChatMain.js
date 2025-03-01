@@ -489,7 +489,7 @@ const ChatMain = () => {
                 </button>
             </section>
             <section className="privacy-policy">
-                <p>개인정보 이용 처리 방침 확인하기</p>
+                <p onClick={() => {navigate("/terms-and-conditions")}}>개인정보 이용 처리 방침 확인하기</p>
             </section>
         </div>
     );

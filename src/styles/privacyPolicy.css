@@ -1,0 +1,117 @@
+.terms-and-conditions {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.privacy-policy-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.privacy-policy-container h1,
+.privacy-policy-container h2 {
+    color: #222;
+    margin-bottom: 10px;
+}
+
+.privacy-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.privacy-table th,
+.privacy-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.privacy-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.privacy-policy-container ul {
+    list-style-type: disc;
+    list-style-position: inside;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 10px;
+}
+
+.privacy-policy-container ol{
+    list-style-position: inside;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.privacy-ul {
+    list-style-position: inside;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 10px;
+}
+
+.privacy-ol {
+    list-style-position: inside;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.privacy-cl {
+    list-style-type: circle;
+    list-style-position: inside;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.privacy-nl {
+    list-style-type: number;
+    list-style-position: inside;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.privacy-content {
+    padding-left: 10px;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    align-items: flex-start !important;
+}
+
+.privacy-content span {
+    padding-left: 10px;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
+}

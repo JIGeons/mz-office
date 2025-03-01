@@ -16,6 +16,8 @@ import {
     NaverCallback,
     Vocabulary,
     Mobile,
+    PrivacyPolicy,
+    TermsAndConditions
 } from "./pages/paths";
 
 // Custom Hooks
@@ -211,6 +213,8 @@ const Root = () => {
                         }
                         <Route path="*" element={ <NotFound />} />
                         <Route path="/account-delete" element={ <AccountDelete /> } />
+                        <Route path="/privacy-policy" element={ <PrivacyPolicy /> } />
+                        <Route path="/terms-and-conditions" element={ <TermsAndConditions /> } />
                     </Routes>
 
                     { /* 🏆 모든 페이지에서 Footer 표시 (로그인 페이지에선 출력 X)*/

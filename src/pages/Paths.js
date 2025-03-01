@@ -13,4 +13,7 @@ import Vocabulary from "./Vocabulary";
 // 모바일로 접근 시 막는 페이지
 import Mobile from "./Mobile";
 
-export { Login, ChatMain, NaverCallback, Vocabulary, Mobile };
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsAndConditions from "./TermsAndConditions";
+
+export { Login, ChatMain, NaverCallback, Vocabulary, Mobile, PrivacyPolicy, TermsAndConditions };

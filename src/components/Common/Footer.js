@@ -1,4 +1,5 @@
 import React from "react";
+import {useNavigate} from "react-router-dom";
 
 // Image
 import mzLogo from "../../assets/images/mz_logo_white.png";
@@ -8,13 +9,15 @@ import email from "../../assets/images/email.png";
 import "../../styles/components/footer.css";
 
 const Footer = () => {
+    const navigate = useNavigate();
+
     return (
         <footer className="footer">
             <div className="footer-left">
                 <img src={ mzLogo } alt="mzLogo.png" />
                 <div className="footer-left-text">
-                    <h3>개인정보 처리방침</h3>
-                    <h3>이용약관</h3>
+                    <h3 onClick={() => navigate("/privacy-policy")}>개인정보 처리방침</h3>
+                    <h3 onClick={() => navigate("/terms-and-conditions")}>이용약관</h3>
                 </div>
             </div>
             <div className="footer-right">
