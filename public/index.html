@@ -24,7 +24,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>MZ-Office</title>
+    <title>MZ-OFFICE</title>
 
     <!-- ✅ 네이버 로그인 SDK 추가 -->
     <script type="text/javascript" src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js" charset="utf-8"></script>
@@ -50,6 +50,7 @@
       if (window.location.pathname !== "/") {
         const redirectPath = window.location.search ? window.location.pathname + window.location.search : window.location.pathname;
         sessionStorage.setItem("redirectPath", redirectPath);
+        console.log(redirectPath);
       }
     </script>
   </body>

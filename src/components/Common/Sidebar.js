@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -24,113 +24,144 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
     const navigate = useNavigate();
 
     // Component State
-    const [chatFolder, setChatFolder] = useState([]);
+    // const [chatFolder, setChatFolder] = useState([]);
+
+    // component Ref
+    const chatId = useRef(null);
 
     // Redux State
-    const chatState = useSelector((state) => state.chat);
-    const { todayChatList, recentChatList } = useSelector((state) => state.chat);
+    const { chatDetail } = useSelector((state) => state.chat);
+
+    // const chatState = useSelector((state) => state.chat);
+    // const { todayChatList, recentChatList } = useSelector((state) => state.chat);
 
     // 오늘 날짜를 불러온다.
     const todayDate = getTodayDate();
 
     // componentDidMount
-    useEffect( () => {
-        let chatList = [];
-
-        const todayChat = todayChatList?.code == "SUCCESS" && (todayChatList?.content?.length > 0) ? todayChatList?.content : null;
-
-        // 오늘 채팅한 내역이 존재하지 않는 경우 오늘의 chatList를 생성한다.
-        if (!todayChat) {
-            console.log("채팅 내역이 존재하지 않음!");
-            // 현재 날짜를 받아온다.
-            const today = getTodayDate();
-            const todayObj = {
-                chatId: todayChatList?.content?.chatId || "today",
-                date: today
-            };
-
-            chatList = [todayObj];
-        } else {
-            const todayChat = todayChatList?.content;
-            chatList = [{
-                chatId: todayChat.chatId,
-                date: todayChat.date
-            }];
-        }
-
-        // 최근 채팅 리스트가 존재하는 경우
-        if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
-            console.log("최근 챗 리스트 삽입!!");
-            // chatList에 최근 채팅 리스트를 삽입한다.
-            chatList = [...chatList, ...recentChatList?.content.slice().reverse()];
-        } else {
-            console.log("최근 챗 리스트가 존재하지 않음");
-        }
-
-        setChatFolder(chatList);
-    }, [ todayChatList, recentChatList ]);
-
-    // // 오늘 날짜의 채팅이 생기면 chatId를 변경하기 위함
-    // useEffect(() => {
-    //     const todayChatList = chatState.todayChatList?.content;
-    //     const newChatFolder = chatFolder;
+    // useEffect( () => {
+    //     let chatList = [];
     //
-    //     // ChatState의 todayChatList가 변경이 된 경우. 오늘의 chatFolder의 chatId를 설정한다.
-    //     if (chatState.todayChatList?.code == "SUCCESS" && chatState.todayChatList?.content?.chatId) {
-    //         newChatFolder[0].chatId = todayChatList?.chatId;
-    //         setChatFolder(newChatFolder);
+    //     const todayChat = todayChatList?.code == "SUCCESS" && (todayChatList?.content?.length > 0) ? todayChatList?.content : null;
+    //
+    //     // 오늘 채팅한 내역이 존재하지 않는 경우 오늘의 chatList를 생성한다.
+    //     if (!todayChat) {
+    //         console.log("채팅 내역이 존재하지 않음!");
+    //         // 현재 날짜를 받아온다.
+    //         const today = getTodayDate();
+    //         const todayObj = {
+    //             chatId: todayChatList?.content?.chatId || "today",
+    //             date: today
+    //         };
+    //
+    //         chatList = [todayObj];
+    //     } else {
+    //         const todayChat = todayChatList?.content;
+    //         chatList = [{
+    //             chatId: todayChat.chatId,
+    //             date: todayChat.date
+    //         }];
     //     }
     //
-    // }, [ todayChatList. recentChatList ]);
+    //     // 최근 채팅 리스트가 존재하는 경우
+    //     if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
+    //         console.log("최근 챗 리스트 삽입!!");
+    //         // chatList에 최근 채팅 리스트를 삽입한다.
+    //         chatList = [...chatList, ...recentChatList?.content.slice().reverse()];
+    //     } else {
+    //         console.log("최근 챗 리스트가 존재하지 않음");
+    //     }
+    //
+    //     setChatFolder(chatList);
+    // }, [ todayChatList, recentChatList ]);
+    //
+    // // // 오늘 날짜의 채팅이 생기면 chatId를 변경하기 위함
+    // // useEffect(() => {
+    // //     const todayChatList = chatState.todayChatList?.content;
+    // //     const newChatFolder = chatFolder;
+    // //
+    // //     // ChatState의 todayChatList가 변경이 된 경우. 오늘의 chatFolder의 chatId를 설정한다.
+    // //     if (chatState.todayChatList?.code == "SUCCESS" && chatState.todayChatList?.content?.chatId) {
+    // //         newChatFolder[0].chatId = todayChatList?.chatId;
+    // //         setChatFolder(newChatFolder);
+    // //     }
+    // //
+    // // }, [ todayChatList. recentChatList ]);
+    //
+    // const handleNaverLogout = () => {
+    //     try {
+    //         console.log("logout");
+    //         const userData = JSON.parse(localStorage.getItem("userData"));
+    //         const accessToken = userData?.accessToken;
+    //
+    //         if (!accessToken) {
+    //             console.error("No access token found");
+    //             return ;
+    //         }
+    //
+    //         dispatch(authActions.clearAuthState());
+    //         dispatch(chatActions.clearChatState());
+    //
+    //         // 토큰 삭제 & 로그인 상태 변경
+    //         localStorage.removeItem("userData");
+    //         console.log("logout!");
+    //
+    //         dispatch(constantActions.onHideDialog());
+    //
+    //         // 🚀 직접 로그인 페이지로 이동 (useNavigate 대신 사용)
+    //         window.location.href = "/login";
+    //     } catch (error) {
+    //
+    //         console.error("네이버 로그아웃 실패: ", error);
+    //     }
+    // };
+    //
+    // const handleChatRoomDelete = (chatId) => {
+    //     console.log("Delete chat: ", chatId);
+    //     if (chatId !== "today") {
+    //         dispatch(chatActions.deleteChatRoom({chatId}));
+    //     }
+    // }
+    //
+    // const navigateToChat = (chatId, date) => {
+    //     console.log("chatId: ", chatId, " date: ", date);
+    //
+    //     if (chatId == "voca") {
+    //         navigate("/vocabulary");
+    //     }
+    //     else {
+    //         // 채팅 페이지로 이동
+    //         navigate(`/chat?chatId=${chatId}&date=${date}`);
+    //     }
+    // }
+    //
+    // console.log("chatFolder", chatFolder);
 
-    const handleNaverLogout = () => {
-        try {
-            console.log("logout");
-            const userData = JSON.parse(localStorage.getItem("userData"));
-            const accessToken = userData?.accessToken;
+    const navigateToType = (type) => {
+        if (type == "voca") {
+            const storeChatId = localStorage.getItem("chatId");
 
-            if (!accessToken) {
-                console.error("No access token found");
-                return ;
+            // chatId가 존재하는 경우 ref에 저장
+            if (storeChatId && storeChatId != "") {
+                chatId.current = storeChatId;
             }
 
-            dispatch(authActions.clearAuthState());
-            dispatch(chatActions.clearChatState());
-
-            // 토큰 삭제 & 로그인 상태 변경
-            localStorage.removeItem("userData");
-            console.log("logout!");
-
-            dispatch(constantActions.onHideDialog());
-
-            // 🚀 직접 로그인 페이지로 이동 (useNavigate 대신 사용)
-            window.location.href = "/login";
-        } catch (error) {
-
-            console.error("네이버 로그아웃 실패: ", error);
-        }
-    };
-
-    const handleChatRoomDelete = (chatId) => {
-        console.log("Delete chat: ", chatId);
-        if (chatId !== "today") {
-            dispatch(chatActions.deleteChatRoom({chatId}));
-        }
-    }
-
-    const navigateToChat = (chatId, date) => {
-        console.log("chatId: ", chatId, " date: ", date);
-
-        if (chatId == "voca") {
             navigate("/vocabulary");
-        }
-        else {
-            // 채팅 페이지로 이동
-            navigate(`/chat?chatId=${chatId}&date=${date}`);
+        } else {
+            // chatId가 존재하는 경우 히스토리가 존재하는 채팅방으로 입장
+            if (chatId.current) {
+                navigate(`/chat?chatId=${chatId.current}`);
+            }
+            // chatId가 존재하지 않는 경우 새로운 채팅방으로 입장
+            else {
+                navigate("/chat");
+            }
         }
     }
 
-    console.log("chatFolder", chatFolder);
+    function openPopup() {
+        window.open("https://dahye-backend-developer.my.canva.site/mz-office", "popupWindow", "width=600,height=400");
+    }
 
     return (
         <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
@@ -142,33 +173,71 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                 <nav className="navigation-bar">
                     {/* 네비게이션 내용 */}
                     <ul>
-                        <h1>MZ오피스 챗봇</h1>
-                        <h2>최근일자 채팅 내역</h2>
-                        {
-                            chatFolder.map((chatFolderDate, index) => {
-                                return (
-                                    <li key={index}>
-                                        <h3 style={{cursor: "pointer"}}
-                                            onClick={() => navigateToChat(chatFolderDate.chatId, chatFolderDate.date)}
-                                        >
-                                            {chatFolderDate.date}
-                                        </h3>
-                                        <img
-                                            src={deleteIcon}
-                                            alt={"delete-icon.png"}
-                                            onClick={() => handleChatRoomDelete(chatFolderDate.chatId)}
-                                            style={{ cursor: "pointer" }}
-                                        />
-                                    </li>
-                                )
-                            })
-                        }
+                        <h1
+                            style={{cursor: "pointer"}}
+                            onClick={() => navigateToType("chat")}
+                        >
+                            MZ오피스 챗봇
+                        </h1>
+                        {/*<h2>최근일자 채팅 내역</h2>*/}
+                        {/*{*/}
+                        {/*    chatFolder.map((chatFolderDate, index) => {*/}
+                        {/*        return (*/}
+                        {/*            <li key={index}>*/}
+                        {/*                <h3 style={{cursor: "pointer"}}*/}
+                        {/*                    onClick={() => navigateToChat(chatFolderDate.chatId, chatFolderDate.date)}*/}
+                        {/*                >*/}
+                        {/*                    {chatFolderDate.date}*/}
+                        {/*                </h3>*/}
+                        {/*                <img*/}
+                        {/*                    src={deleteIcon}*/}
+                        {/*                    alt={"delete-icon.png"}*/}
+                        {/*                    onClick={() => handleChatRoomDelete(chatFolderDate.chatId)}*/}
+                        {/*                    style={{ cursor: "pointer" }}*/}
+                        {/*                />*/}
+                        {/*            </li>*/}
+                        {/*        )*/}
+                        {/*    })*/}
+                        {/*}*/}
                     </ul>
 
                     <ul>
-                        <h1 style={{cursor: "pointer"}} onClick={() => {navigateToChat("voca", "")}}>MZ오피스 단어장</h1>
+                        <h1
+                            style={{cursor: "pointer"}}
+                            onClick={() => { navigateToType("voca") }}
+                        >
+                            MZ오피스 단어장
+                        </h1>
+
+                        {/*
+                        <h1 style={{cursor: "pointer"}} onClick={() => {navigateToChat("voca", "")}}>
+                            MZ오피스 단어장
+                        </h1>
+                        */}
+
                     </ul>
 
+                    <ul>
+                        <h1
+                            style={{cursor: "pointer"}}
+                            onClick={() => {
+                                // dispatch(constantActions.onShowModal())
+                                openPopup()
+                            }}
+                        >
+                            서비스 소개서
+                        </h1>
+                    </ul>
+                    {
+                    <div className="naver-logout">
+                        <div className="naver-logout-button" onClick={() => navigate("/login")}>
+                            <img src={logoutIcon} alt={"logout-icon.png"} />
+                            <span>메인으로 이동</span>
+                        </div>
+                    </div>
+                    }
+
+                    {/*
                     <div className="naver-logout">
                         <div className="naver-logout-button"
                              onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "로그아웃", dialogContent: "로그아웃을 하시겠습니까?", positiveFunction: handleNaverLogout }))}
@@ -180,6 +249,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                             <span>회원탈퇴</span>
                         </div>
                     </div>
+                    */}
                 </nav>
 
             }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import { SocketUrl } from "../utils/ServerUrl";
 
 // Actions
@@ -21,13 +21,15 @@ import {
 import MZLogoWhite from "../assets/images/mz_logo_white.png";
 import SearchIcon from "../assets/images/chat/search_icon.png";
 import DisabledSearchIcon from "../assets/images/chat/disabled_search_icon.png";
+import calenderImg from "../assets/images/chat/calender.png";
 
 // CSS
 import "../styles/chatMain.css";
 
 // Utils
-import { getTodayDate } from "../utils/Utils";
-import { GenerateType} from "../utils/Enums";
+import { getTodayDate, getTodayDateToString } from "../utils/Utils";
+import { GenerateType } from "../utils/Enums";
+import ChatLoading from "../components/Chat/ChatLoading";
 
 const initialMessage = {
     sender: "USER",
@@ -45,9 +47,11 @@ const initialSession = {
 const ChatMain = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // 현재 날짜, URL에서 chatId와 date 가져오기
     const todayDate = getTodayDate();
+    const todayDateToString = getTodayDateToString();
     const [params] = useSearchParams();
     const paramChatId = params.get("chatId") || null;
     const paramDate = params.get("date") || null;    // date가 today가 아닌 경우 chatting 비활성화
@@ -66,9 +70,10 @@ const ChatMain = () => {
     const [chatList, setChatList] = useState([]);
     const [socket, setSocket] = useState(null);
     const [disabledButton, setDisAbledButton] = useState(true);
-    const [chatId, setChatId] = useState(null);
-    // const [sessionList, setSessionList] = useState([]);
-    const [showRequestButton, setShowRequestButton] = useState(false);
+    const [showRequestButton, setShowRequestButton] = useState(true);
+    const [showLoading, setShowLoading] = useState(false);
+    // const [chatId, setChatId] = useState(null);
+    const [sessionListState, setSessionListState] = useState([]);
 
     // Redux State
     const chatState = useSelector((state) => state.chat);
@@ -77,92 +82,131 @@ const ChatMain = () => {
     // useRef로 sessionList, socketMessage Ref 정의
     const sessionListRef = useRef([initialSession]);
     const socketMessageRef = useRef(initialSocketMessage);
+    const chatIdRef = useRef(null);
+    const chatContainerRef = useRef(null);
 
     const [_, setRender] = useState(0);    // 강제 리렌더링용 state
 
     // ComponentDidMount
-    useEffect(() => {
-        const userData = JSON.parse(localStorage.getItem("userData"));
-
-        // TODO:: 활성화 할 것
-        if (!userData) {
-            console.error("❌ User data not found! 페이지를 새로고침합니다.");
-            window.location.reload();   // 🔄 새로고침
-            return ;
-        }
-
-        // TODO:: 활성화 할 것
-        if (!paramChatId && !paramDate) {
-            console.error("❌ paramChatId, Date data not found! 페이지를 새로고침합니다.");
-            window.location.reload();   // 🔄 새로고침
-            return ;
-        }
-
-        // date가 오늘인 경우 API 호출 및 소캣 연결
-        if (paramDate === todayDate) {
-            setShowRequestButton(true);
-            dispatch(chatActions.getTodayChatList())
-
-            // 웹 소켓 연결 실행
-            const ws = connectWebSocket(userData.accessToken);
-            setSocket(ws);
-
-            // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
-            return () => {
-                ws.close();
-            }
-        }
-
-        // date가 오늘이 아닌 경우 chatData request API만 호출
-        else {
-            dispatch(chatActions.getChatDetail({chatId: paramChatId}));
-            setShowRequestButton(false);
-        }
-    }, [ paramChatId, paramDate, dispatch ]);
+    // useEffect(() => {
+    //     const userData = JSON.parse(localStorage.getItem("userData"));
+    //
+    //     // TODO:: 활성화 할 것
+    //     if (!userData) {
+    //         console.error("❌ User data not found! 페이지를 새로고침합니다.");
+    //         window.location.reload();   // 🔄 새로고침
+    //         return ;
+    //     }
+    //
+    //     // TODO:: 활성화 할 것
+    //     if (!paramChatId && !paramDate) {
+    //         console.error("❌ paramChatId, Date data not found! 페이지를 새로고침합니다.");
+    //         window.location.reload();   // 🔄 새로고침
+    //         return ;
+    //     }
+    //
+    //     // date가 오늘인 경우 API 호출 및 소캣 연결
+    //     if (paramDate === todayDate) {
+    //         setShowRequestButton(true);
+    //         dispatch(chatActions.getTodayChatList())
+    //
+    //         // 웹 소켓 연결 실행
+    //         const ws = connectWebSocket(userData.accessToken);
+    //         setSocket(ws);
+    //
+    //         // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
+    //         return () => {
+    //             ws.close();
+    //         }
+    //     }
+    //
+    //     // date가 오늘이 아닌 경우 chatData request API만 호출
+    //     else {
+    //         dispatch(chatActions.getChatDetail({chatId: paramChatId}));
+    //         setShowRequestButton(false);
+    //     }
+    // }, [ paramChatId, paramDate, dispatch ]);
 
     // API 응답 시 처리
+    // useEffect(() => {
+    //     // date가 오늘인 경우
+    //     if (paramDate === todayDate) {
+    //         if (todayChatList?.code == "SUCCESS") {
+    //             const chatSessionList = todayChatList?.content?.chatSessionList || null;
+    //
+    //             // 오늘 채팅 목록이 있는 경우, 마지막에 비어있는 질문 추가
+    //             if (chatSessionList) {
+    //                 setChatId(todayChatList?.content?.chatId);
+    //                 sessionListRef.current = [...chatSessionList, initialSession];
+    //             }
+    //             // 오늘 채팅 목록이 없는 경우, 비어있는 질문으로 sessionListRef 초기화
+    //             else {
+    //                 sessionListRef.current = [initialSession];
+    //             }
+    //
+    //             // socketMessage 초기화
+    //             socketMessageRef.current = initialSocketMessage;
+    //         }
+    //     } else {
+    //         if (chatDetail.code == "SUCCESS") {
+    //             console.log("chatDetail: ", chatDetail.content.chatSessionList);
+    //             // date가 오늘이 아닌경우 chatDetail에서 채팅 목록 조회
+    //             setChatId(chatDetail.content.chatId);
+    //             sessionListRef.current = chatDetail.content.chatSessionList;
+    //             console.log("Updated sessionList: ", sessionListRef.current);
+    //
+    //             // socketMessage 초기화
+    //             socketMessageRef.current = initialSocketMessage;
+    //         } else {
+    //             console.error("### chatDetail 응답 오류. (error: ", chatDetail);
+    //             return;
+    //         }
+    //     }
+    //
+    // }, [ todayChatList, chatDetail, paramDate ]);
+
     useEffect(() => {
-        // date가 오늘인 경우
-        if (paramDate === todayDate) {
-            if (todayChatList?.code == "SUCCESS") {
-                const chatSessionList = todayChatList?.content?.chatSessionList || null;
+        const queryPrams = new URLSearchParams(location.search);
 
-                // 오늘 채팅 목록이 있는 경우, 마지막에 비어있는 질문 추가
-                if (chatSessionList) {
-                    setChatId(todayChatList?.content?.chatId);
-                    sessionListRef.current = [...chatSessionList, initialSession];
-                }
-                // 오늘 채팅 목록이 없는 경우, 비어있는 질문으로 sessionListRef 초기화
-                else {
-                    sessionListRef.current = [initialSession];
-                }
-
-                // socketMessage 초기화
-                socketMessageRef.current = initialSocketMessage;
-            }
-        } else {
-            if (chatDetail.code == "SUCCESS") {
-                console.log("chatDetail: ", chatDetail.content.chatSessionList);
-                // date가 오늘이 아닌경우 chatDetail에서 채팅 목록 조회
-                setChatId(chatDetail.content.chatId);
-                sessionListRef.current = chatDetail.content.chatSessionList;
-                console.log("Updated sessionList: ", sessionListRef.current);
-
-                // socketMessage 초기화
-                socketMessageRef.current = initialSocketMessage;
-            } else {
-                console.error("### chatDetail 응답 오류. (error: ", chatDetail);
-                return;
-            }
+        if (queryPrams.get("chatId")) {
+            chatIdRef.current = queryPrams.get("chatId");
+            initialSocketMessage.chatId = queryPrams.get("chatId");
+            dispatch(chatActions.getChatDetail({chatId: queryPrams.get("chatId")}));
         }
 
-    }, [ todayChatList, chatDetail, paramDate ]);
+        // 웹 소켓 연결 실행
+        const ws = connectWebSocket();
+        setSocket(ws);
+
+        // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
+        return () => {
+            ws.close();
+        }
+
+
+    }, []);
+
+    useEffect(() => {
+        // chatDetail의 응답을 성공적으로 받은 경우
+        if (chatDetail.code == "SUCCESS") {
+            sessionListRef.current = chatDetail.content.chatSessionList;
+        }
+    }, [chatDetail]);
+
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [sessionListState]);  // sessionList가 변경될 때마다 실행
+
 
 
     // ✅ 1. 웹 소켓 연결을 처리하는 함수
-    const connectWebSocket = (token) => {
-        console.log("URL: ", SocketUrl);
-        const ws = new WebSocket(`${SocketUrl}?token=Bearer ${token}`);
+    const connectWebSocket = () => {
+    // const connectWebSocket = (token) => {
+        // console.log("URL: ", SocketUrl);
+        // const ws = new WebSocket(`${SocketUrl}?token=Bearer ${token}`);
+        const ws = new WebSocket(`${SocketUrl}`);
 
         ws.onopen = () => {
             console.log("WebSocket 연결 성공");
@@ -191,6 +235,12 @@ const ChatMain = () => {
         console.log("서버에서 받은 메시지: ", JSON.parse(event.data));
         console.log("### sessionList: ", sessionListRef.current);
         const receivedMessage = JSON.parse(event.data);
+
+        // socketMessageRef.current에 chatId가 없는 경우 로컬 스토리지에 저장
+        if (!socketMessageRef.current.chatId
+            && receivedMessage.chatId) {
+            localStorage.setItem("chatId", receivedMessage.chatId);
+        }
 
         // 새로운 chat은 저장하기 위해 newChatList생성
         const newSessionList = sessionListRef.current.length > 0 ? sessionListRef.current.slice(0,-1) : [];
@@ -229,6 +279,7 @@ const ChatMain = () => {
                 lastSession.messages = [newMessage];
 
                 sessionListRef.current = [...newSessionList, lastSession];   // 응답을 추가한 Session을 추가한다.
+                setSessionListState(sessionListRef.current);
             } else {
                 const newMessage = {
                     sender: "USER",
@@ -239,6 +290,7 @@ const ChatMain = () => {
                 lastSession.messages = [...lastSession.messages, newMessage];
 
                 sessionListRef.current = [...newSessionList, lastSession];   // 응답을 추가한 Session을 추가한다.
+                setSessionListState(sessionListRef.current);
             }
         }
         // content가 존재하는 경우 질문에 대한 응답.
@@ -273,6 +325,8 @@ const ChatMain = () => {
 
             sessionListRef.current = [...newSessionList, lastSessionChat];   // 응답을 추가한 Session을 추가한다.
             setShowRequestButton(true); // AI 응답을 받으면 버튼 활성화
+            setShowLoading(false);
+            setSessionListState(sessionListRef.current);
         }
 
         console.log("~~~~ 강제 렌더링: ");
@@ -362,7 +416,8 @@ const ChatMain = () => {
                     sendAt: new Date(),
                 }
                 sessionListRef.current[sessionListRef.current.length - 1].messages.push(newMessage);
-                setRender(prev => prev + 1);    // 강제 렌더링
+                setShowLoading(true);
+                // setRender(prev => prev + 1);    // 강제 렌더링
             }
 
             console.log("### socketMessageRef.current: ", JSON.stringify(socketMessageRef.current));
@@ -397,7 +452,10 @@ const ChatMain = () => {
             <section className="mz-logo-white">
                 <img src={MZLogoWhite} alt="MZ-logo-white.png" />
                 <div className="mz-logo-text">
-                    { chatId == "today" &&
+                    { /* chatId == "today" &&
+                        <h1>안녕하세요.</h1>
+                    */}
+                    {  !chatIdRef.current &&
                         <h1>안녕하세요.</h1>
                     }
                     <div className="mz-logo-text-description">
@@ -406,6 +464,12 @@ const ChatMain = () => {
                 </div>
             </section>
             <section className="chatting_main">
+                <div className="chatting_date">
+                    <div className="chatting_date_content">
+                        <img src={calenderImg} alt="calendar.png" />
+                        {todayDateToString}
+                    </div>
+                </div>
                 <ScrollToBottom className="chatting_content_scroll" scrollBehavior={"auto"}>
                     <ChatResponse isGuide={true} />
                     {
@@ -471,6 +535,9 @@ const ChatMain = () => {
                         (showRequestButton && socketMessageRef.current) &&
                             <RequestButton inquiryType={socketMessageRef.current.inquiryType} content={socketMessageRef.current.content} user={user} messageType={messageType} setRequestType={setRequestType} />
                     }
+                    {   showLoading &&
+                        <ChatLoading />
+                    }
                 </ScrollToBottom>
             </section>
             <section className="chat_input">
@@ -489,7 +556,7 @@ const ChatMain = () => {
                 </button>
             </section>
             <section className="privacy-policy">
-                <p onClick={() => {navigate("/terms-and-conditions")}}>개인정보 이용 처리 방침 확인하기</p>
+                <p onClick={() => {navigate("/terms-and-conditions")}}>개인정보 처리 방침 확인하기</p>
             </section>
         </div>
     );

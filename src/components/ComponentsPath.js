@@ -9,6 +9,7 @@ import SideBar from "./Common/Sidebar";
 import ChatGuide from "./Chat/ChatGuide";
 import ChatRequest from "./Chat/ChatRequest";
 import ChatResponse from "./Chat/ChatResponse";
+import ChatLoading from "./Chat/ChatLoading";
 import Request from "./Chat/Request";
 import RequestButton from "./Chat/RequestButton";
 

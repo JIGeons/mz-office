@@ -91,3 +91,20 @@
 .login_inner_sec .side-image-2 {
     margin-left: 60px;
 }
+
+
+.move-to-mz-chat-btn {
+    width: 280px;
+    font-family: "Papertory", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 26px;
+    letter-spacing: 0;
+    color: #FFFFFF;
+
+    background-color: #4865FF;
+    border: none;
+    border-radius: 6px;
+
+    padding: 15px 30px;
+}

@@ -15,5 +15,15 @@ import Mobile from "./Mobile";
 
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsAndConditions from "./TermsAndConditions";
+import ServiceDescription from "./ServiceDescription";
 
-export { Login, ChatMain, NaverCallback, Vocabulary, Mobile, PrivacyPolicy, TermsAndConditions };
+export {
+    Login,
+    ChatMain,
+    NaverCallback,
+    Vocabulary,
+    Mobile,
+    PrivacyPolicy,
+    TermsAndConditions,
+    ServiceDescription
+};

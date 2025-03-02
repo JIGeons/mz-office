@@ -24,13 +24,14 @@ const Vocabulary = () => {
     // Component State
     const [ quiz, setQuiz ] = useState(null);
     const [ word, setWord ] = useState(null);
-    const [ quizSentence, setQuizSentence ] = useState(null);
-    const [ answerButton, setAnswerButton ] = useState([]);
+    // const [ quizSentence, setQuizSentence ] = useState(null);
+    // const [ answerButton, setAnswerButton ] = useState([]);
     const [ onShowAnswer, setOnShowAnswer ] = useState(false);
     const [ _, forceUpdate ] = useReducer(x => x + 1, 0);
 
     // useRef
     const selectedAnswerRef = useRef(null);
+    const showModalRef = useRef(false);
 
 
     useEffect(() => {
@@ -74,9 +75,24 @@ const Vocabulary = () => {
 
     // 정답을 확인하고 Dialog를 띄우는 메서드
     const handleAnswerCheck = (index) => {
+        console.log("정답 버튼 클릭!");
         selectedAnswerRef.current = index;
-        setOnShowAnswer(true);
+        showModalRef.current = true;
+        // setOnShowAnswer(true);
 
+        forceUpdate();    // 강제 렌더링
+    }
+
+    const handleConfirmButton = () => {
+        // 정답을 맞추면 새로운 퀴즈 요청
+        if (selectedAnswerRef.current == quiz.answerIndex) {
+            selectedAnswerRef.current = null;
+            dispatch(vocaActions.getVocaQuiz());
+            console.log("정답입니다!");
+        }
+        console.log("정답 확인 dialog OFF");
+        // setOnShowAnswer(false);
+        showModalRef.current = false;
         forceUpdate();    // 강제 렌더링
     }
 
@@ -126,8 +142,8 @@ const Vocabulary = () => {
             </div>
 
             {/* 정답 확인 모달 */}
-            {   onShowAnswer &&
-                <modal className="dialog-modal">
+            {   showModalRef.current &&
+                <section className="dialog-modal">
                     <div className="dialog_inner">
                         {   quiz.answerIndex == selectedAnswerRef.current ?
                             <div className="dialog_content">
@@ -142,11 +158,11 @@ const Vocabulary = () => {
                         }
                         <button
                             className="dialog_answer_button"
-                            onClick={() => setOnShowAnswer(false)}>
+                            onClick={() => handleConfirmButton()}>
                             확인
                         </button>
                     </div>
-                </modal>
+                </section>
             }
         </div>
     );

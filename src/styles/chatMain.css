@@ -45,7 +45,7 @@
     font-size: 45px;
     line-height: 50px;
     letter-spacing: calc(45px * -0.02);
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .mz-logo-text .mz-logo-text-description p {
@@ -77,6 +77,36 @@
     align-items: flex-end;
 
     overflow: hidden;
+}
+
+.chatting_date {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -5px;
+}
+
+.chatting_date_content {
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0;
+
+    color: #FFFFFF;
+    background-color: #414245;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    padding: 7px 15px;
+}
+
+.chatting_date_content img {
+    width: 17px;
+    margin-right: 5px;
 }
 
 .chatting_content_scroll {

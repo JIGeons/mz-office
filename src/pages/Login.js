@@ -28,13 +28,13 @@ const Login = () => {
 
     // ComponentDidMount
     useEffect(() => {
-        const userData = JSON.parse(localStorage.getItem("userData"));
-        const accessToken = userData?.accessToken;
-
-        // accessToken이 존재하는 경우 /chat 페이지로 이동
-        if (accessToken) {
-            navigate("/chat");
-        }
+        // const userData = JSON.parse(localStorage.getItem("userData"));
+        // const accessToken = userData?.accessToken;
+        //
+        // // accessToken이 존재하는 경우 /chat 페이지로 이동
+        // if (accessToken) {
+        //     navigate("/chat");
+        // }
 
         const Interval = setInterval(() => {
             setCurrentSideImageIndex(prevIndex => (prevIndex + 1) % sideImages.length);
@@ -43,14 +43,28 @@ const Login = () => {
         return () => clearInterval(Interval);
     }, []);
 
+    const handleNavigateChat = () => {
+        const chatId = localStorage.getItem("chatId");
+        if (chatId) {
+            navigate("/chat?chatId=" + chatId);
+        } else {
+            navigate("/chat");
+        }
+    }
+
     return (
         <div className="login_container">
             <section className="login_inner_fir">
                 <img className="mz-logo" src={mzLogo} alt={"MZ-Office.logo"} />
                 <img className="mz-office" src={mzOfficeImage} alt="mz-office-image.png" />
                 <div className="naver-login">
-                    <NaverLoginButton />
-                    <p>Naver 로그인 시, 이용약관 및 개인정보처리방침에 동의하는 것으로 간주합니다.</p>
+                    {/*<NaverLoginButton />*/}
+                    <button
+                        className="move-to-mz-chat-btn"
+                        onClick={ handleNavigateChat }>
+                        서비스 바로가기
+                    </button>
+                    <p><span style={{cursor: "pointer", textDecoration: "underline"}} onClick={() => { navigate("/terms-and-conditions") }}>이용약관</span> 및 <span style={{cursor: "pointer", textDecoration: "underline"}} onClick={() => {navigate("/privacy-policy")}}>개인정보 처리방침</span>에 동의하는 것으로 간주합니다.</p>
                 </div>
             </section>
             <section
@@ -60,7 +74,11 @@ const Login = () => {
                 }}
             >
                 {/* 5초마다 바뀌는 side 이미지 */}
-                <img className={`side-image-${currentSideImageIndex}`} src={sideImages[currentSideImageIndex]} alt={"side-image-1"} />
+                <img
+                    className={`side-image-${currentSideImageIndex}`}
+                    src={sideImages[currentSideImageIndex]}
+                    alt={"side-image-1"}
+                />
             </section>
         </div>
     );

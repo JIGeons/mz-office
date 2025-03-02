@@ -68,7 +68,11 @@ const chatSlice = createSlice({
     initialState,
     reducers: {
         clearChatState: (state) => {
-            state.chatList = null;
+            state.todayChatList = {};
+            state.recentChatList = [];
+            state.chatDetail = {};
+            state.deleteChatRoom = {};
+            state.error = null;
         },
     },
     extraReducers: (builder) => {

@@ -35,7 +35,7 @@ REGION = config["region"]
 
 project_path = str(pathlib.Path(__file__).parent.parent.absolute())
 build_folder_name = "dist"
-build_folder_path = project_path + "\\" + build_folder_name
+build_folder_path = project_path + "/" + build_folder_name
 object_folder = "mz-office/"
 
 # ✅ CORS 설정 JSON (정확한 포맷 유지)
@@ -110,7 +110,7 @@ except Exception as e:
 def build_react_app():
     print("\n🚀 Step 1: React 빌드 시작...")
     try:
-        subprocess.run([r"C:/Program Files/nodejs/npm.cmd", "run", "build"], check=True)
+        subprocess.run([r"npm", "run", "build"], check=True)
         print("✅ Step 1 완료: React 빌드 완료!")
     except subprocess.CalledProcessError as e:
         print(f"❌ Step 1 실패: React 빌드 실패: {e}")

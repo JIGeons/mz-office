@@ -19,7 +19,7 @@ axiosInstance.interceptors.request.use(
         const userData = JSON.parse(localStorage.getItem("userData"));
 
         console.log("AccessToken: " , userData.accessToken)
-        config.headers["Authorization"] = `Bearer ${userData.accessToken}`;
+        // config.headers["Authorization"] = `Bearer ${userData.accessToken}`;
         return config;
     },
     (error) => Promise.reject(error)
@@ -45,8 +45,8 @@ axiosInstance.interceptors.response.use(
                     localStorage.setItem("userData", JSON.stringify(userData));
 
                     // 새 토큰으로 요청 재시도
-                    originalRequest.headers["x-access-token"] = newTokens.accessToken;
-                    originalRequest.headers["Authorization"] = `Bearer ${newTokens.accessToken}`;
+                    // originalRequest.headers["x-access-token"] = newTokens.accessToken;
+                    // originalRequest.headers["Authorization"] = `Bearer ${newTokens.accessToken}`;
                     return axiosInstance(originalRequest);
                 }
             } catch (error) {
