@@ -204,7 +204,7 @@ const ChatMain = () => {
     // ✅ 1. 웹 소켓 연결을 처리하는 함수
     const connectWebSocket = () => {
     // const connectWebSocket = (token) => {
-        // console.log("URL: ", SocketUrl);
+        console.log("Socket URL: ", SocketUrl);
         // const ws = new WebSocket(`${SocketUrl}?token=Bearer ${token}`);
         const ws = new WebSocket(`${SocketUrl}`);
 

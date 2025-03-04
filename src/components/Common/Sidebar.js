@@ -179,7 +179,10 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                         >
                             MZ오피스 챗봇
                         </h1>
-                        {/*<h2>최근일자 채팅 내역</h2>*/}
+                        <h2>최근일자 채팅 내역</h2>
+                        <li>
+                            <h3 style={{cursor: "pointer"}} onClick={() => navigateToType("chat")}>{todayDate}</h3>
+                        </li>
                         {/*{*/}
                         {/*    chatFolder.map((chatFolderDate, index) => {*/}
                         {/*        return (*/}

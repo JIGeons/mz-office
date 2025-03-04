@@ -33,7 +33,7 @@ import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 // CSS
 import "./styles/common.css";
-import AccountDelete from "./pages/AccountDelete";
+import AccountDelete from "./pages/accountDelete";
 
 // Utils
 import { getTodayDate } from "./utils/Utils";
@@ -162,7 +162,7 @@ const Root = () => {
         // accessToken이 localStorage에 저장되면 state를 변경
         console.log("url 변경!", location);
 
-        if (location.pathname == "/login") {
+        if (location.pathname == "/login" || location.pathname == "/mobile") {
             setIsMain(true);
             setIsCollapsed(false);
         }
@@ -182,9 +182,7 @@ const Root = () => {
         }
 
         // /chat, /account-delete 경로에서는 footer를 보여주지 않는다.
-        if (location.pathname == "/chat"
-            || location.pathname == "/login"
-            || location.pathname == "/account-delete") {
+        if (["/chat", "/login", "/account-delete", "/mobile"].includes(location.pathname)) {
             setIsNonFooter(false);
         } else {
             setIsNonFooter(true);
@@ -204,7 +202,6 @@ const Root = () => {
 
     useEffect(() => {
         setShowModal(modal?.isShowingModal);
-        console.log("여기 되는건 맞니?");
     }, [modal])
 
     // ✅ 모바일 기기 확인 후 강제 리디렉트
@@ -213,9 +210,11 @@ const Root = () => {
         const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
 
         if (mobileRegex.test(userAgent)) {
+            setIsNonFooter(true);
+            setIsMain(true);
             navigate("/mobile"); // 모바일 기기면 /mobile로 이동
         }
-    }, [navigate]);
+    }, []);
 
     //  사이드바 토글 기능
     const toggleSidebar = () => {

@@ -40,7 +40,7 @@ const Vocabulary = () => {
     }, []);
 
     useEffect(() => {
-        if (vocaQuiz.code == "SUCCESS") {
+        if (vocaQuiz?.code == "SUCCESS") {
             setQuiz(vocaQuiz.content);
 
             const quiz = {...vocaQuiz.content };
@@ -68,7 +68,7 @@ const Vocabulary = () => {
             setQuiz(quiz);
         }
 
-        if (vocaWord.code == "SUCCESS") {
+        if (vocaWord?.code == "SUCCESS") {
             setWord(vocaWord.content);
         }
     }, [ vocaQuiz, vocaWord ])
