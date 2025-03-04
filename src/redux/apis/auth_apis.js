@@ -20,7 +20,7 @@ export const linkNaver = async (code, state) => {
 // 네이버 로그아웃 요청
 export const unlinkNaver = async() => {
     try {
-        const response = await axios.post(`${serverUrl}/api/v1/auth/unlink-naver`);
+        const response = await axiosInstance.post(`${serverUrl}/api/v1/auth/unlink-naver`);
         return response.data;
     } catch (error) {
         throw error.response?.data || error;
@@ -29,7 +29,7 @@ export const unlinkNaver = async() => {
 
 export const onReissueNaverToken = async (refreshToken) => {
     try {
-        const response = await axios.get(`${serverUrl}/api/v1/auth/refresh-token`);
+        const response = await axiosInstance.get(`${serverUrl}/api/v1/auth/refresh-token`);
         return response.data;
     } catch (error) {
         throw error.response?.data || error;
