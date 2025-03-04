@@ -24,120 +24,87 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
     const navigate = useNavigate();
 
     // Component State
-    // const [chatFolder, setChatFolder] = useState([]);
+    const [chatFolder, setChatFolder] = useState([]);
 
     // component Ref
     const chatId = useRef(null);
 
     // Redux State
     const { chatDetail } = useSelector((state) => state.chat);
+    const { todayChatList, recentChatList } = useSelector((state) => state.chat);
 
     // const chatState = useSelector((state) => state.chat);
-    // const { todayChatList, recentChatList } = useSelector((state) => state.chat);
 
     // 오늘 날짜를 불러온다.
     const todayDate = getTodayDate();
 
-    // componentDidMount
-    // useEffect( () => {
-    //     let chatList = [];
-    //
-    //     const todayChat = todayChatList?.code == "SUCCESS" && (todayChatList?.content?.length > 0) ? todayChatList?.content : null;
-    //
-    //     // 오늘 채팅한 내역이 존재하지 않는 경우 오늘의 chatList를 생성한다.
-    //     if (!todayChat) {
-    //         console.log("채팅 내역이 존재하지 않음!");
-    //         // 현재 날짜를 받아온다.
-    //         const today = getTodayDate();
-    //         const todayObj = {
-    //             chatId: todayChatList?.content?.chatId || "today",
-    //             date: today
-    //         };
-    //
-    //         chatList = [todayObj];
-    //     } else {
-    //         const todayChat = todayChatList?.content;
-    //         chatList = [{
-    //             chatId: todayChat.chatId,
-    //             date: todayChat.date
-    //         }];
-    //     }
-    //
-    //     // 최근 채팅 리스트가 존재하는 경우
-    //     if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
-    //         console.log("최근 챗 리스트 삽입!!");
-    //         // chatList에 최근 채팅 리스트를 삽입한다.
-    //         chatList = [...chatList, ...recentChatList?.content.slice().reverse()];
-    //     } else {
-    //         console.log("최근 챗 리스트가 존재하지 않음");
-    //     }
-    //
-    //     setChatFolder(chatList);
-    // }, [ todayChatList, recentChatList ]);
-    //
-    // // // 오늘 날짜의 채팅이 생기면 chatId를 변경하기 위함
-    // // useEffect(() => {
-    // //     const todayChatList = chatState.todayChatList?.content;
-    // //     const newChatFolder = chatFolder;
-    // //
-    // //     // ChatState의 todayChatList가 변경이 된 경우. 오늘의 chatFolder의 chatId를 설정한다.
-    // //     if (chatState.todayChatList?.code == "SUCCESS" && chatState.todayChatList?.content?.chatId) {
-    // //         newChatFolder[0].chatId = todayChatList?.chatId;
-    // //         setChatFolder(newChatFolder);
-    // //     }
-    // //
-    // // }, [ todayChatList. recentChatList ]);
-    //
-    // const handleNaverLogout = () => {
-    //     try {
-    //         console.log("logout");
-    //         const userData = JSON.parse(localStorage.getItem("userData"));
-    //         const accessToken = userData?.accessToken;
-    //
-    //         if (!accessToken) {
-    //             console.error("No access token found");
-    //             return ;
-    //         }
-    //
-    //         dispatch(authActions.clearAuthState());
-    //         dispatch(chatActions.clearChatState());
-    //
-    //         // 토큰 삭제 & 로그인 상태 변경
-    //         localStorage.removeItem("userData");
-    //         console.log("logout!");
-    //
-    //         dispatch(constantActions.onHideDialog());
-    //
-    //         // 🚀 직접 로그인 페이지로 이동 (useNavigate 대신 사용)
-    //         window.location.href = "/login";
-    //     } catch (error) {
-    //
-    //         console.error("네이버 로그아웃 실패: ", error);
-    //     }
-    // };
-    //
-    // const handleChatRoomDelete = (chatId) => {
-    //     console.log("Delete chat: ", chatId);
-    //     if (chatId !== "today") {
-    //         dispatch(chatActions.deleteChatRoom({chatId}));
-    //     }
-    // }
-    //
-    // const navigateToChat = (chatId, date) => {
-    //     console.log("chatId: ", chatId, " date: ", date);
-    //
-    //     if (chatId == "voca") {
-    //         navigate("/vocabulary");
-    //     }
-    //     else {
-    //         // 채팅 페이지로 이동
-    //         navigate(`/chat?chatId=${chatId}&date=${date}`);
-    //     }
-    // }
-    //
-    // console.log("chatFolder", chatFolder);
+    useEffect( () => {
+        if (todayChatList?.code == "SUCCESS") {
+            const response = todayChatList?.content;
+            const foundTodayChat = chatFolder.find(chat => chat.chatId == "today");
 
-    const navigateToType = (type) => {
+            // 저장돼 있던 오늘의 날짜와 오늘 챗 날짜의 날짜가 다르면 하루가 넘어간 것이므로 최근 대화 내역을 다시 불러온다.
+            if (foundTodayChat && foundTodayChat?.date != response?.date) {
+                dispatch(chatActions.getRecentChatList());
+                return ;
+            }
+
+            const todayChat = {chatId: "today", date: getTodayDate()}
+            let recentChat = [];
+
+            // 최근 채팅 내역을 추가한다.
+            if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
+                recentChat = recentChatList?.content;
+                // 응답 받은 최근 내역을 내림 차순으로 정렬한다.
+                recentChat.sort((a, b) => new Date(a.date) - new Date(b.date));
+            }
+
+            setChatFolder([todayChat, ...recentChat]);
+        }
+    }, [ todayChatList, recentChatList ]);
+
+    // 로그아웃 핸들러
+    const handleNaverLogout = () => {
+        try {
+            console.log("logout");
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            const accessToken = userData?.accessToken;
+
+            if (!accessToken) {
+                console.error("No access token found");
+                return ;
+            }
+
+            dispatch(authActions.clearAuthState());
+            dispatch(chatActions.clearChatState());
+
+            // 토큰 삭제 & 로그인 상태 변경
+            localStorage.removeItem("userData");
+            localStorage.removeItem("chatId");
+
+            // dialog 숨김
+            dispatch(constantActions.onHideDialog());
+
+            // 🚀 직접 로그인 페이지로 이동 (useNavigate 대신 사용)
+            window.location.href = "/login";
+
+            console.log("### logout!");
+        } catch (error) {
+
+            console.error("네이버 로그아웃 실패: ", error);
+        }
+    };
+
+    // 채팅방 삭제
+    const handleChatRoomDelete = (chatId) => {
+        console.log("Delete chat: ", chatId);
+        if (chatId !== "today") {
+            dispatch(chatActions.deleteChatRoom({chatId}));
+        }
+    }
+
+    // 채팅방 및 단어장으로 이동
+    const navigateToType = (type, chatId, date) => {
         if (type == "voca") {
             const storeChatId = localStorage.getItem("chatId");
 
@@ -149,10 +116,10 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
             navigate("/vocabulary");
         } else {
             // chatId가 존재하는 경우 히스토리가 존재하는 채팅방으로 입장
-            if (chatId.current) {
-                navigate(`/chat?chatId=${chatId.current}`);
+            if (chatId) {
+                navigate(`/chat?chatId=${chatId}&date=${date}`);
             }
-            // chatId가 존재하지 않는 경우 새로운 채팅방으로 입장
+            // chatId가 존재하지 않는 경우 오늘 채팅방으로 입장.
             else {
                 navigate("/chat");
             }
@@ -240,7 +207,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                     </div>
                     }
 
-                    {/*
+                    {/* 로그아웃 & 회원탈퇴 버튼 */}
                     <div className="naver-logout">
                         <div className="naver-logout-button"
                              onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "로그아웃", dialogContent: "로그아웃을 하시겠습니까?", positiveFunction: handleNaverLogout }))}
@@ -252,7 +219,6 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                             <span>회원탈퇴</span>
                         </div>
                     </div>
-                    */}
                 </nav>
 
             }

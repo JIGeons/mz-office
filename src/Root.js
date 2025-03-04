@@ -51,6 +51,7 @@ const Root = () => {
     const [showModal, setShowModal] = useState(false);
     const [hasLoginData, setHasLoginData] = useState(false);
     const [todayChatId, setTodayChatId] = useState("today");
+    const [chatFolder, setChatFolder] = useState([]);
 
     // 🚀 초기 경로 설정 (sessionStorage에서 가져오기)
     const [redirectPath, setRedirectPath] = useState(sessionStorage.getItem("redirectPath"));
@@ -125,12 +126,24 @@ const Root = () => {
     // chat List API의 응답을 받은 경우
     useEffect(() => {
         console.log("todayChatList, recentChatList 변경 useEffect 실행")
-        const loginKey = localStorage.getItem("login") || null;
 
-        console.log("loginKey", loginKey);
-        if (loginKey) {
+        if (todayChatList?.code == "SUCCESS" && recentChatList?.code == "SUCCESS") {
+            // chatFoder 생성
+            const todayChat = {chatId: "today", date: getTodayDate()}
+            let recentChat = [];
+
+            // 최근 채팅 내역을 추가한다.
+            if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
+                recentChat = recentChatList?.content;
+                // 응답 받은 최근 내역을 내림 차순으로 정렬한다.
+                recentChat.sort((a, b) => new Date(a.date) - new Date(b.date));
+            }
+
+            setChatFolder([todayChat, ...recentChat]);
+
+            const loginKey = localStorage.getItem("login") || null;
             // 오늘 대화, 최근 대화 요청에 성공한 경우
-            if (recentChatList?.code == "SUCCESS" && todayChatList?.code == "SUCCESS") {
+            if (loginKey) {
                 const chatId = todayChatList?.content?.chatId || "today";
                 setTodayChatId(chatId);
 
@@ -193,8 +206,29 @@ const Root = () => {
             const params = new URLSearchParams(location.search);
 
             if (!params.get("chatId")) {
-                const storeChatId = localStorage.getItem("chatId");
-                if (storeChatId) navigate(`/chat?chatId=${storeChatId}&date=${today}`);
+                const storeChatId = localStorage.getItem("chatId") || "today";
+                const date = params.get("date");
+                if (storeChatId) navigate(`/chat?chatId=${storeChatId}&date=${getTodayDate()}`);
+            }
+        }
+
+        if (path == "/chat") {
+            const params = new URLSearchParams(location.search);
+            const chatId = params.get("chatId");
+            const date = params.get("date");
+
+            // 오늘 날짜의 채팅방으로 이동
+            if (chatId == "today") {
+                navigate(`/chat?chatId=today&date=${getTodayDate()}`);
+                return ;
+            }
+
+            // 3️⃣ chatFolder에서 chatId와 date가 유효한지 확인
+            const isValidChat = chatFolder.some(chat => chat.chatId === chatId && chat.date === date);
+
+            if (!isValidChat) {
+                console.log("❌ 유효하지 않은 chatId, today로 리디렉트");
+                navigate(`/chat?chatId=today`);
             }
         }
 

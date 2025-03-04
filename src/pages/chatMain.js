@@ -27,7 +27,7 @@ import calenderImg from "../assets/images/chat/calender.png";
 import "../styles/chatMain.css";
 
 // Utils
-import { getTodayDate, getTodayDateToString } from "../utils/Utils";
+import { getTodayDate, getTodayDateToString, transferDateToString } from "../utils/Utils";
 import { GenerateType } from "../utils/Enums";
 import ChatLoading from "../components/Chat/ChatLoading";
 
@@ -72,8 +72,9 @@ const ChatMain = () => {
     const [disabledButton, setDisAbledButton] = useState(true);
     const [showRequestButton, setShowRequestButton] = useState(true);
     const [showLoading, setShowLoading] = useState(false);
-    // const [chatId, setChatId] = useState(null);
+    const [chatData, setChatData] = useState({chatId: null, date: null});
     const [sessionListState, setSessionListState] = useState([]);
+    // const [chatId, setChatId] = useState(null);
 
     // Redux State
     const chatState = useSelector((state) => state.chat);
@@ -167,11 +168,19 @@ const ChatMain = () => {
 
     useEffect(() => {
         const queryPrams = new URLSearchParams(location.search);
+        const paramChatId = queryPrams.get("chatId");
 
-        if (queryPrams.get("chatId")) {
-            chatIdRef.current = queryPrams.get("chatId");
-            initialSocketMessage.chatId = queryPrams.get("chatId");
-            dispatch(chatActions.getChatDetail({chatId: queryPrams.get("chatId")}));
+        if (paramChatId) {
+            // chatId가 today이면 오늘의 chatting을 불러온다.
+            if (paramChatId == "today") {
+                dispatch(chatActions.getTodayChatList());
+            }
+            // chat 히스토리를 불러온다.
+            else {
+                chatIdRef.current = queryPrams.get("chatId");
+                initialSocketMessage.chatId = queryPrams.get("chatId");
+                dispatch(chatActions.getChatDetail({chatId: queryPrams.get("chatId")}));
+            }
         }
 
         // 웹 소켓 연결 실행
@@ -187,11 +196,23 @@ const ChatMain = () => {
     }, []);
 
     useEffect(() => {
-        // chatDetail의 응답을 성공적으로 받은 경우
-        if (chatDetail.code == "SUCCESS") {
-            sessionListRef.current = chatDetail.content.chatSessionList;
+        if (todayChatList?.code == "SUCCESS") {
+            const response = todayChatList?.content;
+            setChatData({chatId: response?.chatId , date: response?.date});
+            sessionListRef.current = todayChatList.content.chatSessionList;
+
+            // 새로운 message세션 추가 해야함.
         }
-    }, [chatDetail]);
+
+        // chatDetail의 응답을 성공적으로 받은 경우
+        if (chatDetail?.code == "SUCCESS") {
+            const response = chatDetail?.content;
+            setChatData({chatId: response?.chatId , date: response?.date});
+            sessionListRef.current = chatDetail.content.chatSessionList;
+        } else if (chatDetail?.code == "ERROR") {
+            navigate("/chat");
+        }
+    }, [todayChatList, chatDetail]);
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -467,7 +488,7 @@ const ChatMain = () => {
                 <div className="chatting_date">
                     <div className="chatting_date_content">
                         <img src={calenderImg} alt="calendar.png" />
-                        {todayDateToString}
+                        {transferDateToString(chatData.date)}
                     </div>
                 </div>
                 <ScrollToBottom className="chatting_content_scroll" scrollBehavior={"auto"}>
