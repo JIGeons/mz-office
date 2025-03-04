@@ -43,30 +43,6 @@ const NaverLoginButton = () => {
             <img  height="67" src={naverLoginButton} alt="네이버 로그인" />
         </button>
     );
-/*
-    useEffect(() => {
-        const state = Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성 (CSRF 방지)
-        localStorage.setItem("naver_auth_state", state); // ✅ 로그인 시 저장 (나중에 검증용)
-
-        // ✅ 네이버 로그인 초기화 (스크립트 로드 후 실행)
-        if (window.naver) {
-            const naverLogin = new window.naver.LoginWithNaverId({
-                clientId: naverClientId,
-                callbackUrl: naverCallbackUrl,
-                isPopup: true,  // ✅ 팝업 비활성화
-                loginButton: { color: "green", type: 3, height: "70" },
-                state: state,
-                responseType: "code",
-            });
-
-            naverLogin.init();
-        } else {
-            console.error("네이버 SDK 로드 안됨");
-        }
-    }, []);
-
-    return <div id="naverIdLogin" />; // 네이버 로그인 버튼 자동 생성
-    */
 };
 
 export default NaverLoginButton;

@@ -12,6 +12,10 @@ body {
     font-weight: bold;
 }
 
+button {
+    cursor: pointer;
+}
+
 /* ✅ 전체 레이아웃을 Flexbox로 설정 */
 .container {
     display: flex;

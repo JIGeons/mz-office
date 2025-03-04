@@ -57,11 +57,11 @@
 }
 
 .naver-login p {
-    font-color: #767678;
     font-weight: 200;
     font-size: 12px;
     line-height: 15px;
     letter-spacing: calc(15px * -0.02);
+    color: #767678;
 }
 
 .login_inner_sec {
@@ -75,6 +75,7 @@
     background-color: #1F2531;
     overflow: hidden;
 
+    background: url("../assets/images/login/bg_mainright.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -91,6 +92,25 @@
 .login_inner_sec .side-image-2 {
     margin-left: 60px;
 }
+
+.swiper-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.swiper-slide{
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
 
 
 .move-to-mz-chat-btn {
