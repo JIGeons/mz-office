@@ -1,6 +1,6 @@
 // 로그인 관련 apis 파일
-// import axiosInstance from "../AxiosInstance";
 import axios from "axios";
+import axiosInstance from "../AxiosInstance";
 import serverUrl from "../../utils/ServerUrl";
 
 // 오늘 진행된 채팅 내역 조회
@@ -35,7 +35,7 @@ export const getChatDetail = async (chatId) => {
 
 export const deleteChatRoom = async (chatId) => {
     try {
-        const response = await axios.delete(`${serverUrl}/api/v1/chat/${chatId}`);
+        const response = await axiosInstance.delete(`${serverUrl}/api/v1/chat/${chatId}`);
         return response.data;
     } catch (error) {
         throw error.response?.data || error;
