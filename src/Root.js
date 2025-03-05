@@ -45,6 +45,7 @@ const Root = () => {
 
     // 상태 관리 (useState)
     const [isMain, setIsMain] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
     const [isNonFooter, setIsNonFooter] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(true);   // 사이드바 최소 너비 상태
     const [dialogContent, setDialogContent] = useState(null);
@@ -71,6 +72,14 @@ const Root = () => {
 
         if (redirectPath) {
             sessionStorage.removeItem("redirectPath"); // ✅ 한 번만 실행되도록 삭제
+        }
+
+        const userAgent = navigator.userAgent;
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+
+        // ✅ 모바일 기기 확인 후 강제 리디렉트
+        if (mobileRegex.test(userAgent)) {
+            setIsMobile(true);
         }
 
         const userAccessData = JSON.parse(localStorage.getItem("userData"));
@@ -155,20 +164,6 @@ const Root = () => {
             console.error("API 호출에 실패함");
         }
     }, [ todayChatList, recentChatList ]);
-
-    // url 변동 감지
-    // useEffect(() => {
-    //     // accessToken이 localStorage에 저장되면 state를 변경
-    //     console.log("url 변경!", location);
-    //
-    //     const loginData = localStorage.getItem("login");
-    //     const userData = JSON.parse(localStorage.getItem("userData"));
-    //
-    //     if ((loginData && userData?.accessToken)) {
-    //         setHasLoginData(true);
-    //     }
-    //
-    // }, [location])
 
     // url 변동 감지
     useEffect(() => {
@@ -354,14 +349,25 @@ const Root = () => {
                         <Route path="/" element={ isMain && <Navigate to={"/login"} replace /> } />
                         <Route path="*" element={ <NotFound /> } />
 
-                        <Route path="/login" element={ <Login /> } />
-                        {/* 모바일로 접근 시 모바일 페이지로 redirect */}
-                        <Route path="/mobile" element={ <Mobile /> } />
+                        {/* 모바일 환경인 경우 */}
+                        {   isMobile && (
+                            <>
+                                <Route path="/mobile" element={ <Mobile /> } />
+                                <Route path="/login" element={ <Login /> } />
+                            </>
+                        )}
 
-                        <Route path="/chat" element={ <ChatMain /> } />
-                        <Route path="/vocabulary" element={ <Vocabulary /> } />
+                        {/* 모바일 환경이 아닌 경우 */}
+                        {   !isMobile && (
+                            <>
+                                <Route path="/login" element={ <Login /> } />
 
-                        <Route path="/account-delete" element={ <AccountDelete /> } />
+                                <Route path="/chat" element={ <ChatMain /> } />
+                                <Route path="/vocabulary" element={ <Vocabulary /> } />
+
+                                <Route path="/account-delete" element={ <AccountDelete /> } />
+                            </>
+                        )}
 
                         <Route path="/privacy-policy" element={ <PrivacyPolicy /> } />
                         <Route path="/terms-and-conditions" element={ <TermsAndConditions /> } />
