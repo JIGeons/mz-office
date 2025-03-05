@@ -1,21 +1,21 @@
 // 로그인
-import Login from "./login";
+import Login from "./Login";
 
 // 채팅
-import ChatMain from "./chatMain";
+import ChatMain from "./ChatMain";
 
 // 네이버 로그인 콜백
-import NaverCallback from "./naverCallback";
+import NaverCallback from "./NaverCallback";
 
 // 단어장
-import Vocabulary from "./vocabulary";
+import Vocabulary from "./Vocabulary";
 
 // 모바일로 접근 시 막는 페이지
-import Mobile from "./mobile";
+import Mobile from "./Mobile";
 
-import PrivacyPolicy from "./privacyPolicy";
-import TermsAndConditions from "./termsAndConditions";
-import ServiceDescription from "./serviceDescription";
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsAndConditions from "./TermsAndConditions";
+import ServiceDescription from "./ServiceDescription";
 
 export {
     Login,

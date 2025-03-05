@@ -85,6 +85,7 @@ module.exports = {
         new CopyWebpackPlugin({
            patterns: [
                { from: "public/404.html", to: "404.html" },
+               { from: "public/manifest.json", to: "manifest.json" },
            ]
         }),
         new webpack.ProvidePlugin({

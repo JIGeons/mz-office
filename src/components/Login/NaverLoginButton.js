@@ -4,7 +4,7 @@ import serverUrl from "../../utils/ServerUrl";
 // Image
 import naverLoginButton from "../../assets/images/login/naver_login_btn.png";
 
-const naverClientId = process.env.NAVER_CLIENT_ID;
+const naverClientId = process.env.REACT_APP_NAVER_CLIENT_ID;
 const webUrl = process.env.REACT_APP_MZ_OFFICE_WEB_URL;
 // const webUrl ="http://localhost";
 const naverCallbackUrl = `${webUrl}/naver-callback`;

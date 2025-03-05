@@ -44,7 +44,9 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
             const foundTodayChat = chatFolder.find(chat => chat.chatId == "today");
 
             // 저장돼 있던 오늘의 날짜와 오늘 챗 날짜의 날짜가 다르면 하루가 넘어간 것이므로 최근 대화 내역을 다시 불러온다.
-            if (foundTodayChat && foundTodayChat?.date != response?.date) {
+            if (!response && response?.date != foundTodayChat?.date) {
+                console.log("\n\n\n\n\n### foundeTodayChat: ", foundTodayChat);
+                console.log("response: ", response);
                 dispatch(chatActions.getRecentChatList());
                 return ;
             }
@@ -54,7 +56,8 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
 
             // 최근 채팅 내역을 추가한다.
             if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
-                recentChat = recentChatList?.content;
+                console.log("\n\n\n\n### recentChatList: ", recentChatList.content);
+                recentChat = [...recentChatList?.content];
                 // 응답 받은 최근 내역을 내림 차순으로 정렬한다.
                 recentChat.sort((a, b) => new Date(a.date) - new Date(b.date));
             }
@@ -142,33 +145,30 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                     <ul>
                         <h1
                             style={{cursor: "pointer"}}
-                            onClick={() => navigateToType("chat")}
+                            onClick={() => navigateToType("chat", "today")}
                         >
                             MZ오피스 챗봇
                         </h1>
                         <h2>최근일자 채팅 내역</h2>
-                        <li>
-                            <h3 style={{cursor: "pointer"}} onClick={() => navigateToType("chat")}>{todayDate}</h3>
-                        </li>
-                        {/*{*/}
-                        {/*    chatFolder.map((chatFolderDate, index) => {*/}
-                        {/*        return (*/}
-                        {/*            <li key={index}>*/}
-                        {/*                <h3 style={{cursor: "pointer"}}*/}
-                        {/*                    onClick={() => navigateToChat(chatFolderDate.chatId, chatFolderDate.date)}*/}
-                        {/*                >*/}
-                        {/*                    {chatFolderDate.date}*/}
-                        {/*                </h3>*/}
-                        {/*                <img*/}
-                        {/*                    src={deleteIcon}*/}
-                        {/*                    alt={"delete-icon.png"}*/}
-                        {/*                    onClick={() => handleChatRoomDelete(chatFolderDate.chatId)}*/}
-                        {/*                    style={{ cursor: "pointer" }}*/}
-                        {/*                />*/}
-                        {/*            </li>*/}
-                        {/*        )*/}
-                        {/*    })*/}
-                        {/*}*/}
+                        {
+                            chatFolder.map((chatFolderDate, index) => {
+                                return (
+                                    <li key={index}>
+                                        <h3 style={{cursor: "pointer"}}
+                                            onClick={() => navigateToType("chat", chatFolderDate.chatId, chatFolderDate.date)}
+                                        >
+                                            {chatFolderDate.date}
+                                        </h3>
+                                        <img
+                                            src={deleteIcon}
+                                            alt={"delete-icon.png"}
+                                            onClick={() => handleChatRoomDelete(chatFolderDate.chatId)}
+                                            style={{ cursor: "pointer" }}
+                                        />
+                                    </li>
+                                )
+                            })
+                        }
                     </ul>
 
                     <ul>
@@ -178,12 +178,6 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                         >
                             MZ오피스 단어장
                         </h1>
-
-                        {/*
-                        <h1 style={{cursor: "pointer"}} onClick={() => {navigateToChat("voca", "")}}>
-                            MZ오피스 단어장
-                        </h1>
-                        */}
 
                     </ul>
 
@@ -198,14 +192,6 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                             서비스 소개서
                         </h1>
                     </ul>
-                    {
-                    <div className="naver-logout">
-                        <div className="naver-logout-button" onClick={() => navigate("/login")}>
-                            <img src={logoutIcon} alt={"logout-icon.png"} />
-                            <span>메인으로 이동</span>
-                        </div>
-                    </div>
-                    }
 
                     {/* 로그아웃 & 회원탈퇴 버튼 */}
                     <div className="naver-logout">

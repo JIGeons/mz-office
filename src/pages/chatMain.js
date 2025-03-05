@@ -169,6 +169,7 @@ const ChatMain = () => {
     useEffect(() => {
         const queryPrams = new URLSearchParams(location.search);
         const paramChatId = queryPrams.get("chatId");
+        const paramDate = queryPrams.get("date");
 
         if (paramChatId) {
             // chatId가 today이면 오늘의 chatting을 불러온다.
@@ -177,33 +178,43 @@ const ChatMain = () => {
             }
             // chat 히스토리를 불러온다.
             else {
+                console.log("chat 히스토리 조회");
                 chatIdRef.current = queryPrams.get("chatId");
                 initialSocketMessage.chatId = queryPrams.get("chatId");
                 dispatch(chatActions.getChatDetail({chatId: queryPrams.get("chatId")}));
+
+                return ;
             }
         }
 
-        // 웹 소켓 연결 실행
-        const ws = connectWebSocket();
-        setSocket(ws);
+        // 오늘 날짜의 채팅인 경우에만 웹 소캣 연결
+        if (paramDate == todayDate) {
+            // 웹 소켓 연결 실행
+            const ws = connectWebSocket();
+            setSocket(ws);
 
-        // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
-        return () => {
-            ws.close();
+            // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
+            return () => {
+                ws.close();
+            }
+
+            console.log("===================================");
+            console.log("ChatMain 컴포넌트 마운트");
         }
-
-
-    }, []);
+    }, [paramChatId, paramDate]);
 
     useEffect(() => {
         if (todayChatList?.code == "SUCCESS") {
             const response = todayChatList?.content;
-            setChatData({chatId: response?.chatId , date: response?.date});
+
+            setChatData({chatId: response?.chatId || "today" , date: response?.date || todayDate});
             sessionListRef.current = todayChatList.content.chatSessionList;
 
             // 새로운 message세션 추가 해야함.
         }
+    }, [todayChatList]);
 
+    useEffect(() => {
         // chatDetail의 응답을 성공적으로 받은 경우
         if (chatDetail?.code == "SUCCESS") {
             const response = chatDetail?.content;
@@ -212,7 +223,7 @@ const ChatMain = () => {
         } else if (chatDetail?.code == "ERROR") {
             navigate("/chat");
         }
-    }, [todayChatList, chatDetail]);
+    }, [chatDetail]);
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -224,10 +235,9 @@ const ChatMain = () => {
 
     // ✅ 1. 웹 소켓 연결을 처리하는 함수
     const connectWebSocket = () => {
-    // const connectWebSocket = (token) => {
-        console.log("Socket URL: ", SocketUrl);
-        // const ws = new WebSocket(`${SocketUrl}?token=Bearer ${token}`);
-        const ws = new WebSocket(`${SocketUrl}`);
+        const storageUserData = JSON.parse(localStorage.getItem("userData"));
+        console.log(`Socket URL: ${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
+        const ws = new WebSocket(`${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
 
         ws.onopen = () => {
             console.log("WebSocket 연결 성공");
@@ -278,12 +288,15 @@ const ChatMain = () => {
 
         // content == "" 인 경우, 버튼 클릭에 대한 응답
         if (!receivedMessage.content || receivedMessage.content === "") {
+            // chatId가 존재하지 않는 경우 chatId 업데이트
+            if (!socketMessageRef.current?.chatId) {
+                socketMessageRef.current.chatId = receivedMessage.chatId;
+            }
 
             // chatSessionId가 존재하지 않는 경우, 처음 버튼을 누른 경우 -> initSessionMessage를 생성
             // InquiryType == REQUEST_TYPE
             if (!socketMessageRef.current?.chatSessionId) {
                 // chatId, chatSessionId 업데이트
-                socketMessageRef.current.chatId = receivedMessage.chatId;
                 socketMessageRef.current.chatSessionId = receivedMessage.chatSessionId;
 
                 // 신규 메세지 추가
@@ -468,6 +481,7 @@ const ChatMain = () => {
     let messageType = null;
 
     let user = "";
+    console.log("#### ChatData: ", chatData);
     return (
         <div className="chat-main">
             <section className="mz-logo-white">
@@ -561,13 +575,14 @@ const ChatMain = () => {
                     }
                 </ScrollToBottom>
             </section>
-            <section className="chat_input">
+            <section className={`chat_input ${disabledButton ? "input-disabled" : ""}`}>
                 <textarea
                     id="chat-input-content"
                     typeof={"textarea"}
                     onChange={(e) => handlerOnChangeInput(e)}
                     onKeyDown={handlerOnKeyDown} // ✅ 엔터 및 Shift + Enter 이벤트 처리
                     placeholder={"MZ오피스에게 물어보기"}
+                    disabled={disabledButton} // 비활성화 적용
                 ></textarea>
                 <button className={"chat_sending"}>
                     { disabledButton ?

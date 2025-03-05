@@ -19,7 +19,7 @@ import {
     PrivacyPolicy,
     TermsAndConditions,
     ServiceDescription
-} from "./pages/paths";
+} from "./pages/Paths";
 
 // Custom Hooks
 
@@ -33,7 +33,7 @@ import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 // CSS
 import "./styles/common.css";
-import AccountDelete from "./pages/accountDelete";
+import AccountDelete from "./pages/AccountDelete";
 
 // Utils
 import { getTodayDate } from "./utils/Utils";
@@ -57,22 +57,13 @@ const Root = () => {
     const [redirectPath, setRedirectPath] = useState(sessionStorage.getItem("redirectPath"));
 
     // Redux 상태 가져오기
-    const { chatDetil } = useSelector((state) => state.chat);
+    const { userData } = useSelector((state) => state.auth);
+    const { todayChatList, recentChatList, chatDetil } = useSelector((state) => state.chat);
     const constant = useSelector((state) => state.constant);
     const { modal } = useSelector((state) => state.constant, shallowEqual);
-    // const { userData } = useSelector((state) => state.auth);
-    // const chatState = useSelector((state) => state.chat);
-    const { todayChatList, recentChatList } = useSelector((state) => state.chat);
 
     // 오늘 날짜 불러오기
     const todayDate = getTodayDate();
-
-    useEffect(() => {
-        const userData = {
-            accessToken: "awer"
-        }
-        localStorage.setItem("userData", JSON.stringify(userData));
-    }, []);
 
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
@@ -85,7 +76,8 @@ const Root = () => {
         const userAccessData = JSON.parse(localStorage.getItem("userData"));
         const accessToken = userAccessData?.accessToken;
 
-        if (accessToken) {
+        // userData의 content 내용과 accessToken의 내용이 동일하면 로그인.
+        if (userData?.content == accessToken) {
             setHasLoginData(true);
         } else {
             // accessToken이 존재하지 않고 "/naver-callback" 경로가 아닌 경우 /login으로 이동
@@ -93,6 +85,9 @@ const Root = () => {
                 navigate("/login");
             }
         }
+
+        // chatFolder 세팅
+        settingChatFolder();
 
         const handleStorageChange = async (event) => {
             if (event.key == "login") {
@@ -110,18 +105,20 @@ const Root = () => {
     }, []);
 
     // // Redux 상태나 localStorage 변경 시 로그인 상태 업데이트
-    // useEffect(() => {
-    //     const userAccessData = JSON.parse(localStorage.getItem("userData"));
-    //     const loginData = userAccessData?.accessToken && userData?.code == "SUCCESS" ? true : false;
-    //     console.log("loginData", loginData);
-    //
-    //     if ((loginData && !hasLoginData)) {
-    //         setHasLoginData(true);
-    //     } else if (!loginData && hasLoginData) {
-    //         setHasLoginData(false);
-    //         navigate("/login");
-    //     }
-    // }, [ userData ]);
+    useEffect(() => {
+        const userAccessData = JSON.parse(localStorage.getItem("userData"));
+        const loginData = userAccessData?.accessToken && userData?.code == "SUCCESS" ? true : false;
+        console.log("loginData", loginData);
+
+        // userData의 content 내용과 accessToken의 내용이 동일하면 로그인.
+        if (userData?.content == userAccessData?.accessToken) {
+            setHasLoginData(true);
+        } else {
+            setHasLoginData(false);
+            navigate("/login");
+        }
+
+    }, [ userData ]);
 
     // chat List API의 응답을 받은 경우
     useEffect(() => {
@@ -134,14 +131,15 @@ const Root = () => {
 
             // 최근 채팅 내역을 추가한다.
             if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
-                recentChat = recentChatList?.content;
+                recentChat = [...recentChatList?.content];
                 // 응답 받은 최근 내역을 내림 차순으로 정렬한다.
                 recentChat.sort((a, b) => new Date(a.date) - new Date(b.date));
             }
 
             setChatFolder([todayChat, ...recentChat]);
 
-            const loginKey = localStorage.getItem("login") || null;
+            const loginKey = localStorage.getItem("login");
+            console.log("\n\n\n\n### loginKey", loginKey);
             // 오늘 대화, 최근 대화 요청에 성공한 경우
             if (loginKey) {
                 const chatId = todayChatList?.content?.chatId || "today";
@@ -153,10 +151,10 @@ const Root = () => {
             }
         }
         // 둘 다 호출에 실패한 경우
-        else if (recentChatList?.code != "SUCCESS" && todayChatList?.code != "SUCCESS") {
+        else if (recentChatList?.code == "ERROR" || todayChatList?.code == "ERROR") {
             console.error("API 호출에 실패함");
         }
-    }, [ todayChatList, recentChatList, navigate, todayChatId, todayDate ]);
+    }, [ todayChatList, recentChatList ]);
 
     // url 변동 감지
     // useEffect(() => {
@@ -178,8 +176,10 @@ const Root = () => {
 
         const userAgent = navigator.userAgent;
         const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
-        const userData = JSON.parse(localStorage.getItem("userDate"));
+        const userData = JSON.parse(localStorage.getItem("userData"));
         const accessToken = userData?.accessToken;
+
+        console.log("\n\n@@@ 현재 url: ", path);
 
         // ✅ 모바일 기기 확인 후 강제 리디렉트
         if (mobileRegex.test(userAgent)) {
@@ -189,7 +189,33 @@ const Root = () => {
             return ;
         }
 
-        // accessToken이 없는 경우 로그인 페이지로 이동 (예외 - /naver-callback, /mobile)
+        // 루트로 접근한 경우 로그인 페이지로 이동.
+        if (path == "/") {
+            window.location.href = "/login";
+            return ;
+        }
+
+        // 해당 경로에서는 footer 안보이도록 설정
+        if (["/chat", "/login", "/account-delete", "/mobile"].includes(path)) {
+            setIsNonFooter(false);
+        } else {
+            setIsNonFooter(true);
+        }
+
+        // 로그인&모바일 페이지에서는 sidebar 안보이도록 설정
+        if (path == "/login" || path == "/mobile") {
+            setIsMain(true);
+            setIsCollapsed(false);
+        }
+        else {
+            setIsMain(false);
+            setIsCollapsed(true);
+        }
+
+
+
+        // ========== AccessToken이 존재하지 않는 경우 ==========
+        // 예외) "/naver-callback", "/mobile"
         if (!accessToken && !["/naver-callback", "/mobile"].includes(path)) {
             // 로그인 페이지에 접근 시 accessToken이 존재하지 않은 경우
             if (path == "/login") {
@@ -201,51 +227,44 @@ const Root = () => {
         }
 
         // chat page로 이동하는 메서드
-        if ((hasLoginData && path == "/login") // 로그인 데이터가 존재하는데 로그인 페이지로 이동 시
-            || path == "/chat") {
-            const params = new URLSearchParams(location.search);
+        // if ((hasLoginData && path == "/login") // 로그인 데이터가 존재하는데 로그인 페이지로 이동 시
+        //     || path == "/chat") {
+        //     const params = new URLSearchParams(location.search);
+        //
+        //     if (!params.get("chatId")) {
+        //         const storeChatId = localStorage.getItem("chatId") || "today";
+        //         const date = params.get("date");
+        //         if (storeChatId) navigate(`/chat?chatId=${storeChatId}&date=${getTodayDate()}`);
+        //     }
+        // }
 
-            if (!params.get("chatId")) {
-                const storeChatId = localStorage.getItem("chatId") || "today";
-                const date = params.get("date");
-                if (storeChatId) navigate(`/chat?chatId=${storeChatId}&date=${getTodayDate()}`);
-            }
+        // ========== AccessToken이 존재하는 경우 ==========
+        // 로그인 데이터가 존재하는 경우
+        if (path == "/login") {
+            navigate(`/chat?chatId=today`);
+            return ;
         }
 
         if (path == "/chat") {
             const params = new URLSearchParams(location.search);
             const chatId = params.get("chatId");
             const date = params.get("date");
+            console.log("~~ chatId: ", chatId, " date: ", date);
 
             // 오늘 날짜의 채팅방으로 이동
-            if (chatId == "today") {
+            if (chatId == "today" && !date) {
                 navigate(`/chat?chatId=today&date=${getTodayDate()}`);
                 return ;
             }
 
             // 3️⃣ chatFolder에서 chatId와 date가 유효한지 확인
             const isValidChat = chatFolder.some(chat => chat.chatId === chatId && chat.date === date);
+            console.log("### chatFolder: ", chatFolder);
 
             if (!isValidChat) {
                 console.log("❌ 유효하지 않은 chatId, today로 리디렉트");
                 navigate(`/chat?chatId=today`);
             }
-        }
-
-        // 로그인&모바일 페이지에서는 sidebar 안보이도록 설정
-        if (path == "/login" || path == "/mobile") {
-            setIsMain(true);
-            setIsCollapsed(false);
-        }
-        else {
-            setIsMain(false);
-        }
-
-        // 해당 경로에서는 footer 안보이도록 설정
-        if (["/chat", "/login", "/account-delete", "/mobile"].includes(path)) {
-            setIsNonFooter(false);
-        } else {
-            setIsNonFooter(true);
         }
 
     }, [location])
@@ -265,6 +284,22 @@ const Root = () => {
         setShowModal(modal?.isShowingModal);
     }, [modal]);
 
+    const settingChatFolder = () => {
+        if (todayChatList?.code == "SUCCESS") {
+            const todayChatData = {
+                chatId: todayChatList?.content?.chatId || "today",
+                date: todayChatList?.content?.date || getTodayDate(),
+            }
+
+            let chatHistory = [];
+            if (recentChatList?.code == "SUCCESS") {
+                chatHistory = [...recentChatList?.content];;
+            }
+
+            setChatFolder([todayChatData, ...chatHistory]);
+        }
+    }
+
     //  사이드바 토글 기능
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
@@ -275,9 +310,11 @@ const Root = () => {
         dispatch(constantActions.onHideDialog());
     }
 
+    console.log("isMain: ", isMain);
+
     return (
         <div id="wrap">
-            <div className={`container ${isCollapsed ? "sidebar-collapsed" : ""}`}>
+            <div className={`container ${(!isMain && isCollapsed) ? "sidebar-collapsed" : ""}`}>
                 { /* 로그인 이후에 sidebar 표시 */
                     !isMain && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
                 }

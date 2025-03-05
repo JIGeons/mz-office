@@ -13,11 +13,12 @@ import constantReducer from "./modules/ConstantSlice";
 // Redux Persis 설정
 const persistConfig = {
     key: "root",     // 저장소 키
-    storage,        // localStorage 사용
+    storage,         // localStorage 사용
+    whitelist: ["auth", "chat", "voca"] // ✅ 보존할 reducer 설정
 };
 
 // Redux Reducer 통합
-const rootReduce = combineReducers({
+const rootReducer = combineReducers({
     auth: authReducer,
     chat: chatReducer,
     voca: vocaReducer,
@@ -25,7 +26,7 @@ const rootReduce = combineReducers({
 });
 
 // Persist 적용된 Reducer 생성
-const persistedReducer = persistReducer(persistConfig, rootReduce);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // 환경 설정
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -49,14 +50,14 @@ const middleware = (getDefaultMiddleware) => {
     return defaultMiddleware;
 }
 
-// Redux Store 설정
+// ✅ Redux Store 설정
 const store = configureStore({
     reducer: persistedReducer,
     middleware,
     devTools: isDevelopment,
 });
 
-// Persistor 생성
+// ✅ Persistor 생성
 const persistor = persistStore(store);
 
 export { store, persistor };
