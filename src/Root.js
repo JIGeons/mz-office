@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from "react";
 import {useSelector, useDispatch, shallowEqual} from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import ProtectedRoute from "./route/ProtectedRoute";
 
 // Redux
 import { persistor } from "./redux/Store";
@@ -50,7 +51,6 @@ const Root = () => {
     const [isCollapsed, setIsCollapsed] = useState(true);   // 사이드바 최소 너비 상태
     const [dialogContent, setDialogContent] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [hasLoginData, setHasLoginData] = useState(false);
     const [todayChatId, setTodayChatId] = useState("today");
     const [chatFolder, setChatFolder] = useState([]);
 
@@ -95,14 +95,14 @@ const Root = () => {
         const accessToken = userAccessData?.accessToken;
 
         // userData의 content 내용과 accessToken의 내용이 동일하면 로그인.
-        if (userData?.content == accessToken) {
-            setHasLoginData(true);
-        } else {
-            // accessToken이 존재하지 않고 "/naver-callback" 경로가 아닌 경우 /login으로 이동
-            if (!(redirectPath && redirectPath.includes("/naver-callback"))) {
-                // navigate("/login");
-            }
-        }
+        // if (userData?.content == accessToken) {
+        //     setHasLoginData(true);
+        // } else {
+        //     // accessToken이 존재하지 않고 "/naver-callback" 경로가 아닌 경우 /login으로 이동
+        //     if (!(redirectPath && redirectPath.includes("/naver-callback"))) {
+        //         // navigate("/login");
+        //     }
+        // }
 
         // chatFolder 세팅
         settingChatFolder();
@@ -123,9 +123,6 @@ const Root = () => {
                 // ✅ 로그인 성공 후 채팅 목록 가져오기
                 dispatch(chatActions.getTodayChatList());
                 dispatch(chatActions.getRecentChatList());
-
-                // 로그인 상태 업데이트
-                setHasLoginData(true);
             }
         };
 
@@ -137,13 +134,9 @@ const Root = () => {
                 const loginStatus = JSON.parse(localStorage.getItem("userData"));
 
                 if (loginStatus?.accessToken) {
-                    setHasLoginData(true);
-
                     // ✅ 다른 창에서 로그인했을 경우에도 채팅 목록 가져오기
                     dispatch(chatActions.getTodayChatList());
                     dispatch(chatActions.getRecentChatList());
-                } else {
-                    setHasLoginData(false);
                 }
             }
         };
@@ -163,14 +156,6 @@ const Root = () => {
         const userAccessData = JSON.parse(localStorage.getItem("userData"));
         const loginData = userAccessData?.accessToken && userData?.code == "SUCCESS" ? true : false;
         console.log("loginData", loginData);
-
-        // userData의 content 내용과 accessToken의 내용이 동일하면 로그인.
-        if (userData?.content == userAccessData?.accessToken) {
-            setHasLoginData(true);
-        } else {
-            setHasLoginData(false);
-            // navigate("/login");
-        }
 
     }, [ userData ]);
 
@@ -199,8 +184,6 @@ const Root = () => {
                 setTodayChatId(chatId);
 
                 localStorage.removeItem("login");
-                setHasLoginData(true);
-                // navigate("/chat?chatId=" + todayChatId + "&date=" + todayDate);
             }
         }
         // 둘 다 호출에 실패한 경우
@@ -252,9 +235,10 @@ const Root = () => {
         if (!accessToken && !["/naver-callback"].includes(path)) {
             // 로그인 페이지에 접근 시 accessToken이 존재하지 않은 경우
             if (path == "/login") {
-                setHasLoginData(false); // hasLoginData를 false로 설정
+                // setHasLoginData(false); // hasLoginData를 false로 설정
                 return ;
             }
+            console.log("여기서 로그인 페이지로 이동을 하는건가?");
             // window.location.href = "/login";
             return ;
         }
@@ -297,6 +281,7 @@ const Root = () => {
             if (!isValidChat) {
                 console.log("❌ 유효하지 않은 chatId, today로 리디렉트");
                 navigate(`/chat?chatId=today`);
+                return ;
             }
         }
 
@@ -389,39 +374,21 @@ const Root = () => {
                         <Route path="/" element={ isMain && <Navigate to={"/login"} replace /> } />
                         <Route path="*" element={ <NotFound /> } />
 
-                        {/* 모바일 환경인 경우 */}
-                        {/*   isMobile && (
-                            <>
-                                <Route path="/mobile" element={ <Mobile /> } />
-                                <Route path="/login" element={ <Login /> } />
-                            </>
-                        )*/}
-
-                        {/* 모바일 환경이 아닌 경우 */}
-                        {/*   !isMobile && (
-                            <>
-                                <Route path="/login" element={ <Login /> } />
-
-                                <Route path="/chat" element={ <ChatMain /> } />
-                                <Route path="/vocabulary" element={ <Vocabulary /> } />
-
-                                <Route path="/account-delete" element={ <AccountDelete /> } />
-                            </>
-                        )*/}
-
+                        {/* ✅ 로그인 페이지 (비로그인 상태에서도 접근 가능) */}
                         <Route path="/login" element={ <Login /> } />
+                        { /* 네이버 로그인 콜백 수행 */
+                             <Route path="/naver-callback" element={ <NaverCallback /> } />
+                        }
 
-                        <Route path="/chat" element={ <ChatMain /> } />
-                        <Route path="/vocabulary" element={ <Vocabulary /> } />
-
-                        <Route path="/account-delete" element={ <AccountDelete /> } />
+                        {/* ✅ 일반 사용자가 접근 가능한 페이지 */}
+                        <Route element={<ProtectedRoute />}>
+                            <Route path="/chat" element={ <ChatMain /> } />
+                            <Route path="/vocabulary" element={ <Vocabulary /> } />
+                            <Route path="/account-delete" element={ <AccountDelete /> } />
+                        </Route>
 
                         <Route path="/privacy-policy" element={ <PrivacyPolicy /> } />
                         <Route path="/terms-and-conditions" element={ <TermsAndConditions /> } />
-
-                        { /* 네이버 로그인 콜백 수행 */
-                            !hasLoginData && <Route path="/naver-callback" element={ <NaverCallback /> } />
-                        }
                     </Routes>
 
                     { /* 🏆 모든 페이지에서 Footer 표시 (로그인 페이지에선 출력 X)*/
