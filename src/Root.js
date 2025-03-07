@@ -16,6 +16,7 @@ import {
     NaverCallback,
     Vocabulary,
     Mobile,
+    AccountDelete,
     PrivacyPolicy,
     TermsAndConditions,
     ServiceDescription
@@ -33,7 +34,6 @@ import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
 
 // CSS
 import "./styles/common.css";
-import AccountDelete from "./pages/AccountDelete";
 
 // Utils
 import { getTodayDate } from "./utils/Utils";
@@ -82,6 +82,15 @@ const Root = () => {
             setIsMobile(true);
         }
 
+        let setProperty;
+
+        function setFullHeight() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        }
+
+        window.addEventListener('resize', setFullHeight);
+        setFullHeight();
+
         const userAccessData = JSON.parse(localStorage.getItem("userData"));
         const accessToken = userAccessData?.accessToken;
 
@@ -91,25 +100,61 @@ const Root = () => {
         } else {
             // accessToken이 존재하지 않고 "/naver-callback" 경로가 아닌 경우 /login으로 이동
             if (!(redirectPath && redirectPath.includes("/naver-callback"))) {
-                navigate("/login");
+                // navigate("/login");
             }
         }
 
         // chatFolder 세팅
         settingChatFolder();
 
-        const handleStorageChange = async (event) => {
-            if (event.key == "login") {
-                console.log("🚀 localStorage 변경 감지! 페이지 새로고침...");
+        // ✅ 1. postMessage를 이용해 로그인 상태 감지
+        const handleLoginMessage = (event) => {
+            if (event.origin !== window.location.origin) return ;
+
+            if (event.data.type == "LOGIN_SUCCESS") {
+                console.log("✅ 로그인 성공: ", event.data.user);
+
+                localStorage.setItem("userData", JSON.stringify(event.data.user));
+                localStorage.setItem("login", String(Date.now()));
+
+                // ✅ 중복 이동 방지를 위해 sessionStorage에 로그인 성공 플래그 추가
+                sessionStorage.setItem("login_success", "true");
+
+                // ✅ 로그인 성공 후 채팅 목록 가져오기
                 dispatch(chatActions.getTodayChatList());
                 dispatch(chatActions.getRecentChatList());
+
+                // 로그인 상태 업데이트
+                setHasLoginData(true);
             }
         };
 
+        // ✅ 2. storage 이벤트 감지를 이용해 로그인 상태 변경 감지
+        const handleStorageChange = async (event) => {
+            if (event.key == "login") {
+                console.log("🚀 localStorage 변경 감지! 로그인 상태 업데이트");
+
+                const loginStatus = JSON.parse(localStorage.getItem("userData"));
+
+                if (loginStatus?.accessToken) {
+                    setHasLoginData(true);
+
+                    // ✅ 다른 창에서 로그인했을 경우에도 채팅 목록 가져오기
+                    dispatch(chatActions.getTodayChatList());
+                    dispatch(chatActions.getRecentChatList());
+                } else {
+                    setHasLoginData(false);
+                }
+            }
+        };
+
+        window.addEventListener("message", handleLoginMessage);
         window.addEventListener("storage", handleStorageChange);
 
         return () => {
             window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("message", handleLoginMessage);
+            window.removeEventListener("resize", setProperty);
         };
     }, []);
 
@@ -124,7 +169,7 @@ const Root = () => {
             setHasLoginData(true);
         } else {
             setHasLoginData(false);
-            navigate("/login");
+            // navigate("/login");
         }
 
     }, [ userData ]);
@@ -148,7 +193,6 @@ const Root = () => {
             setChatFolder([todayChat, ...recentChat]);
 
             const loginKey = localStorage.getItem("login");
-            console.log("\n\n\n\n### loginKey", loginKey);
             // 오늘 대화, 최근 대화 요청에 성공한 경우
             if (loginKey) {
                 const chatId = todayChatList?.content?.chatId || "today";
@@ -156,7 +200,7 @@ const Root = () => {
 
                 localStorage.removeItem("login");
                 setHasLoginData(true);
-                navigate("/chat?chatId=" + todayChatId + "&date=" + todayDate);
+                // navigate("/chat?chatId=" + todayChatId + "&date=" + todayDate);
             }
         }
         // 둘 다 호출에 실패한 경우
@@ -177,21 +221,15 @@ const Root = () => {
         console.log("\n\n@@@ 현재 url: ", path);
 
         // ✅ 모바일 기기 확인 후 강제 리디렉트
-        if (mobileRegex.test(userAgent)) {
-            setIsNonFooter(true);
-            setIsMain(true);
-            navigate("/mobile"); // 모바일 기기면 /mobile로 이동
-            return ;
-        }
-
-        // 루트로 접근한 경우 로그인 페이지로 이동.
-        if (path == "/") {
-            window.location.href = "/login";
-            return ;
-        }
+        // if (mobileRegex.test(userAgent)) {
+        //     setIsNonFooter(true);
+        //     setIsMain(true);
+        //     // navigate("/mobile"); // 모바일 기기면 /mobile로 이동
+        //     return ;
+        // }
 
         // 해당 경로에서는 footer 안보이도록 설정
-        if (["/chat", "/login", "/account-delete", "/mobile"].includes(path)) {
+        if (["/chat", "/login", "/account-delete"].includes(path)) {
             setIsNonFooter(false);
         } else {
             setIsNonFooter(true);
@@ -211,13 +249,13 @@ const Root = () => {
 
         // ========== AccessToken이 존재하지 않는 경우 ==========
         // 예외) "/naver-callback", "/mobile"
-        if (!accessToken && !["/naver-callback", "/mobile"].includes(path)) {
+        if (!accessToken && !["/naver-callback"].includes(path)) {
             // 로그인 페이지에 접근 시 accessToken이 존재하지 않은 경우
             if (path == "/login") {
                 setHasLoginData(false); // hasLoginData를 false로 설정
                 return ;
             }
-            window.location.href = "/login";
+            // window.location.href = "/login";
             return ;
         }
 
@@ -282,16 +320,18 @@ const Root = () => {
     const settingChatFolder = () => {
         if (todayChatList?.code == "SUCCESS") {
             const todayChatData = {
-                chatId: todayChatList?.content?.chatId || "today",
+                chatId: "today",
                 date: todayChatList?.content?.date || getTodayDate(),
             }
 
-            let chatHistory = [];
+            let recentChat = [];
             if (recentChatList?.code == "SUCCESS") {
-                chatHistory = [...recentChatList?.content];;
+                recentChat = [...recentChatList?.content];
+                // 응답 받은 최근 내역을 내림 차순으로 정렬한다.
+                recentChat.sort((a, b) => new Date(a.date) - new Date(b.date));
             }
 
-            setChatFolder([todayChatData, ...chatHistory]);
+            setChatFolder([todayChatData, ...recentChat]);
         }
     }
 
@@ -350,15 +390,15 @@ const Root = () => {
                         <Route path="*" element={ <NotFound /> } />
 
                         {/* 모바일 환경인 경우 */}
-                        {   isMobile && (
+                        {/*   isMobile && (
                             <>
                                 <Route path="/mobile" element={ <Mobile /> } />
                                 <Route path="/login" element={ <Login /> } />
                             </>
-                        )}
+                        )*/}
 
                         {/* 모바일 환경이 아닌 경우 */}
-                        {   !isMobile && (
+                        {/*   !isMobile && (
                             <>
                                 <Route path="/login" element={ <Login /> } />
 
@@ -367,7 +407,14 @@ const Root = () => {
 
                                 <Route path="/account-delete" element={ <AccountDelete /> } />
                             </>
-                        )}
+                        )*/}
+
+                        <Route path="/login" element={ <Login /> } />
+
+                        <Route path="/chat" element={ <ChatMain /> } />
+                        <Route path="/vocabulary" element={ <Vocabulary /> } />
+
+                        <Route path="/account-delete" element={ <AccountDelete /> } />
 
                         <Route path="/privacy-policy" element={ <PrivacyPolicy /> } />
                         <Route path="/terms-and-conditions" element={ <TermsAndConditions /> } />

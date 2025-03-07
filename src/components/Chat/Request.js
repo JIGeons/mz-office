@@ -73,7 +73,7 @@ const Request = ({ type, messageType, step }) => {
             }
             {   type == "INPUT_TEXT" &&
                 <div className = "request">
-                    <img src={important} alt="important.png" />
+                    <img className="notice-image" src={important} alt="important.png" />
                     <div className="request-content">
                         <h2>{ title }</h2>
                     </div>
@@ -83,7 +83,7 @@ const Request = ({ type, messageType, step }) => {
                 <div className="request">
                     {   (type == "WITH_PREVIOUS" || type == "WITHOUT_PREVIOUS") &&
                         <>
-                            <img src={important} alt="important.png" />
+                            <img className="notice-image" src={important} alt="important.png" />
                             <div className="request-content">
                                 <h2>{ title }</h2>
                             </div>
@@ -91,7 +91,7 @@ const Request = ({ type, messageType, step }) => {
                     }
                     {   type == "MESSAGE_TYPE" &&
                         <>
-                            <img src={important} alt="important.png" />
+                            <img className="notice-image" src={important} alt="important.png" />
                             <div className="request-content">
                                 <h2>{ title }</h2>
                                 <h3>{ content } </h3>

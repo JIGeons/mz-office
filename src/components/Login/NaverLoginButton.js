@@ -6,14 +6,9 @@ import naverLoginButton from "../../assets/images/login/naver_login_btn.png";
 
 const naverClientId = process.env.REACT_APP_NAVER_CLIENT_ID;
 const webUrl = process.env.REACT_APP_MZ_OFFICE_WEB_URL;
-// const webUrl ="http://localhost";
 const naverCallbackUrl = `${webUrl}/naver-callback`;
 
-const generateState = () => {
-    return Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성 (CSRF 방지)
-};
-
-// console.log("callbackURL = ", naverCallbackUrl);
+console.log("callbackURL = ", naverCallbackUrl);
 
 const NaverLoginButton = () => {
     const handleNaverLogin = () => {
@@ -35,7 +30,24 @@ const NaverLoginButton = () => {
         // ✅ 팝업 창이 정상적으로 열렸는지 확인
         if (!popup) {
             alert("팝업이 차단되었습니다. 팝업 차단을 해제해주세요.");
+            return ;
         }
+
+        const checkPopupClosed = setInterval(() => {
+            if (popup.closed) {
+                clearInterval(checkPopupClosed);
+                console.log("팝업이 닫혔습니다. 로그인 상태 확인 중...");
+
+                // localStorage에서 로그인 상태 확인
+                const loginStatus = JSON.parse(localStorage.getItem("userData"));
+                if (loginStatus?.accessToken) {
+                    console.log("✅ 로그인 성공: ", loginStatus);
+                    window.location.reload();  // 페이지 새로고침하여 로그인 반영
+                } else {
+                    console.log("❌ 로그인 실패 또는 취소됨");
+                }
+            }
+        }, 1000);
     };
 
     return (

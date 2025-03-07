@@ -13,6 +13,7 @@ import Vocabulary from "./Vocabulary";
 // 모바일로 접근 시 막는 페이지
 import Mobile from "./Mobile";
 
+import AccountDelete from "./AccountDelete";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsAndConditions from "./TermsAndConditions";
 import ServiceDescription from "./ServiceDescription";
@@ -23,6 +24,7 @@ export {
     NaverCallback,
     Vocabulary,
     Mobile,
+    AccountDelete,
     PrivacyPolicy,
     TermsAndConditions,
     ServiceDescription

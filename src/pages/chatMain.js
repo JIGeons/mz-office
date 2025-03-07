@@ -44,10 +44,21 @@ const initialSession = {
     messages: [initialMessage],
 }
 
+// socketMessage 객체 정의
+const initialSocketMessage = {
+    chatId: null,
+    chatSessionId: null,
+    inquiryType: null,
+    content: null,
+}
+
 const ChatMain = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
+
+    const userAgent = navigator.userAgent;
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
 
     // 현재 날짜, URL에서 chatId와 date 가져오기
     const todayDate = getTodayDate();
@@ -56,14 +67,6 @@ const ChatMain = () => {
     const paramChatId = params.get("chatId") || null;
     const paramDate = params.get("date") || null;    // date가 today가 아닌 경우 chatting 비활성화
     const isToday = paramDate == todayDate;
-
-    // socketMessage 객체 정의
-    const initialSocketMessage = {
-        chatId: paramChatId == "today" ? null : paramChatId,
-        chatSessionId: null,
-        inquiryType: null,
-        content: null,
-    }
 
     // useState 정의
     const [userInfo, setUserInfo] = useState({});
@@ -74,6 +77,7 @@ const ChatMain = () => {
     const [showLoading, setShowLoading] = useState(false);
     const [chatData, setChatData] = useState({chatId: null, date: null});
     const [sessionListState, setSessionListState] = useState([]);
+    const [isMobile, setIsMobile] = useState(false);
     // const [chatId, setChatId] = useState(null);
 
     // Redux State
@@ -82,7 +86,7 @@ const ChatMain = () => {
 
     // useRef로 sessionList, socketMessage Ref 정의
     const sessionListRef = useRef([initialSession]);
-    const socketMessageRef = useRef(initialSocketMessage);
+    const socketMessageRef = useRef({...initialSocketMessage});
     const chatIdRef = useRef(null);
     const chatContainerRef = useRef(null);
 
@@ -167,9 +171,18 @@ const ChatMain = () => {
     // }, [ todayChatList, chatDetail, paramDate ]);
 
     useEffect(() => {
+        // ✅ 모바일 기기 확인 후 강제 리디렉트
+        if (mobileRegex.test(userAgent)) {
+            setIsMobile(true);
+        }
+    }, []);
+
+    useEffect(() => {
         const queryPrams = new URLSearchParams(location.search);
         const paramChatId = queryPrams.get("chatId");
         const paramDate = queryPrams.get("date");
+
+        setChatData({chatId: paramChatId || "today", date: paramDate || todayDate});
 
         if (paramChatId) {
             // chatId가 today이면 오늘의 chatting을 불러온다.
@@ -207,8 +220,9 @@ const ChatMain = () => {
         if (todayChatList?.code == "SUCCESS") {
             const response = todayChatList?.content;
 
-            setChatData({chatId: response?.chatId || "today" , date: response?.date || todayDate});
-            sessionListRef.current = todayChatList.content.chatSessionList;
+            initialSocketMessage.chatId = response?.chatId;
+            socketMessageRef.current.chatId = response?.chatId;
+            sessionListRef.current = response.chatSessionList;
 
             // 새로운 message세션 추가 해야함.
         }
@@ -218,7 +232,6 @@ const ChatMain = () => {
         // chatDetail의 응답을 성공적으로 받은 경우
         if (chatDetail?.code == "SUCCESS") {
             const response = chatDetail?.content;
-            setChatData({chatId: response?.chatId , date: response?.date});
             sessionListRef.current = chatDetail.content.chatSessionList;
         } else if (chatDetail?.code == "ERROR") {
             navigate("/chat");
@@ -404,10 +417,11 @@ const ChatMain = () => {
         console.log("requestType: ", requestType);
 
         if (requestType == "RESET") {
-            socketMessageRef.current = initialSocketMessage;
+            console.log("initialSocketMessage: ", initialSocketMessage);
+            socketMessageRef.current = {...initialSocketMessage};
             // 강제 렌더링
             setRender(prev => prev + 1);
-            return;
+            return ;
         } else if (requestType == "MORE_REQUEST") {
             //
             // socketMessageRef.current.chatSessionId = null;
@@ -476,8 +490,8 @@ const ChatMain = () => {
     }
 
     const sessionList = sessionListRef.current;
-    console.log("=== Session List: ", sessionList);
-    console.log("=== showRequestButton: ", showRequestButton, " socketMessageRef.current: ", socketMessageRef.current);
+    // console.log("=== Session List: ", sessionList);
+    // console.log("=== showRequestButton: ", showRequestButton, " socketMessageRef.current: ", socketMessageRef.current);
     let messageType = null;
 
     let user = "";
@@ -487,25 +501,35 @@ const ChatMain = () => {
             <section className="mz-logo-white">
                 <img src={MZLogoWhite} alt="MZ-logo-white.png" />
                 <div className="mz-logo-text">
-                    { /* chatId == "today" &&
-                        <h1>안녕하세요.</h1>
-                    */}
-                    {  !chatIdRef.current &&
-                        <h1>안녕하세요.</h1>
+                    {   !isMobile &&
+                        <>
+                            {  !chatIdRef.current &&
+                                <h1>안녕하세요.</h1>
+                            }
+                            <div className="mz-logo-text-description">
+                                <p>MZ오피스를 이용하여, 사내에서의 문제를 해결해보세요!</p>
+                            </div>
+                        </>
                     }
-                    <div className="mz-logo-text-description">
-                        <p>MZ오피스를 이용하여, 사내에서의 문제를 해결해보세요!</p>
-                    </div>
                 </div>
             </section>
             <section className="chatting_main">
-                <div className="chatting_date">
-                    <div className="chatting_date_content">
-                        <img src={calenderImg} alt="calendar.png" />
-                        {transferDateToString(chatData.date)}
+                {   !isMobile &&
+                    <div className="chatting_date">
+                        <div className="chatting_date_content">
+                            <img src={calenderImg} alt="calendar.png" />
+                            {transferDateToString(chatData.date)}
+                        </div>
                     </div>
-                </div>
+                }
                 <ScrollToBottom className="chatting_content_scroll" scrollBehavior={"auto"}>
+                    {   isMobile &&
+                        <>
+                            <div className="mz-logo-text-description">
+                                <h2>사용자님, 안녕하세요!<br /> MZ오피스를 이용하여,<br /><span>사내에서의 문제를 해결</span>해보세요!</h2>
+                            </div>
+                        </>
+                    }
                     <ChatResponse isGuide={true} />
                     {
                         sessionList && sessionList.length > 0
@@ -518,7 +542,7 @@ const ChatMain = () => {
                                 if (msg?.sender == "USER") {
                                     if (msg?.inquiryType == "REQUEST_TYPE") {
                                         if (msg?.content == "PARSE") {
-                                            msgComponent.push(<ChatRequest content={"문구 해석"} key={`request-parse-${index}-${depth}`} />)
+                                            msgComponent.push(<ChatRequest content={"문구 해석"} key={`request-${index}-${depth}`} />)
                                             msgComponent.push(<Request type={"INPUT_TEXT"} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         } else {
                                             msgComponent.push(<ChatRequest content={"문장 작성"} key={`request-${index}-${depth}`} />);
@@ -529,25 +553,25 @@ const ChatMain = () => {
                                     else if (msg?.inquiryType == "MESSAGE_TYPE") {
                                         messageType = msg?.content;
                                         if (msg?.content == "MESSAGE") {
-                                            msgComponent.push(<ChatRequest content={"문자 작성"} key={`request-parse-${index}-${depth}`} />)
+                                            msgComponent.push(<ChatRequest content={"문자 작성"} key={`request-${index}-${depth}`} />)
                                         } else {
-                                            msgComponent.push(<ChatRequest content={"메일 작성"} key={`request-parse-${index}-${depth}`} />)
+                                            msgComponent.push(<ChatRequest content={"메일 작성"} key={`request-${index}-${depth}`} />)
                                         }
                                         msgComponent.push(<Request step={"step_2"} type={msg?.inquiryType} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                     }
 
                                     else if (msg?.inquiryType == "INPUT_METHOD") {
                                         if (msg?.content == "WITH_PREVIOUS") {
-                                            msgComponent.push(<ChatRequest content={`이전에 받은 ${messageType == "MESSAGE" ? "문자" : "메일"} 입력`} key={`request-parse-${index}-${depth}`} />);
+                                            msgComponent.push(<ChatRequest content={`이전에 받은 ${messageType == "MESSAGE" ? "문자" : "메일"} 입력`} key={`request-${index}-${depth}`} />);
                                             msgComponent.push(<Request step={"step_3"} type={msg?.content} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         } else {
-                                            msgComponent.push(<ChatRequest content={`이전에 받은 ${messageType == "MESSAGE" ? "문자" : "메일"} 없이 입력`} key={`request-parse-${index}-${depth}`} />);
+                                            msgComponent.push(<ChatRequest content={`이전에 받은 ${messageType == "MESSAGE" ? "문자" : "메일"} 없이 입력`} key={`request-${index}-${depth}`} />);
                                             msgComponent.push(<Request step={"step_3"} type={msg?.content} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                         }
                                     }
 
                                     else if (msg?.inquiryType == "SENTENCE_GENERATION_TYPE") {
-                                        msgComponent.push(<ChatRequest content={ GenerateType(msg?.content)} key={`request-parse-${index}-${depth}`} />);
+                                        msgComponent.push(<ChatRequest content={ GenerateType(msg?.content)} key={`request-${index}-${depth}`} />);
                                         msgComponent.push(<Request type={"INPUT_TEXT"} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                     }
 
@@ -557,7 +581,7 @@ const ChatMain = () => {
                                 } else if (msg?.sender == "AI") {
                                     user = "AI";
                                     msgComponent.push(<ChatResponse content={msg?.content} key={`response-${index}-${depth}`} />);
-                                    msgComponent.push(<Request type={msg?.inquiryType} messageType={messageType} />);
+                                    msgComponent.push(<Request type={msg?.inquiryType} messageType={messageType} key={`response-parse-${index}-${depth}`} />);
                                 }
 
                                 // 메세지 컴포넌트 출력
@@ -567,7 +591,8 @@ const ChatMain = () => {
                     }
                     {
                         // SocketMessage에 따라 버튼 출력
-                        (showRequestButton && socketMessageRef.current) &&
+                        (showRequestButton && socketMessageRef.current)
+                        && (chatData?.date == todayDate) &&
                             <RequestButton inquiryType={socketMessageRef.current.inquiryType} content={socketMessageRef.current.content} user={user} messageType={messageType} setRequestType={setRequestType} />
                     }
                     {   showLoading &&
@@ -582,7 +607,7 @@ const ChatMain = () => {
                     onChange={(e) => handlerOnChangeInput(e)}
                     onKeyDown={handlerOnKeyDown} // ✅ 엔터 및 Shift + Enter 이벤트 처리
                     placeholder={"MZ오피스에게 물어보기"}
-                    disabled={disabledButton} // 비활성화 적용
+                    disabled={!(socketMessageRef.current?.inquiryType == "SENTENCE_GENERATION_TYPE" || socketMessageRef.current?.content == "PARSE" || socketMessageRef.current?.content == "WITH_PREVIOUS")} // 비활성화 적용
                 ></textarea>
                 <button className={"chat_sending"}>
                     { disabledButton ?

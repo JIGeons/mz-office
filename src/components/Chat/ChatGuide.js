@@ -8,9 +8,9 @@ import "../../styles/components/chat.css"
 const ChatGuide = () => {
     return (
         <div className="chat-guide">
-            <img src={ noticeIcon } alt="noticeIcon.png" />
+            <img className="notice-image" src={ noticeIcon } alt="noticeIcon.png" />
             <div className={"chat-guide-content"}>
-                <h1>문구 해석 또는 문장 작성 유형을 선택해주신 뒤에, 작성해주세요~</h1>
+                <h1>문구 해석 또는 문장 <span>작성 유형</span>을 선택해주신 뒤에, 작성해주세요~</h1>
                 <h2>[ 문구 해석 가이드라인 ]</h2>
                 <span>Step 1. 해석할 내용을 자유롭게 입력해주세요!</span>
 

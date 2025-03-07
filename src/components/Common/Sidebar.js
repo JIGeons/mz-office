@@ -8,9 +8,11 @@ import * as chatActions from "../../redux/modules/ChatSlice";
 import * as constantActions from "../../redux/modules/ConstantSlice";
 
 // Image
-import sidebarToggle from "../../assets/images/sidebar/ico_leftmenu.png"
-import deleteIcon from "../../assets/images/sidebar/delete.png"
-import logoutIcon from "../../assets/images/sidebar/Logout.png"
+import sidebarToggle from "../../assets/images/sidebar/ico_leftmenu.png";
+import deleteIcon from "../../assets/images/sidebar/delete.png";
+import mobilDeleteIcon from "../../assets/images/sidebar/mobile_delete.png";
+import logoutIcon from "../../assets/images/sidebar/Logout.png";
+import closedIcon from "../../assets/images/sidebar/ico_closed.png";
 
 // CSS
 import "../../styles/components/sidebar.css"
@@ -23,8 +25,12 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const userAgent = navigator.userAgent;
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+
     // Component State
     const [chatFolder, setChatFolder] = useState([]);
+    const [isMobile, setIsMobile] = useState(false);
 
     // component Ref
     const chatId = useRef(null);
@@ -37,6 +43,13 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
 
     // 오늘 날짜를 불러온다.
     const todayDate = getTodayDate();
+
+    useEffect(() => {
+        // ✅ 모바일 기기 확인 후 강제 리디렉트
+        if (mobileRegex.test(userAgent)) {
+            setIsMobile(true);
+        }
+    }, []);
 
     useEffect( () => {
         if (todayChatList?.code == "SUCCESS") {
@@ -112,9 +125,9 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
             const storeChatId = localStorage.getItem("chatId");
 
             // chatId가 존재하는 경우 ref에 저장
-            if (storeChatId && storeChatId != "") {
-                chatId.current = storeChatId;
-            }
+            // if (storeChatId && storeChatId != "") {
+            //     chatId.current = storeChatId;
+            // }
 
             navigate("/vocabulary");
         } else {
@@ -137,12 +150,12 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
         <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
             {/* 사이드바 닫기 버튼 */}
             <button className="sidebar-toggle" onClick={toggleSidebar}>
-                <img src={sidebarToggle} alt={"sidebar-toggle.png"} />
+                <img src={ (isMobile && !isCollapsed) ? closedIcon : sidebarToggle} alt={"sidebar-toggle.png"} />
             </button>
             { !isCollapsed &&
                 <nav className="navigation-bar">
                     {/* 네비게이션 내용 */}
-                    <ul>
+                    <ul className="chat-ul">
                         <h1
                             style={{cursor: "pointer"}}
                             onClick={() => navigateToType("chat", "today")}
@@ -160,7 +173,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                                             {chatFolderDate.date}
                                         </h3>
                                         <img
-                                            src={deleteIcon}
+                                            src={isMobile ? mobilDeleteIcon : deleteIcon}
                                             alt={"delete-icon.png"}
                                             onClick={() => handleChatRoomDelete(chatFolderDate.chatId)}
                                             style={{ cursor: "pointer" }}

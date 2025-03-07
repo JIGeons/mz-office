@@ -33,12 +33,17 @@ const NaverCallback = () => {
                 name: authState.userData?.name || null,
             }
 
-            window.close();
-
             // String으로 저장
             localStorage.setItem("userData", JSON.stringify(userData));
             // LocalStorage 값 변경 -> storage 이벤트 트리거
             localStorage.setItem("login", String(Date.now()));
+
+            // ✅ 부모 창에 로그인 완료 메시지 전송
+            if (window.opener) {
+                window.opener.postMessage({ type: "LOGIN_SUCCESS", user: userData }, window.location.origin);
+            }
+
+            window.close();
         } else {
             // 네이버 로그인에 실패한 경우
             setLoginProcess(false);
