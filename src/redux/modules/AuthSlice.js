@@ -80,7 +80,7 @@ const authSlice = createSlice({
             // Naver 로그인 연결 해제
             .addCase(unlinkNaver.fulfilled, (state, action) => {
                 state.userData = null;
-                state.sessionData = null;
+                state.sessionData = action.payload;
             })
             // Naver 로그인 토큰 갱신
             .addCase(reissueNaverToken.fulfilled, (state, action) => {

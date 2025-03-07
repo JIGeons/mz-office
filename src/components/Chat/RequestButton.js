@@ -53,15 +53,15 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
             {/* inquiryType에 따라 보여줄 버튼 출력 */}
             { !inquiryType &&
                 <div className="request-parse-write">
-                    <button className="request-parse-write-button">
-                        <img src={ parseIcon } alt="parse_ico.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'PARSE')} />
+                    <button className="request-parse-write-button"  onClick={() => requestButtonClick("REQUEST_TYPE", 'PARSE')}>
+                        <img src={ parseIcon } alt="parse_ico.png"/>
                         <div className="request-parse-write-text">
                             <h3>문구 해석</h3>
                             <p>사수가 뭐라고 하는지 이해가 안돼 :(</p>
                         </div>
                     </button>
-                    <button className="request-parse-write-button">
-                        <img className="write-ico" src={ writeIcon } alt="write_ico.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'GENERATE')} />
+                    <button className="request-parse-write-button" onClick={() => requestButtonClick("REQUEST_TYPE", 'GENERATE')} >
+                        <img className="write-ico" src={ writeIcon } alt="write_ico.png"/>
                         <div className="request-parse-write-text">
                             <h3>문장 작성</h3>
                             <p>타팀에 보낼 메일 및 문자를 부탁해!</p>

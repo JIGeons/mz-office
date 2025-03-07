@@ -1,23 +1,40 @@
-import React, {useState} from "react";
-import {useDispatch} from "react-redux";
+import React, {useContext, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
 
 // CSS
 import "../styles/components/accountDelete.css";
 
 // Actions
+import * as AuthActions from "../redux/modules/AuthSlice";
 import * as constantActions from "../redux/modules/ConstantSlice";
 
 const AccountDelete = () => {
     const dispatch = useDispatch();
 
+    // Component State
     const [isChecked, setIsChecked] = useState(false);
 
+    // Redux State
+    const { sessionData } = useSelector((state) => state.auth);
+
+    useEffect(() => {
+
+        if (sessionData?.code == "SUCCESS") {
+            localStorage.removeItem("userData");
+            localStorage.removeItem("naver-auth-state");
+            localStorage.removeItem("chatId");
+
+            dispatch(AuthActions.clearAuthState());
+            window.location.href = "/login";
+        }
+
+    }, [sessionData])
     const handleChange = (event) => {
         setIsChecked(event.target.checked);
     };
 
     const handleDeleteAccount = () => {
-        console.log("ㅊㅔ크박스 확인: ", isChecked);
+        dispatch(AuthActions.unlinkNaver());
     }
 
     return (

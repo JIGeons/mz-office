@@ -37,7 +37,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
 
     // Redux State
     const { chatDetail } = useSelector((state) => state.chat);
-    const { todayChatList, recentChatList } = useSelector((state) => state.chat);
+    const { todayChatList, recentChatList, deleteChatRoom } = useSelector((state) => state.chat);
 
     // const chatState = useSelector((state) => state.chat);
 
@@ -79,6 +79,15 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
         }
     }, [ todayChatList, recentChatList ]);
 
+    useEffect(() => {
+        // 삭제에 성공한 경우 오늘&최근 chatList를 다시 호출한다.
+        if (deleteChatRoom?.code == "SUCCESS") {
+           dispatch(chatActions.getTodayChatList());
+           dispatch(chatActions.getRecentChatList());
+           dispatch(chatActions.clearDeleteChatRoom);
+        }
+    }, [deleteChatRoom]);
+
     // 로그아웃 핸들러
     const handleNaverLogout = () => {
         try {
@@ -116,6 +125,8 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
         console.log("Delete chat: ", chatId);
         if (chatId !== "today") {
             dispatch(chatActions.deleteChatRoom({chatId}));
+        } else {
+            dispatch(chatActions.deleteChatRoom({ chatId: todayChatList?.content?.chatId }));
         }
     }
 

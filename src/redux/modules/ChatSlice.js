@@ -74,6 +74,9 @@ const chatSlice = createSlice({
             state.deleteChatRoom = {};
             state.error = null;
         },
+        clearDeleteChatRoom: (state) => {
+            state.deleteChatRoom = { code: "CLEAR" };
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -121,5 +124,5 @@ const chatSlice = createSlice({
     },
 });
 
-export const { clearChatState } = chatSlice.actions;
+export const { clearChatState, clearDeleteChatRoom } = chatSlice.actions;
 export default chatSlice.reducer;
