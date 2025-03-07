@@ -53,7 +53,7 @@ const RequestType = (type) => {
     let requestType = type;
 
     switch (type) {
-        case "EMAIL":
+        case "MAIL":
             requestType = "메일";
             break;
         case "MESSAGE":

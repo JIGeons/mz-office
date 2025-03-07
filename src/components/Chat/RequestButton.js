@@ -5,6 +5,8 @@ import explainButton from "../../assets/images/chat/btn_explain.png"
 import writeButton from "../../assets/images/chat/btn_write.png"
 import writeMailBtn from "../../assets/images/chat/ico_mail.png";
 import writeMessageBtn from "../../assets/images/chat/ico_text.png";
+import parseIcon from "../../assets/images/chat/parse_ico.png";
+import writeIcon from "../../assets/images/chat/write_ico.png";
 
 // Utils
 import { GenerateType, RequestType } from "../../utils/Enums";
@@ -16,7 +18,7 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
 
     if (inquiryType == "MESSAGE_TYPE") {
         buttonType = [`이전에 받은 ${RequestType(messageType)} 입력`, `이전에 받은 ${RequestType(messageType)} 없이 입력`];
-    } else if (inquiryType == "INPUT_METHOD"  && content == "WITHOUT_PREVIOUS" && messageType == "EMAIL") {
+    } else if (inquiryType == "INPUT_METHOD"  && content == "WITHOUT_PREVIOUS" && messageType == "MAIL") {
         buttonType = ["FEEDBACK_REQUEST", "REMINDER", "THANK_YOU", "APOLOGY", "GREETING", "SUGGESTION", "FOLLOW_UP"];
     } else if (inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS"  && messageType == "MESSAGE") {
         buttonType = ["CONGRATULATION", "INQUIRY", "APPRECIATION", "APOLOGY", "SCHEDULE_CONFIRMATION", "ANNOUNCEMENT", "WORK_REQUEST", "FOLLOW_UP"]
@@ -51,8 +53,22 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
             {/* inquiryType에 따라 보여줄 버튼 출력 */}
             { !inquiryType &&
                 <div className="request-parse-write">
-                    <img src={ explainButton } alt="explain.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'PARSE')} />
-                    <img src={ writeButton } alt="write.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'GENERATE')} />
+                    <button className="request-parse-write-button">
+                        <img src={ parseIcon } alt="parse_ico.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'PARSE')} />
+                        <div className="request-parse-write-text">
+                            <h3>문구 해석</h3>
+                            <p>사수가 뭐라고 하는지 이해가 안돼 :(</p>
+                        </div>
+                    </button>
+                    <button className="request-parse-write-button">
+                        <img className="write-ico" src={ writeIcon } alt="write_ico.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'GENERATE')} />
+                        <div className="request-parse-write-text">
+                            <h3>문장 작성</h3>
+                            <p>타팀에 보낼 메일 및 문자를 부탁해!</p>
+                        </div>
+                    </button>
+                    {/*<img src={ explainButton } alt="explain.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'PARSE')} />*/}
+                    {/*<img src={ writeButton } alt="write.png" onClick={() => requestButtonClick("REQUEST_TYPE", 'GENERATE')} />*/}
                 </div>
             }
             { inquiryType === "REQUEST_TYPE" &&
@@ -61,7 +77,7 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
                         <img src={ writeMailBtn } alt="mail.png" />
                         <p>문자 작성</p>
                     </button>
-                    <button className={"mail-write"} onClick={() => requestButtonClick("MESSAGE_TYPE", 'EMAIL')}>
+                    <button className={"mail-write"} onClick={() => requestButtonClick("MESSAGE_TYPE", 'MAIL')}>
                         <img src={ writeMessageBtn } alt="text.png"/>
                         <p>메일 작성</p>
                     </button>
@@ -96,7 +112,7 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
                     </div>
                 </div>
             }
-            { inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS"  && messageType == "EMAIL" &&
+            { inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS"  && messageType == "MAIL" &&
                 <div className="request-generation">
                     <div className="request-generation-type">
                         {
