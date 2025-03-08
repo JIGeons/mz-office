@@ -26,12 +26,18 @@ import {
 // Custom Hooks
 
 // Components
-import Sidebar from "./components/Common/Sidebar";
-import Footer from "./components/Common/Footer";
-import NotFound from "./components/Common/NotFound";
+import {
+    SideBar,
+    Footer,
+    NotFound,
+    MobileHeader
+} from "./components/ComponentsPath";
 
 // Dialog
-import DialogConfirmCancel from "./components/Dialog/DialogConfirmCancel";
+import {
+    DialogConfirmCancel,
+    DialogConfirm
+} from "./components//ComponentsPath";
 
 // CSS
 import "./styles/common.css";
@@ -76,10 +82,19 @@ const Root = () => {
 
         const userAgent = navigator.userAgent;
         const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+        const iosRegex = /iPhone|iPad|iPod/i;
 
         // ✅ 모바일 기기 확인 후 강제 리디렉트
         if (mobileRegex.test(userAgent)) {
             setIsMobile(true);
+        }
+
+        if (iosRegex.test(userAgent)) {
+            // ios 스크롤 바운스 방지
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.inset = '0px';
         }
 
         let setProperty;
@@ -93,16 +108,6 @@ const Root = () => {
 
         const userAccessData = JSON.parse(localStorage.getItem("userData"));
         const accessToken = userAccessData?.accessToken;
-
-        // userData의 content 내용과 accessToken의 내용이 동일하면 로그인.
-        // if (userData?.content == accessToken) {
-        //     setHasLoginData(true);
-        // } else {
-        //     // accessToken이 존재하지 않고 "/naver-callback" 경로가 아닌 경우 /login으로 이동
-        //     if (!(redirectPath && redirectPath.includes("/naver-callback"))) {
-        //         // navigate("/login");
-        //     }
-        // }
 
         // chatFolder 세팅
         settingChatFolder();
@@ -203,17 +208,12 @@ const Root = () => {
 
         console.log("\n\n@@@ 현재 url: ", path);
 
-        // ✅ 모바일 기기 확인 후 강제 리디렉트
-        // if (mobileRegex.test(userAgent)) {
-        //     setIsNonFooter(true);
-        //     setIsMain(true);
-        //     // navigate("/mobile"); // 모바일 기기면 /mobile로 이동
-        //     return ;
-        // }
-
         // 해당 경로에서는 footer 안보이도록 설정
-        if (["/chat", "/login", "/account-delete"].includes(path)) {
+        if (["/chat", "/login"].includes(path)) {
             setIsNonFooter(false);
+        } else if (["/account-delete"].includes(path)){
+            if (isMobile) setIsNonFooter(true);
+            else setIsNonFooter(false);
         } else {
             setIsNonFooter(true);
         }
@@ -289,7 +289,8 @@ const Root = () => {
 
     // Dialog
     useEffect(() => {
-        if (constant.dialog?.isShowingDialog && constant.dialog?.dialogType == "CONFIRM") {
+        if (constant.dialog?.isShowingDialog &&
+            (constant.dialog?.dialogType.includes("CONFIRM"))) {
             setDialogContent(constant?.dialog);
         }
         else if (!constant.dialog?.isShowingDialog) {
@@ -330,42 +331,17 @@ const Root = () => {
         dispatch(constantActions.onHideDialog());
     }
 
-    console.log("isMain: ", isMain);
-
     return (
         <div id="wrap">
             <div className={`container ${(!isMain && isCollapsed) ? "sidebar-collapsed" : ""}`}>
                 { /* 로그인 이후에 sidebar 표시 */
-                    !isMain && <Sidebar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
+                    !isMain && <SideBar toggleSidebar={toggleSidebar} isCollapsed={isCollapsed} />
+                }
+                {   !isMain && isMobile &&
+                    <MobileHeader toggleSidebar={toggleSidebar} />
                 }
 
                 <div className={`content ${!isMain ? "content-with-sidebar" : "content-full"} ${ !isNonFooter ? "none-footer" : ""}`}>
-                    {/*<Routes>*/}
-                    {/*    /!* 🚀 처음 진입 시, sessionStorage에 저장된 경로가 있다면 해당 경로로 리디렉트 *!/*/}
-                    {/*    {redirectPath && <Route path="*" element={<Navigate to={redirectPath} replace />} />}*/}
-
-                    {/*    /!* 로그인 정보가 없는 경우 /login 페이지로 이동 *!/*/}
-                    {/*    <Route path="/" element={ hasLoginData ?*/}
-                    {/*        <Navigate to={`/chat?chatId=${todayChatId}&date=${todayDate}`} replace /> : <Login /> }*/}
-                    {/*    />*/}
-
-                        { /* 로그인 상태에서 login 페이지 접근 시 /chat페이지로 리다이렉트 */ }
-                    {/*    <Route path="/login" element={ <Login /> } />*/}
-
-                    {/*    <Route path="/chat" element={ <ChatMain /> } />*/}
-                    {/*    <Route path="/vocabulary" element={ <Vocabulary /> } />*/}
-                    {/*    <Route path="/mobile" element={ <Mobile /> } />*/}
-
-                    {/*    <Route path="*" element={ <NotFound />} />*/}
-                    {/*    <Route path="/account-delete" element={ <AccountDelete /> } />*/}
-                    {/*    <Route path="/privacy-policy" element={ <PrivacyPolicy /> } />*/}
-                    {/*    <Route path="/terms-and-conditions" element={ <TermsAndConditions /> } />*/}
-                    {/*</Routes>*/}
-
-                    { /* 🏆 모든 페이지에서 Footer 표시 (로그인 페이지에선 출력 X)*/}
-                    {/*    (hasLoginData && isNonFooter) && <Footer />*/}
-
-
                     <Routes>
                         {/* 🚀 처음 진입 시, sessionStorage에 저장된 경로가 있다면 해당 경로로 리디렉트 */}
                         {redirectPath && <Route path="*" element={<Navigate to={redirectPath} replace />} />}
@@ -392,12 +368,12 @@ const Root = () => {
                     </Routes>
 
                     { /* 🏆 모든 페이지에서 Footer 표시 (로그인 페이지에선 출력 X)*/
-                        (!isMain && isNonFooter) && <Footer />
+                        (!isMain && isNonFooter)
+                        && <Footer />
                     }
                 </div>
 
-                {
-                    (dialogContent?.isShowingDialog && dialogContent.dialogType == "CONFIRM") &&
+                { (dialogContent?.isShowingDialog && dialogContent.dialogType == "CONFIRM_CANCEL") &&
                     <DialogConfirmCancel
                         title={dialogContent.dialogTitle}
                         content={dialogContent.dialogContent}
@@ -405,6 +381,15 @@ const Root = () => {
                         onClickNegativeBtn={hideDialog}
                         positiveBtnContent={"예"}
                         negativeBtnContent={"아니오"}
+                    />
+                }
+
+                { (dialogContent?.isShowingDialog && dialogContent.dialogType == "CONFIRM") &&
+                    <DialogConfirm
+                        title={dialogContent.dialogTitle}
+                        content={dialogContent.dialogContent}
+                        onClickPositiveBtn={dialogContent.positiveFunction}
+                        positiveBtnContent={dialogContent.positiveButtonText}
                     />
                 }
 

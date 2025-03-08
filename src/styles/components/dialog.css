@@ -83,6 +83,11 @@
     border: none;
 }
 
+.dialog_btn_confirm {
+    width: 100%;
+    background-color: #4865FF;
+}
+
 .dialog_btn_positive {
     background-color: #4865FF;
 }

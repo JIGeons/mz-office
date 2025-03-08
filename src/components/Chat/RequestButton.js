@@ -7,6 +7,8 @@ import writeMailBtn from "../../assets/images/chat/ico_mail.png";
 import writeMessageBtn from "../../assets/images/chat/ico_text.png";
 import parseIcon from "../../assets/images/chat/parse_ico.png";
 import writeIcon from "../../assets/images/chat/write_ico.png";
+import reIcon from "../../assets/images/chat/ico_re.png";
+import homeIcon from "../../assets/images/chat/ico_home.png";
 
 // Utils
 import { GenerateType, RequestType } from "../../utils/Enums";
@@ -17,7 +19,7 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
     let buttonType = [];
 
     if (inquiryType == "MESSAGE_TYPE") {
-        buttonType = [`이전에 받은 ${RequestType(messageType)} 입력`, `이전에 받은 ${RequestType(messageType)} 없이 입력`];
+        buttonType = [`이전에 <span>받은 ${RequestType(messageType)}</span> 입력`, `이전에 받은 <span>${RequestType(messageType)} 없이</span> 입력`];
     } else if (inquiryType == "INPUT_METHOD"  && content == "WITHOUT_PREVIOUS" && messageType == "MAIL") {
         buttonType = ["FEEDBACK_REQUEST", "REMINDER", "THANK_YOU", "APOLOGY", "GREETING", "SUGGESTION", "FOLLOW_UP"];
     } else if (inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS"  && messageType == "MESSAGE") {
@@ -84,46 +86,25 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
                 </div>
             }
             { inquiryType == "MESSAGE_TYPE" &&
-                <div className="request-input-method">
+                <div className="request-input-method mobile-prev-div">
                     {/* 이전에 받은 */}
-                    <button className={"chat-input-prev"} onClick={() => requestButtonClick("INPUT_METHOD", 'WITH_PREVIOUS')}>
-                        { buttonType[0] }
+                    <button className={"chat-input-prev mobile-button"} onClick={() => requestButtonClick("INPUT_METHOD", 'WITH_PREVIOUS')}>
+                        <p>이전에 <span className="prev-span">받은 {RequestType(messageType)}</span> 입력</p>
                     </button>
-                    <button className={"chat-input-prev-none"} onClick={() => requestButtonClick("INPUT_METHOD", 'WITHOUT_PREVIOUS')}>
-                        { buttonType[1] }
+                    <button className={"chat-input-prev-none mobile-button"} onClick={() => requestButtonClick("INPUT_METHOD", 'WITHOUT_PREVIOUS')}>
+                        <p>이전에 <span className="prev-none-span">받은 {RequestType(messageType)} 없이</span> 입력</p>
                     </button>
                 </div>
             }
-            { inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS"  && messageType == "MESSAGE" &&
+            { inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS" &&
                 <div className="request-generation">
                     <div className="request-generation-type">
-                        {
+                        { /* 문자/메일 유형 선택 */
                             buttonType.map((content, index) => {
                                 return (
-                                    <>
-                                        { index % 4 == 3 && <br /> }
-                                        <button className={"chat-generation-type"} onClick={() => requestButtonClick("SENTENCE_GENERATION_TYPE", content)}>
-                                            <p>{ GenerateType(content) }</p>
-                                        </button>
-                                    </>
-                                )
-                            })
-                        }
-                    </div>
-                </div>
-            }
-            { inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS"  && messageType == "MAIL" &&
-                <div className="request-generation">
-                    <div className="request-generation-type">
-                        {
-                            buttonType.map((content, index) => {
-                                return (
-                                    <>
-                                        { index % 4 == 3 && <br /> }
-                                        <button className={"chat-generation-type"} onClick={() => requestButtonClick("SENTENCE_GENERATION_TYPE", content)}>
-                                            <p>{ GenerateType(content) }</p>
-                                        </button>
-                                    </>
+                                    <button className={"chat-generation-type"} onClick={() => requestButtonClick("SENTENCE_GENERATION_TYPE", content)}>
+                                        <p>{ GenerateType(content) }</p>
+                                    </button>
                                 )
                             })
                         }
@@ -134,11 +115,13 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
                 <div className="request-input-method">
                     {/* 챗봇 메인으로 */}
                     <button className={"chat-input-prev"} onClick={() => requestButtonClick("AI_REQUEST", 'RESET')}>
-                        {buttonType[0]}
+                        <img src={homeIcon} alt="homeIcon.png" />
+                        <p dangerouslySetInnerHTML={{__html: buttonType[0]}}></p>
                     </button>
                     {/* 더 문의 하기 */}
                     <button className={"chat-input-prev-none"} onClick={() => requestButtonClick("MORE_REQUEST", messageType)}>
-                        {buttonType[1]}
+                        <img src={reIcon} alt="homeIcon.png" />
+                        <p dangerouslySetInnerHTML={{__html: buttonType[1]}}></p>
                     </button>
                 </div>
             }

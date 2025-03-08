@@ -5,18 +5,30 @@ import { RequestType } from "../../utils/Enums";
 
 // Images
 import important from "../../assets/images/chat/ico_Error.png";
-import step1 from "../../assets/images/chat/STEPS1.png"
-import step2 from "../../assets/images/chat/STEPS2.png"
-import step3 from "../../assets/images/chat/STEPS3.png"
+import step1 from "../../assets/images/chat/web_steps1.png"
+import step2 from "../../assets/images/chat/web_steps2.png"
+import step3 from "../../assets/images/chat/web_steps3.png"
+import mobileStep1 from "../../assets/images/chat/mobile_step1.png";
+import mobileStep2 from "../../assets/images/chat/mobile_step2.png";
+import mobileStep3 from "../../assets/images/chat/mobile_step3.png";
 
 // CSS
 import "../../styles/components/chat.css"
 
 const Request = ({ type, messageType, step }) => {
+    const userAgent = navigator.userAgent;
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+    let isMobile = false;
+
     let title = null;
     let content = null;
     let subContent = null;
     const requestType = RequestType(messageType);
+
+    // ✅ 모바일 기기 확인 후 강제 리디렉트
+    if (mobileRegex.test(userAgent)) {
+        isMobile = true;
+    }
 
     switch ( type ) {
         case "MESSAGE_TYPE":
@@ -47,13 +59,13 @@ const Request = ({ type, messageType, step }) => {
     let stepImage = null;
     switch ( step ) {
         case "step_1":
-            stepImage = step1;
+            stepImage = isMobile ? mobileStep1 : step1;
             break;
         case "step_2":
-            stepImage = step2;
+            stepImage = isMobile ? mobileStep2 : step2;
             break;
         case "step_3":
-            stepImage = step3;
+            stepImage = isMobile ? mobileStep3 : step3;
             break;
         default:
             break;
@@ -68,7 +80,9 @@ const Request = ({ type, messageType, step }) => {
             }
             {   type == "REQUEST_TYPE" &&
                 <div className="request-choose-message-type">
-                    <h1><span>문자</span>와 <span>메일</span> 중에 유형을 작성해주세요! </h1>
+                    { !isMobile
+                        && <h1><span>문자</span>와 <span>메일</span> 중에 유형을 작성해주세요! </h1>
+                    }
                 </div>
             }
             {   type == "INPUT_TEXT" &&

@@ -337,6 +337,7 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     margin-bottom: 5px;
+    gap: 10px;
 }
 
 .request-generation-type .chat-generation-type {
@@ -360,8 +361,6 @@
     border-radius: 40px;
 
     padding: 10px 0;
-    margin-bottom: 10px;
-    margin-left: 10px;
     white-space: nowrap;
 }
 
@@ -369,6 +368,10 @@
     width: calc(100% - 60px);
     text-align: right;
     margin-top: 15px;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 .request-input-method button {
     height: 44px;
@@ -378,9 +381,15 @@
     line-height: 21.48px;
     letter-spacing: -0.04em;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     padding: 10px 20px;
-    margin-left: 10px;
     border-radius: 30px;
+}
+.request-input-method button img {
+    margin-right: 5px;
 }
 
 .chat-input-prev {
@@ -534,6 +543,9 @@
 
         color: #1F2531;
     }
+    .request-step-img {
+        margin-top: 10px;
+    }
 
     /* =============== Chat Request =============== */
     .chat-request {
@@ -608,37 +620,123 @@
         padding-top: 1px;
         white-space: nowrap;
     }
+    .request-message-type {
+        margin: 10px 0;
+        padding-left: 37px;
+    }
+    .request-message-type button {
+        width: 108px !important;
+        height: 32px !important;
+
+        background-color: #1F2531;
+        border: 1px solid #404652 !important;
+    }
+    .request-message-type button p {
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        letter-spacing: -0.04em !important;
+    }
+    .request-message-type .chat-write img {
+        width: 18.35px !important;
+        height: 12px !important;
+    }
+    .request-message-type .mail-write img {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .mobile-prev-div {
+        width: 100%;
+        display: flex;
+        justify-content: center !important;
+        align-items: center;
+        gap: 10px;
+
+        padding: 0 !important;
+    }
+    .request-input-method .mobile-button {
+        padding: 0 13px !important;
+        margin: 0 !important;
+    }
+    .request-input-method .chat-input-prev .prev-span {
+        color: #60DBFF;
+    }
+    .request-input-method .chat-input-prev-none .prev-none-span {
+        color: #FF5AD6;
+    }
+
+    .request-generation {
+        width: 100%;
+        margin-top: 10px;
+        padding-left: 37px;
+    }
+    .request-generation-type {
+        justify-content: flex-start;
+        gap: 5px;
+        row-gap: 10px;
+    }
+    .chat-generation-type {
+        width: auto !important;
+        height: 32px !important;
+        min-width: 60px;
+        font-family: 'Pretendard', sans-serif !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        letter-spacing: -0.04em !important;
+        color: #FFFFFF !important;
+        background-color: #1F2531 !important;
+        border: 1px solid #404652 !important;
+        padding: 2px 15px !important;
+        margin: 0 !important;
+    }
 
     .request-input-method {
         width: 100%;
         margin: 10px 0;
         display: flex;
-        align-items: flex-start ;
-        padding-left: 28px;
+        justify-content: flex-start;
+        padding-left: 37px;
+        gap: 7px;
+    }
+    .request-input-method button {
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        line-height: 0;
+        color: #FFFFFF;
+        background-color: #1F2531;
+        border: 1px solid #404652 !important;
+
+        padding: 0 13px !important;
+        margin: 0;
     }
     .chat-input-prev {
-        width: 110px !important;
-        height: 32px !important;
-
         font-family: 'Pretendard', sans-serif !important;
         font-weight: 500 !important;
         font-size: 14px !important;
-        line-height: 18px !important;
         letter-spacing: -0.04em !important;
 
         padding: 0 !important;
     }
+    .chat-input-prev img {
+        width: 17px;
+        height: 14px;
+        margin-right: 4px;
+    }
     .chat-input-prev-none {
-        width: 124px !important;
-        height: 32px !important;
-
         font-family: 'Pretendard', sans-serif !important;
         font-weight: 500 !important;
         font-size: 14px !important;
-        line-height: 18px !important;
         letter-spacing: -0.04em !important;
 
         padding: 0 !important;
+    }
+    .chat-input-prev-none img {
+        width: 13px;
+        height: 15px;
+        margin-right: 4px;
     }
 
     /* =============== Chat Response =============== */
