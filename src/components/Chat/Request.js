@@ -5,12 +5,13 @@ import { RequestType } from "../../utils/Enums";
 
 // Images
 import important from "../../assets/images/chat/ico_Error.png";
-import step1 from "../../assets/images/chat/web_steps1.png"
-import step2 from "../../assets/images/chat/web_steps2.png"
-import step3 from "../../assets/images/chat/web_steps3.png"
+import step1 from "../../assets/images/chat/web_step1.png"
+import step2 from "../../assets/images/chat/web_step2.png"
+import step3 from "../../assets/images/chat/web_step3.png"
 import mobileStep1 from "../../assets/images/chat/mobile_step1.png";
 import mobileStep2 from "../../assets/images/chat/mobile_step2.png";
 import mobileStep3 from "../../assets/images/chat/mobile_step3.png";
+import mobileChatAiIcon from "../../assets/images/chat/ico_mobile_chat_ai.png";
 
 // CSS
 import "../../styles/components/chat.css"
@@ -52,8 +53,6 @@ const Request = ({ type, messageType, step }) => {
             if (!requestType) title = "받아보신 해석 내용에 만족하셨나요?";
             else title = `받아보신 ${requestType} 내용에 만족하셨나요?`
             break;
-        // default:
-        //     break;
     }
 
     let stepImage = null;
@@ -73,19 +72,20 @@ const Request = ({ type, messageType, step }) => {
 
     return (
         <>
-            {   step &&
-                <div className="request-step">
-                    <img className={"request-step-img"} src={ stepImage } alt="stepImage.png" />
-                </div>
-            }
+        {   step &&
+            <div className="request-step">
+                <img className={"request-step-img"} src={ stepImage } alt="stepImage.png" />
+            </div>
+        }
+        <div className="request-component">
+            { /* 모바일인 경우 chat 이미지를 보여줌 */
+                (isMobile || type == "REQUEST_TYPE") && <img className={"chat-ai-icon"} src={mobileChatAiIcon} alt="mobile-chat-ai-icon.png" /> }
             {   type == "REQUEST_TYPE" &&
                 <div className="request-choose-message-type">
-                    { !isMobile
-                        && <h1><span>문자</span>와 <span>메일</span> 중에 유형을 작성해주세요! </h1>
-                    }
+                    <p><span>문자</span>와 <span>메일</span> 중에 유형을 작성해주세요!</p>
                 </div>
             }
-            {   type == "INPUT_TEXT" &&
+            {   (type == "INPUT_TEXT" || type == "AI_RESPONSE") &&
                 <div className = "request">
                     <img className="notice-image" src={important} alt="important.png" />
                     <div className="request-content">
@@ -115,6 +115,7 @@ const Request = ({ type, messageType, step }) => {
                     }
                 </div>
             }
+        </div>
         </>
     );
 }

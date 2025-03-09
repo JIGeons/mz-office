@@ -7,6 +7,8 @@ import writeMailBtn from "../../assets/images/chat/ico_mail.png";
 import writeMessageBtn from "../../assets/images/chat/ico_text.png";
 import parseIcon from "../../assets/images/chat/parse_ico.png";
 import writeIcon from "../../assets/images/chat/write_ico.png";
+import webReIcon from "../../assets/images/chat/ico_web_re.png";
+import webHomeIcon from "../../assets/images/chat/ico_web_home.png";
 import reIcon from "../../assets/images/chat/ico_re.png";
 import homeIcon from "../../assets/images/chat/ico_home.png";
 
@@ -14,7 +16,15 @@ import homeIcon from "../../assets/images/chat/ico_home.png";
 import { GenerateType, RequestType } from "../../utils/Enums";
 
 const RequestButton = ({ inquiryType, content, messageType, user, setRequestType }) => {
-    console.log("여기가 출력되면 ?");
+    const userAgent = navigator.userAgent;
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+    let isMobile = false;
+
+    // ✅ 모바일 기기 확인 후 강제 리디렉트
+    if (mobileRegex.test(userAgent)) {
+        isMobile = true;
+    }
+
 
     let buttonType = [];
 
@@ -27,7 +37,7 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
     } else if (inquiryType == "AI_REQUEST" && user == "AI") {
         buttonType = [`챗봇 메인으로`];
         if (messageType) {
-            buttonType.push(`${RequestType(messageType)} 다시 문의`);
+            buttonType.push(`${RequestType(messageType)} 작성 다시 문의하기`);
         } else {
             buttonType.push("해석 더 문의하기");
         }
@@ -114,13 +124,13 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
             { inquiryType == "AI_REQUEST" && user == "AI" &&
                 <div className="request-input-method">
                     {/* 챗봇 메인으로 */}
-                    <button className={"chat-input-prev"} onClick={() => requestButtonClick("AI_REQUEST", 'RESET')}>
-                        <img src={homeIcon} alt="homeIcon.png" />
+                    <button className={"chat-input-prev return-main"} onClick={() => requestButtonClick("AI_REQUEST", 'RESET')}>
+                        <img src={isMobile ? homeIcon : webHomeIcon} alt="homeIcon.png" />
                         <p dangerouslySetInnerHTML={{__html: buttonType[0]}}></p>
                     </button>
                     {/* 더 문의 하기 */}
                     <button className={"chat-input-prev-none"} onClick={() => requestButtonClick("MORE_REQUEST", messageType)}>
-                        <img src={reIcon} alt="homeIcon.png" />
+                        <img src={isMobile ? reIcon : webReIcon} alt="homeIcon.png" />
                         <p dangerouslySetInnerHTML={{__html: buttonType[1]}}></p>
                     </button>
                 </div>

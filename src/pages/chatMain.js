@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import { persistor } from "../redux/Store";
 import { SocketUrl } from "../utils/ServerUrl";
 
 // Actions
@@ -30,6 +31,7 @@ import "../styles/chatMain.css";
 import { getTodayDate, getTodayDateToString, transferDateToString } from "../utils/Utils";
 import { GenerateType } from "../utils/Enums";
 import ChatLoading from "../components/Chat/ChatLoading";
+import * as constantActions from "../redux/modules/ConstantSlice";
 
 const initialMessage = {
     sender: "USER",
@@ -60,6 +62,8 @@ const ChatMain = () => {
     const userAgent = navigator.userAgent;
     const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
 
+    const reconnectTimeout = 5000; // 5초 후 재연결
+
     // 현재 날짜, URL에서 chatId와 date 가져오기
     const todayDate = getTodayDate();
     const todayDateToString = getTodayDateToString();
@@ -85,90 +89,12 @@ const ChatMain = () => {
     const { todayChatList, chatDetail } = useSelector((state) => state.chat);
 
     // useRef로 sessionList, socketMessage Ref 정의
-    const sessionListRef = useRef([initialSession]);
+    const sessionListRef = useRef([{...initialSession}]);
     const socketMessageRef = useRef({...initialSocketMessage});
     const chatIdRef = useRef(null);
     const chatContainerRef = useRef(null);
 
     const [_, setRender] = useState(0);    // 강제 리렌더링용 state
-
-    // ComponentDidMount
-    // useEffect(() => {
-    //     const userData = JSON.parse(localStorage.getItem("userData"));
-    //
-    //     // TODO:: 활성화 할 것
-    //     if (!userData) {
-    //         console.error("❌ User data not found! 페이지를 새로고침합니다.");
-    //         window.location.reload();   // 🔄 새로고침
-    //         return ;
-    //     }
-    //
-    //     // TODO:: 활성화 할 것
-    //     if (!paramChatId && !paramDate) {
-    //         console.error("❌ paramChatId, Date data not found! 페이지를 새로고침합니다.");
-    //         window.location.reload();   // 🔄 새로고침
-    //         return ;
-    //     }
-    //
-    //     // date가 오늘인 경우 API 호출 및 소캣 연결
-    //     if (paramDate === todayDate) {
-    //         setShowRequestButton(true);
-    //         dispatch(chatActions.getTodayChatList())
-    //
-    //         // 웹 소켓 연결 실행
-    //         const ws = connectWebSocket(userData.accessToken);
-    //         setSocket(ws);
-    //
-    //         // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
-    //         return () => {
-    //             ws.close();
-    //         }
-    //     }
-    //
-    //     // date가 오늘이 아닌 경우 chatData request API만 호출
-    //     else {
-    //         dispatch(chatActions.getChatDetail({chatId: paramChatId}));
-    //         setShowRequestButton(false);
-    //     }
-    // }, [ paramChatId, paramDate, dispatch ]);
-
-    // API 응답 시 처리
-    // useEffect(() => {
-    //     // date가 오늘인 경우
-    //     if (paramDate === todayDate) {
-    //         if (todayChatList?.code == "SUCCESS") {
-    //             const chatSessionList = todayChatList?.content?.chatSessionList || null;
-    //
-    //             // 오늘 채팅 목록이 있는 경우, 마지막에 비어있는 질문 추가
-    //             if (chatSessionList) {
-    //                 setChatId(todayChatList?.content?.chatId);
-    //                 sessionListRef.current = [...chatSessionList, initialSession];
-    //             }
-    //             // 오늘 채팅 목록이 없는 경우, 비어있는 질문으로 sessionListRef 초기화
-    //             else {
-    //                 sessionListRef.current = [initialSession];
-    //             }
-    //
-    //             // socketMessage 초기화
-    //             socketMessageRef.current = initialSocketMessage;
-    //         }
-    //     } else {
-    //         if (chatDetail.code == "SUCCESS") {
-    //             console.log("chatDetail: ", chatDetail.content.chatSessionList);
-    //             // date가 오늘이 아닌경우 chatDetail에서 채팅 목록 조회
-    //             setChatId(chatDetail.content.chatId);
-    //             sessionListRef.current = chatDetail.content.chatSessionList;
-    //             console.log("Updated sessionList: ", sessionListRef.current);
-    //
-    //             // socketMessage 초기화
-    //             socketMessageRef.current = initialSocketMessage;
-    //         } else {
-    //             console.error("### chatDetail 응답 오류. (error: ", chatDetail);
-    //             return;
-    //         }
-    //     }
-    //
-    // }, [ todayChatList, chatDetail, paramDate ]);
 
     useEffect(() => {
         // ✅ 모바일 기기 확인 후 강제 리디렉트
@@ -183,6 +109,7 @@ const ChatMain = () => {
         const paramDate = queryPrams.get("date");
 
         setChatData({chatId: paramChatId || "today", date: paramDate || todayDate});
+        setShowLoading(false);
 
         if (paramChatId) {
             // chatId가 today이면 오늘의 chatting을 불러온다.
@@ -217,22 +144,29 @@ const ChatMain = () => {
     }, [paramChatId, paramDate]);
 
     useEffect(() => {
-        if (todayChatList?.code == "SUCCESS") {
+        if (todayChatList?.code == "SUCCESS" && paramDate == todayDate) {
             const response = todayChatList?.content;
 
             initialSocketMessage.chatId = response?.chatId;
             socketMessageRef.current.chatId = response?.chatId;
-            sessionListRef.current = response.chatSessionList;
+            // 기존 데이터 삽입.
+            sessionListRef.current = [...response.chatSessionList];
+            // 채팅을 시작할 새로운 session 추가
+            sessionListRef.current.push({...initialSession});
 
-            // 새로운 message세션 추가 해야함.
+            // 강제 렌더링
+            setRender(prev => prev + 1);
         }
     }, [todayChatList]);
 
     useEffect(() => {
         // chatDetail의 응답을 성공적으로 받은 경우
-        if (chatDetail?.code == "SUCCESS") {
+        if (chatDetail?.code == "SUCCESS" && paramDate != todayDate) {
             const response = chatDetail?.content;
             sessionListRef.current = chatDetail.content.chatSessionList;
+
+            // 강제 렌더링
+            setRender(prev => prev + 1);
         } else if (chatDetail?.code == "ERROR") {
             navigate("/chat");
         }
@@ -249,7 +183,7 @@ const ChatMain = () => {
     // ✅ 1. 웹 소켓 연결을 처리하는 함수
     const connectWebSocket = () => {
         const storageUserData = JSON.parse(localStorage.getItem("userData"));
-        console.log(`Socket URL: ${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
+        // console.log(`Socket URL: ${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
         const ws = new WebSocket(`${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
 
         ws.onopen = () => {
@@ -265,11 +199,27 @@ const ChatMain = () => {
             console.log("🔴 종료 코드:", event.code);
             console.log("🔴 종료 이유:", event.reason);
             console.log("🔴 연결이 정상 종료되었나?", event.wasClean ? "✅ 예" : "❌ 아니요");
+
+            // 토큰 인증 실패 - 로그인 페이지로 이동
+            if (event.code == 4001) {
+                localStorage.clear();   // 로컬스토리지 초기화
+                persistor.purge();      // redux 초기화
+                location.reload();
+                return ;
+            }
+
+            // 연결이 정상 종료 되지 않은 경우. 다시 연결 요청
+            if (!event.wasClean) {
+                console.log(`🔄 ${reconnectTimeout / 1000}초 후 WebSocket 재연결`);
+                setTimeout(connectWebSocket, reconnectTimeout);
+            }
         };
 
         ws.onerror = (error) => {
             console.log("WebSocket 오류: ", error);
         };
+
+        dispatch(constantActions.onHideDialog());
 
         return ws;
     };
@@ -284,6 +234,7 @@ const ChatMain = () => {
         if (!socketMessageRef.current.chatId
             && receivedMessage.chatId) {
             localStorage.setItem("chatId", receivedMessage.chatId);
+            initialSocketMessage.chatId = receivedMessage.chatId;
         }
 
         // 새로운 chat은 저장하기 위해 newChatList생성
@@ -356,7 +307,7 @@ const ChatMain = () => {
                 newMessage = {
                     // 새로운 message 추가
                     sender: "AI",
-                    inquiryType: sessionListRef.current.inquiryType,
+                    inquiryType: "AI_RESPONSE",
                     content: receivedMessage.content,
                     sendAt: new Date(),
                 }
@@ -404,10 +355,12 @@ const ChatMain = () => {
                 return;
             } else {
                 // Enter: 메시지 전송
-                e.preventDefault(); // 기본 Enter 동작(개행) 방지
+                if (!isMobile) {
+                    e.preventDefault(); // 기본 Enter 동작(개행) 방지
 
-                // 전송 가능한 경우에 enter 처리
-                if (!disabledButton) sendRequest();
+                    // 전송 가능한 경우에 enter 처리
+                    if (!disabledButton) sendRequest();
+                }
             }
         }
     };
@@ -419,6 +372,7 @@ const ChatMain = () => {
         if (requestType == "RESET") {
             console.log("initialSocketMessage: ", initialSocketMessage);
             socketMessageRef.current = {...initialSocketMessage};
+            sessionListRef.current.push({...initialSession});
             // 강제 렌더링
             setRender(prev => prev + 1);
             return ;
@@ -439,17 +393,14 @@ const ChatMain = () => {
 
     // 메시지 전송 함수
     const sendMessage = (inquiryType, content) => {
-        if (socket) {
-            let newChatId = false;
-            // sessionId가 없는 경우 -> 챗이 시작하기 전
-            if (!socketMessageRef.current?.chatSessionId) {
-                const todayDate = getTodayDate();
-                // 질문을 시작하는 날짜가 오늘이 아니면 새로운 채팅방을 생성
-                if (paramDate != todayDate) {
-                    newChatId = true;
-                }
-            }
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            console.log("### socket.readyState: ", socket.readyState);
+            console.warn("🚨 WebSocket이 닫혀 있어 메시지를 보낼 수 없습니다.");
+            connectWebSocket();
+            return;
+        }
 
+        if (socket) {
             console.log("inquiryType: ", inquiryType, " content: ", content);
 
             // 소캣 메세지 set
@@ -465,7 +416,6 @@ const ChatMain = () => {
                 }
                 sessionListRef.current[sessionListRef.current.length - 1].messages.push(newMessage);
                 setShowLoading(true);
-                // setRender(prev => prev + 1);    // 강제 렌더링
             }
 
             console.log("### socketMessageRef.current: ", JSON.stringify(socketMessageRef.current));
@@ -495,11 +445,10 @@ const ChatMain = () => {
     let messageType = null;
 
     let user = "";
-    console.log("#### ChatData: ", chatData);
+    // console.log("#### SessionList: ", sessionList);
     return (
         <div className="chat-main">
             <section className="mz-logo-white">
-                <img src={MZLogoWhite} alt="MZ-logo-white.png" />
                 <div className="mz-logo-text">
                     {   !isMobile &&
                         <>
@@ -591,7 +540,7 @@ const ChatMain = () => {
                     }
                     {
                         // SocketMessage에 따라 버튼 출력
-                        (showRequestButton && socketMessageRef.current)
+                        (showRequestButton && socketMessageRef.current && !showLoading)
                         && (chatData?.date == todayDate) &&
                             <RequestButton inquiryType={socketMessageRef.current.inquiryType} content={socketMessageRef.current.content} user={user} messageType={messageType} setRequestType={setRequestType} />
                     }
@@ -617,7 +566,7 @@ const ChatMain = () => {
                 </button>
             </section>
             <section className="privacy-policy">
-                <p onClick={() => {navigate("/terms-and-conditions")}}>개인정보 처리 방침 확인하기</p>
+                <p onClick={() => {navigate("/privacy-policy")}}>개인정보 처리 방침 확인하기</p>
             </section>
         </div>
     );
