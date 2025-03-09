@@ -16,6 +16,7 @@ import {
     ChatMain,
     NaverCallback,
     Vocabulary,
+    MobileVocabulary,
     Mobile,
     AccountDelete,
     PrivacyPolicy,
@@ -359,7 +360,7 @@ const Root = () => {
                         {/* ✅ 일반 사용자가 접근 가능한 페이지 */}
                         <Route element={<ProtectedRoute />}>
                             <Route path="/chat" element={ <ChatMain /> } />
-                            <Route path="/vocabulary" element={ <Vocabulary /> } />
+                            <Route path="/vocabulary" element={ isMobile ? <MobileVocabulary /> : <Vocabulary /> } />
                             <Route path="/account-delete" element={ <AccountDelete /> } />
                         </Route>
 

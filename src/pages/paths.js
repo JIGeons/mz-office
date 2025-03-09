@@ -9,6 +9,7 @@ import NaverCallback from "./NaverCallback";
 
 // 단어장
 import Vocabulary from "./Vocabulary";
+import MobileVocabulary from "./mobile/MobileVocabulary";
 
 // 모바일로 접근 시 막는 페이지
 import Mobile from "./Mobile";
@@ -23,6 +24,7 @@ export {
     ChatMain,
     NaverCallback,
     Vocabulary,
+    MobileVocabulary,
     Mobile,
     AccountDelete,
     PrivacyPolicy,
