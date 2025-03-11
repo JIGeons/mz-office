@@ -27,8 +27,19 @@ function transferDateToString(date) {
     return `${year}년 ${month}월 ${day}일 ${Day(dateToString.getDay())}`;
 }
 
+function getIsMobile(userAgent) {
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
+
+    // ✅ 모바일 기기 확인 후 강제 리디렉트
+    if (mobileRegex.test(userAgent)) {
+        return true;
+    }
+    return false;
+}
+
 export {
     getTodayDate,
     getTodayDateToString,
-    transferDateToString
+    transferDateToString,
+    getIsMobile
 };

@@ -8,8 +8,6 @@ const naverClientId = process.env.REACT_APP_NAVER_CLIENT_ID;
 const webUrl = process.env.REACT_APP_MZ_OFFICE_WEB_URL;
 const naverCallbackUrl = `${webUrl}/naver-callback`;
 
-console.log("callbackURL = ", naverCallbackUrl);
-
 const NaverLoginButton = () => {
     const handleNaverLogin = () => {
         const state = Math.random().toString(36).substr(2, 15); // ✅ 랜덤 state 생성

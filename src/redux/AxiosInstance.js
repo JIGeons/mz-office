@@ -18,9 +18,6 @@ axiosInstance.interceptors.request.use(
     (config) => {
         const userData = JSON.parse(localStorage.getItem("userData"));
 
-        console.log("### userData", userData);
-
-        console.log("AccessToken: " , userData.accessToken)
         config.headers["Authorization"] = `Bearer ${userData.accessToken}`;
         return config;
     },

@@ -8,11 +8,13 @@ import * as constantActions from "../redux/modules/ConstantSlice";
 
 // Images
 import vocaImage from "../assets/images/voca/voca_img.png";
+import rightIcon from "../assets/images/voca/answer_icon.png";
+import wrongIcon from "../assets/images/voca/wrong_icon.png";
+import correctImg from "../assets/images/voca/img_correct.svg";
+import incorrectImg from "../assets/images/voca/img_incorrect.svg";
 
 // CSS
 import "../styles/vocabulary.css";
-import rightIcon from "../assets/images/voca/answer_icon.png";
-import wrongIcon from "../assets/images/voca/wrong_icon.png";
 
 const Vocabulary = () => {
     const dispatch = useDispatch();
@@ -147,11 +149,11 @@ const Vocabulary = () => {
                     <div className="dialog_inner">
                         {   quiz.answerIndex == selectedAnswerRef.current ?
                             <div className="dialog_content">
-                                <img className="dialog_icon" src={ rightIcon } alt="rightIcon.png" />
+                                <img className="dialog_icon" src={ correctImg } alt="rightIcon.png" />
                                 <h3 className="dialog-answer-content">정답입니다!</h3>
                             </div>
                             :   <div className="dialog_content">
-                                    <img className="dialog_icon" src={ wrongIcon } alt="rightIcon.png" />
+                                    <img className="dialog_icon" src={ incorrectImg } alt="rightIcon.png" />
                                     <h3 className="dialog-answer-content">오답입니다.</h3>
                                     <h3 className="dialog-answer-content">다시 선택해 주세요!</h3>
                                 </div>

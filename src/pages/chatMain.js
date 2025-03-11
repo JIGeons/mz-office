@@ -131,7 +131,6 @@ const ChatMain = () => {
         if (paramDate == todayDate) {
             // 웹 소켓 연결 실행
             const ws = connectWebSocket();
-            setSocket(ws);
 
             // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
             return () => {
@@ -208,10 +207,10 @@ const ChatMain = () => {
                 return ;
             }
 
-            // 연결이 정상 종료 되지 않은 경우. 다시 연결 요청
-            if (!event.wasClean) {
-                console.log(`🔄 ${reconnectTimeout / 1000}초 후 WebSocket 재연결`);
-                setTimeout(connectWebSocket, reconnectTimeout);
+            // 연결이 정상 종료 되지 않은 경우. 다시 연결 요청 (채팅이 가능한 페이지에서만)
+            if (!event.wasClean
+                && (location.pathname == "/chat" && paramChatId == "today")) {
+                dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "채팅방 연결 오류", dialogContent: "채팅방을 다시 연결 합니다.", positiveFunction: connectWebSocket }))
             }
         };
 
@@ -220,6 +219,7 @@ const ChatMain = () => {
         };
 
         dispatch(constantActions.onHideDialog());
+        setSocket(ws);
 
         return ws;
     };
@@ -233,7 +233,11 @@ const ChatMain = () => {
         // socketMessageRef.current에 chatId가 없는 경우 로컬 스토리지에 저장
         if (!socketMessageRef.current.chatId
             && receivedMessage.chatId) {
-            localStorage.setItem("chatId", receivedMessage.chatId);
+            const chatDataString = {
+                chatId: receivedMessage.chatId,
+                date: getTodayDate()
+            }
+            localStorage.setItem("chatData", JSON.stringify(chatDataString));
             initialSocketMessage.chatId = receivedMessage.chatId;
         }
 
@@ -394,9 +398,8 @@ const ChatMain = () => {
     // 메시지 전송 함수
     const sendMessage = (inquiryType, content) => {
         if (!socket || socket.readyState !== WebSocket.OPEN) {
-            console.log("### socket.readyState: ", socket.readyState);
-            console.warn("🚨 WebSocket이 닫혀 있어 메시지를 보낼 수 없습니다.");
-            connectWebSocket();
+            console.log("\n\n\n### readyState: ", socket.readyState);
+            dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "채팅방 연결 오류", dialogContent: "채팅방을 다시 연결 합니다.", positiveFunction: connectWebSocket }));
             return;
         }
 
@@ -453,7 +456,7 @@ const ChatMain = () => {
                     {   !isMobile &&
                         <>
                             {  !chatIdRef.current &&
-                                <h1>안녕하세요.</h1>
+                                <h1>사용자님, 안녕하세요.</h1>
                             }
                             <div className="mz-logo-text-description">
                                 <p>MZ오피스를 이용하여, 사내에서의 문제를 해결해보세요!</p>
@@ -521,7 +524,7 @@ const ChatMain = () => {
 
                                     else if (msg?.inquiryType == "SENTENCE_GENERATION_TYPE") {
                                         msgComponent.push(<ChatRequest content={ GenerateType(msg?.content)} key={`request-${index}-${depth}`} />);
-                                        msgComponent.push(<Request type={"INPUT_TEXT"} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
+                                        msgComponent.push(<Request type={msg?.inquiryType} contentType={msg?.content} messageType={messageType} key={`request-parse-${index}-${depth}`} />);
                                     }
 
                                     else if (msg?.inquiryType == "AI_REQUEST") {

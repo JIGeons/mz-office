@@ -31,9 +31,9 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
     if (inquiryType == "MESSAGE_TYPE") {
         buttonType = [`이전에 <span>받은 ${RequestType(messageType)}</span> 입력`, `이전에 받은 <span>${RequestType(messageType)} 없이</span> 입력`];
     } else if (inquiryType == "INPUT_METHOD"  && content == "WITHOUT_PREVIOUS" && messageType == "MAIL") {
-        buttonType = ["FEEDBACK_REQUEST", "REMINDER", "THANK_YOU", "APOLOGY", "GREETING", "SUGGESTION", "FOLLOW_UP"];
+        buttonType = ["FEEDBACK_REQUEST", "REMINDER", "THANK_YOU", "APOLOGY", "GREETING", "SUGGESTION"];
     } else if (inquiryType == "INPUT_METHOD" && content == "WITHOUT_PREVIOUS"  && messageType == "MESSAGE") {
-        buttonType = ["CONGRATULATION", "INQUIRY", "APPRECIATION", "APOLOGY", "SCHEDULE_CONFIRMATION", "ANNOUNCEMENT", "WORK_REQUEST", "FOLLOW_UP"]
+        buttonType = ["CONGRATULATION", "INQUIRY", "APPRECIATION", "APOLOGY", "SCHEDULE_CONFIRMATION", "ANNOUNCEMENT", "WORK_REQUEST"]
     } else if (inquiryType == "AI_REQUEST" && user == "AI") {
         buttonType = [`챗봇 메인으로`];
         if (messageType) {

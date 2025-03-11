@@ -23,9 +23,6 @@ const GenerateType = (type) => {
         case "WORK_REQUEST":
             messageType = "업무 요청";
             break;
-        case "FOLLOW_UP":
-            messageType = "팔로우업";
-            break;
         case "FEEDBACK_REQUEST":
             messageType = "피드백 요청";
             break;

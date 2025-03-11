@@ -8,11 +8,13 @@ import * as constantActions from "../../redux/modules/ConstantSlice";
 
 // Images
 import backIcon from "../../assets/images/voca/ico-bag.png";
+import rightIcon from "../../assets/images/voca/answer_icon.png";
+import wrongIcon from "../../assets/images/voca/wrong_icon.png";
+import correctImg from "../../assets/images/voca/img_correct.svg";
+import incorrectImg from "../../assets/images/voca/img_incorrect.svg";
 
 // CSS
 import "../../styles/vocabulary.css";
-import rightIcon from "../../assets/images/voca/answer_icon.png";
-import wrongIcon from "../../assets/images/voca/wrong_icon.png";
 import  "@fontsource/titan-one";
 
 const MobileVocabulary = () => {
@@ -137,21 +139,25 @@ const MobileVocabulary = () => {
 
             {/* 정답 확인 모달 */}
             {   showModalRef.current &&
-                <section className="dialog-modal">
-                    <div className="dialog_inner">
+                <section className="mobile-dialog-modal">
+                    <div className="mobile-dialog_inner">
                         {   quiz.answerIndex == selectedAnswerRef.current ?
-                            <div className="dialog_content">
-                                <img className="dialog_icon" src={ rightIcon } alt="rightIcon.png" />
-                                <h3 className="dialog-answer-content">정답입니다!</h3>
+                            <div className="mobile-dialog_content">
+                                <img className="mobile-dialog_icon" src={ correctImg } alt="rightIcon.png" />
+                                <div className="mobile-dialog-answer-content">
+                                    <h3><span className="correct-answer">정답</span> 입니다!</h3>
+                                </div>
                             </div>
-                            :   <div className="dialog_content">
-                                <img className="dialog_icon" src={ wrongIcon } alt="rightIcon.png" />
-                                <h3 className="dialog-answer-content">오답입니다.</h3>
-                                <h3 className="dialog-answer-content">다시 선택해 주세요!</h3>
+                            : <div className="mobile-dialog_content">
+                                <img className="mobile-dialog_icon" src={ incorrectImg } alt="rightIcon.png" />
+                                <div className="mobile-dialog-answer-content">
+                                    <h3><span className="incorrect-answer">오답</span> 입니다.</h3>
+                                    <h4>다시 선택해 주세요!</h4>
+                                </div>
                             </div>
                         }
                         <button
-                            className="dialog_answer_button"
+                            className="mobile-dialog_answer_button"
                             onClick={() => handleConfirmButton()}>
                             확인
                         </button>

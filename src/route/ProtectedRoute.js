@@ -9,8 +9,8 @@ const ProtectedRoute = ({ requiredRole }) => {
     const userData = JSON.parse(localStorage.getItem("userData"));
 
 
-    console.log("accessToken", userData?.accessToken);
-    console.log("isAuthenticated", isAuthenticated);
+    // console.log("accessToken", userData?.accessToken);
+    // console.log("isAuthenticated", isAuthenticated);
     if (!userData?.accessToken) {
         // ✅ 로그인하지 않은 경우, 로그인 페이지로 리디렉트
         return <Navigate to="/login" replace state={{ from: location }} />;

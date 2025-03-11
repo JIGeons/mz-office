@@ -28,14 +28,6 @@
     position: relative;
 }
 
-.dialog_title {
-    font-family: 'Paperlogy', sans-serif;
-    font-weight: 700;
-    font-size: 30px;
-    line-height: 40px;
-    letter-spacing: -0.05em;
-}
-
 .dialog_content {
     font-family: 'Paperlogy', sans-serif;
     font-weight: 400;
@@ -45,6 +37,14 @@
     margin-bottom: 50px;
 
     white-space: pre-line;
+}
+
+.dialog_title {
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 40px;
+    letter-spacing: -0.05em;
 }
 
 .dialog_icon {
@@ -109,4 +109,126 @@
     line-height: 26px;
     letter-spacing: 0;
     color: #FFFFFF;
+}
+
+/* 모바일 전용 스타일 */
+@media screen and (max-width: 767px) {
+    .mobile-dialog-modal {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        background-color: rgba(31, 37, 49, 0.8)  /* 50% 투명도 */;
+
+        padding: 25px;
+    }
+
+    .mobile-dialog_inner {
+        width: 100%;
+
+        background-color: #FFFFFF;
+        border-radius: 20px;
+        padding: 25px;
+    }
+    .mobile-dialog_content {
+        font-family: 'Paperlogy', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 30px;
+        letter-spacing: -0.04em;
+        margin-bottom: 30px;
+
+        white-space: pre-line;
+    }
+
+    .mobile-dialog_title {
+        font-family: 'Paperlogy', sans-serif;
+        font-weight: 700;
+        font-size: 30px;
+        line-height: 50px;
+        letter-spacing: -0.05em;
+    }
+
+    .mobile-dialog_icon {
+        width: 167px;
+        margin-top: -20px;
+    }
+    .mobile-dialog-answer-content {
+        font-family: 'Paperlogy', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 100%;
+        letter-spacing: -0.04em;
+        margin-top: -10px;
+
+        white-space: pre-line;
+    }
+    .mobile-dialog-answer-content .correct-answer {
+        color: #4865FF;
+    }
+    .mobile-dialog-answer-content .incorrect-answer {
+        color: #D83B53;
+    }
+    .mobile-dialog_content h4 {
+        font-family: 'Paperlogy', sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 32px;
+        letter-spacing: -0.02em;
+        color: #333333;
+        margin-top: 5px;
+    }
+
+    .mobile-dialog_answer_button {
+        width: 100%;
+        height: 49px;
+        background-color: #4865FF;
+        border: none;
+        border-radius: 12px;
+
+        font-family: 'Paperlogy', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 26px;
+        letter-spacing: 0;
+        color: #FFFFFF;
+    }
+
+    .mobile-dialog_btn_group {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+        gap: 10px;
+        position: relative;
+    }
+
+    .mobile-dialog_btn {
+        width: 239px;
+        height: 49px;
+
+        font-family: 'Paperlogy', sans-serif;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 26px;
+        letter-spacing: 0;
+        color: #EEEFF6;
+        border-radius: 6px;
+        border: none;
+    }
+    .mobile-dialog_btn_confirm {
+        width: 100%;
+        background-color: #4865FF;
+    }
+    .mobile-dialog_btn_positive {
+        background-color: #4865FF;
+    }
+    .mobile-dialog_btn_negative {
+        background-color: #C6C8D1;
+    }
 }

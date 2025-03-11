@@ -361,8 +361,9 @@ const Root = () => {
                         <Route element={<ProtectedRoute />}>
                             <Route path="/chat" element={ <ChatMain /> } />
                             <Route path="/vocabulary" element={ isMobile ? <MobileVocabulary /> : <Vocabulary /> } />
-                            <Route path="/account-delete" element={ <AccountDelete /> } />
+
                         </Route>
+                        <Route path="/account-delete" element={ <AccountDelete /> } />
 
                         <Route path="/privacy-policy" element={ <PrivacyPolicy /> } />
                         <Route path="/terms-and-conditions" element={ <TermsAndConditions /> } />

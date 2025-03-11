@@ -108,6 +108,11 @@ button {
 
         display: flex;
         flex-direction: column;
+        overflow-y: auto; /* ✅ 스크롤 가능하지만 필요할 때만 표시 */
+        scrollbar-width: none; /* ✅ 파이어폭스에서 스크롤바 숨김 */
+    }
+    .container::-webkit-scrollbar {
+        display: none;
     }
 
     /* ✅ Sidebar가 보일 때 (컨텐츠 너비 조절) */
@@ -179,6 +184,7 @@ button {
         display: flex;
         justify-content: center;
         align-items: center;
+        position: sticky;
 
         background: black;
 

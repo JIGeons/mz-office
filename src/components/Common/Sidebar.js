@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import {persistor} from "../../redux/Store";
 
 // Actions
 import * as authActions from "../../redux/modules/AuthSlice";
@@ -21,7 +22,7 @@ import "../../styles/components/sidebar.css"
 import {getTodayDate} from "../../utils/Utils";
 
 
-const Sidebar = ({ toggleSidebar, isCollapsed }) => {
+const Sidebar = ({ toggleSidebar, isCollapsed, isMain }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -58,8 +59,8 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
 
             // 저장돼 있던 오늘의 날짜와 오늘 챗 날짜의 날짜가 다르면 하루가 넘어간 것이므로 최근 대화 내역을 다시 불러온다.
             if (!response && response?.date != foundTodayChat?.date) {
-                console.log("\n\n\n\n\n### foundeTodayChat: ", foundTodayChat);
-                console.log("response: ", response);
+                // console.log("\n\n\n\n\n### foundeTodayChat: ", foundTodayChat);
+                // console.log("response: ", response);
                 dispatch(chatActions.getRecentChatList());
                 return ;
             }
@@ -69,10 +70,10 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
 
             // 최근 채팅 내역을 추가한다.
             if (recentChatList?.code == "SUCCESS" && recentChatList?.content?.length > 0) {
-                console.log("\n\n\n\n### recentChatList: ", recentChatList.content);
+                // console.log("\n\n\n\n### recentChatList: ", recentChatList.content);
                 recentChat = [...recentChatList?.content];
                 // 응답 받은 최근 내역을 내림 차순으로 정렬한다.
-                recentChat.sort((a, b) => new Date(a.date) - new Date(b.date));
+                recentChat.sort((a, b) => new Date(b.date) - new Date(a.date));
             }
 
             setChatFolder([todayChat, ...recentChat]);
@@ -85,13 +86,15 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
            dispatch(chatActions.getTodayChatList());
            dispatch(chatActions.getRecentChatList());
            dispatch(chatActions.clearDeleteChatRoom);
+
+           dispatch(constantActions.onHideDialog());
         }
     }, [deleteChatRoom]);
 
     // 로그아웃 핸들러
     const handleNaverLogout = () => {
         try {
-            console.log("logout");
+            // console.log("logout");
             const userData = JSON.parse(localStorage.getItem("userData"));
             const accessToken = userData?.accessToken;
 
@@ -100,12 +103,10 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                 return ;
             }
 
-            dispatch(authActions.clearAuthState());
-            dispatch(chatActions.clearChatState());
+            persistor.purge();
 
             // 토큰 삭제 & 로그인 상태 변경
-            localStorage.removeItem("userData");
-            localStorage.removeItem("chatId");
+            localStorage.clear();
 
             // dialog 숨김
             dispatch(constantActions.onHideDialog());
@@ -113,7 +114,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
             // 🚀 직접 로그인 페이지로 이동 (useNavigate 대신 사용)
             window.location.href = "/login";
 
-            console.log("### logout!");
+            // console.log("### logout!");
         } catch (error) {
 
             console.error("네이버 로그아웃 실패: ", error);
@@ -122,24 +123,19 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
 
     // 채팅방 삭제
     const handleChatRoomDelete = (chatId) => {
-        console.log("Delete chat: ", chatId);
+        // console.log("Delete chat: ", chatId);
         if (chatId !== "today") {
             dispatch(chatActions.deleteChatRoom({chatId}));
         } else {
-            dispatch(chatActions.deleteChatRoom({ chatId: todayChatList?.content?.chatId }));
+            const storedChatData = JSON.parse(localStorage.getItem("chatData"));
+            const chatId = storedChatData?.chatId || todayChatList?.content?.chatId;
+            dispatch(chatActions.deleteChatRoom({ chatId }));
         }
     }
 
     // 채팅방 및 단어장으로 이동
     const navigateToType = (type, chatId, date) => {
         if (type == "voca") {
-            const storeChatId = localStorage.getItem("chatId");
-
-            // chatId가 존재하는 경우 ref에 저장
-            // if (storeChatId && storeChatId != "") {
-            //     chatId.current = storeChatId;
-            // }
-
             navigate("/vocabulary");
         } else {
             // chatId가 존재하는 경우 히스토리가 존재하는 채팅방으로 입장
@@ -186,7 +182,12 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                                         <img
                                             src={isMobile ? mobilDeleteIcon : deleteIcon}
                                             alt={"delete-icon.png"}
-                                            onClick={() => handleChatRoomDelete(chatFolderDate.chatId)}
+                                            onClick={() => dispatch(constantActions.onShowDialog({
+                                                dialogType: "CONFIRM_CANCEL",
+                                                dialogTitle: "채팅 삭제",
+                                                dialogContent: `'${chatFolderDate.date}'의 채팅을 정말 삭제 하시겠습니까?\n(삭제 후, 채팅 내역은 복구가 불가합니다.)`,
+                                                positiveFunction: () => handleChatRoomDelete(chatFolderDate.chatId) }
+                                            ))}
                                             style={{ cursor: "pointer" }}
                                         />
                                     </li>
@@ -220,7 +221,7 @@ const Sidebar = ({ toggleSidebar, isCollapsed }) => {
                     {/* 로그아웃 & 회원탈퇴 버튼 */}
                     <div className="naver-logout">
                         <div className="naver-logout-button"
-                             onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "로그아웃", dialogContent: "로그아웃을 하시겠습니까?", positiveFunction: handleNaverLogout }))}
+                             onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM_CANCEL", dialogTitle: "로그아웃", dialogContent: "로그아웃을 하시겠습니까?", positiveFunction: handleNaverLogout }))}
                         >
                             <img src={logoutIcon} alt={"logout-icon.png"} />
                             <span>로그아웃</span>
