@@ -154,7 +154,8 @@
         letter-spacing: -0.05em;
     }
 
-    .mobile-dialog_icon {
+    .mobile-dialog_content img {
+        image-rendering: auto;
         width: 167px;
         margin-top: -20px;
     }

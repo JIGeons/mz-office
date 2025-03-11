@@ -8,10 +8,12 @@ import * as constantActions from "../redux/modules/ConstantSlice";
 
 // Images
 import vocaImage from "../assets/images/voca/voca_img.png";
-import rightIcon from "../assets/images/voca/answer_icon.png";
-import wrongIcon from "../assets/images/voca/wrong_icon.png";
-import correctImg from "../assets/images/voca/img_correct.svg";
-import incorrectImg from "../assets/images/voca/img_incorrect.svg";
+import correctImg from "../assets/images/voca/img_correct.png";
+import incorrectImg from "../assets/images/voca/img_incorrect.png";
+import correctImgx2 from "../assets/images/voca/img_correct@x2.png";
+import correctImgx3 from "../assets/images/voca/img_correct@x3.png";
+import incorrectImgx2 from "../assets/images/voca/img_incorrect@x2.png";
+import incorrectImgx3 from "../assets/images/voca/img_incorrect@x3.png";
 
 // CSS
 import "../styles/vocabulary.css";
@@ -149,11 +151,19 @@ const Vocabulary = () => {
                     <div className="dialog_inner">
                         {   quiz.answerIndex == selectedAnswerRef.current ?
                             <div className="dialog_content">
-                                <img className="dialog_icon" src={ correctImg } alt="rightIcon.png" />
+                                <img
+                                    className="dialog_icon"
+                                    src={ correctImg }
+                                    srcSet={`${correctImgx2} 2x, ${correctImgx3} 3x`}
+                                    alt="rightIcon.png" />
                                 <h3 className="dialog-answer-content">정답입니다!</h3>
                             </div>
                             :   <div className="dialog_content">
-                                    <img className="dialog_icon" src={ incorrectImg } alt="rightIcon.png" />
+                                    <img
+                                        className="dialog_icon"
+                                        src={ incorrectImg }
+                                        srcSet={`${incorrectImgx2} 2x, ${incorrectImgx3} 3x`}
+                                        alt="rightIcon.png" />
                                     <h3 className="dialog-answer-content">오답입니다.</h3>
                                     <h3 className="dialog-answer-content">다시 선택해 주세요!</h3>
                                 </div>

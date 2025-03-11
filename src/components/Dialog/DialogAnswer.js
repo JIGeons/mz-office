@@ -1,8 +1,8 @@
 import React from 'react';
 
 // Images
-import rightIcon from "../../assets/images/voca/answer_icon.png";
-import wrongIcon from "../../assets/images/voca/wrong_icon.png";
+import rightIcon from "../../assets/images/voca/img_correct.png";
+import wrongIcon from "../../assets/images/voca/img_incorrect.png";
 
 // CSS
 import "../../styles/components/dialog.css"
