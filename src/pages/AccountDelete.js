@@ -63,7 +63,7 @@ const AccountDelete = () => {
                 </div>
                 <button className={isChecked ? "clickable" : ""}
                         disabled={!isChecked}
-                        onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "", dialogContent: "정말 탈퇴하시겠습니까?\n탈퇴 시, 탈퇴 전의 데이터는 돌릴 수 없습니다.", positiveFunction: handleDeleteAccount }))}
+                        onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM_CANCEL", dialogTitle: "정말 탈퇴하시겠습니까?", dialogContent: "탈퇴 시, 탈퇴 전의 데이터는 돌릴 수 없습니다.", positiveFunction: handleDeleteAccount }))}
                 >
                     확인
                 </button>

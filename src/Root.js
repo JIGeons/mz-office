@@ -364,7 +364,6 @@ const Root = () => {
 
                         </Route>
                         <Route path="/account-delete" element={ <AccountDelete /> } />
-
                         <Route path="/privacy-policy" element={ <PrivacyPolicy /> } />
                         <Route path="/terms-and-conditions" element={ <TermsAndConditions /> } />
                     </Routes>
