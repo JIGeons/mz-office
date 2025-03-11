@@ -46,9 +46,6 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
 
     }
 
-    console.log("inquiryType : ", inquiryType, " messageType : ", messageType);
-    console.log("buttonType : ", buttonType);
-
     const requestButtonClick = (inquiryType, content) => {
         if (inquiryType == "AI_REQUEST") {
             if (content == "RESET") setRequestType("RESET", content);

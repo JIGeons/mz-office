@@ -25,7 +25,9 @@ const ChatResponse = ({isGuide, content} ) => {
           { isGuide && <ChatGuide /> }
           { content  &&
               <div className="chat-response-content">
-                  <ReactMarkdown>{ content }</ReactMarkdown>
+                  <ReactMarkdown>
+                      {content.replaceAll(/\n\n/g, "\n\n &nbsp; \n\n")}
+                  </ReactMarkdown>
               </div>
           }
       </div>

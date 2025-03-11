@@ -88,8 +88,22 @@
 }
 
 .chat-response .chat-response-content ul {
+    list-style-type: none;
     list-style-position: inside;
+    padding-left: 0; /* 왼쪽 패딩 제거 */
 }
+.chat-response .chat-response-content ul li {
+    list-style-position: inside;  /* 마커를 li 영역 바깥으로 */
+    padding-left: 10px;  /* 마커와 텍스트 간격 조정 */
+    position: relative;
+}
+.chat-response .chat-response-content ul li::before {
+    content: '• ';
+    display: inline-block;
+    font-size: 25px;  /* 마커 크기 조정 */
+    margin-right: 7px;  /* 마커와 텍스트 사이의 간격 좁히기 */
+}
+
 
 .chat-request {
     display: flex;
@@ -870,6 +884,22 @@
 
         border-radius: 0 12px 12px 12px;
         padding: 15px !important;
+    }
+    .chat-response .chat-response-content ul {
+        list-style-type: none;
+        list-style-position: inside;
+        padding-left: 0; /* 왼쪽 패딩 제거 */
+    }
+    .chat-response .chat-response-content ul li {
+        list-style-position: inside;  /* 마커를 li 영역 바깥으로 */
+        padding-left: 10px;  /* 마커와 텍스트 간격 조정 */
+        position: relative;
+    }
+    .chat-response .chat-response-content ul li::before {
+        content: '• ';
+        display: inline-block;
+        font-size: 20px;  /* 마커 크기 조정 */
+        margin-right: 7px;  /* 마커와 텍스트 사이의 간격 좁히기 */
     }
 
     /* =============== Image ===============*/

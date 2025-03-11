@@ -448,7 +448,7 @@ const ChatMain = () => {
     let messageType = null;
 
     let user = "";
-    // console.log("#### SessionList: ", sessionList);
+    console.log("#### SessionList: ", sessionList);
     return (
         <div className="chat-main">
             <section className="mz-logo-white">

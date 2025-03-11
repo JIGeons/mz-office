@@ -167,7 +167,7 @@ const Root = () => {
 
     // chat List API의 응답을 받은 경우
     useEffect(() => {
-        console.log("todayChatList, recentChatList 변경 useEffect 실행")
+        // console.log("todayChatList, recentChatList 변경 useEffect 실행")
 
         if (todayChatList?.code == "SUCCESS" && recentChatList?.code == "SUCCESS") {
             // chatFoder 생성
