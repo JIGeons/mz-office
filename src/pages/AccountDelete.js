@@ -59,7 +59,7 @@ const AccountDelete = () => {
                 <div className="divider"></div>
                 <div className="account-delete-check">
                     <input type="checkbox" checked={isChecked} onChange={handleChange} />
-                    <h7>유의사항을 확인하였으며, 탈퇴에 동의합니다.</h7>
+                    <p><span style={{marginRight: "5px"}}>유의사항을 확인하였으며, </span> <span>탈퇴에 동의합니다.</span></p>
                 </div>
                 <button className={isChecked ? "clickable" : ""}
                         disabled={!isChecked}

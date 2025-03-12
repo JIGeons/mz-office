@@ -171,7 +171,9 @@ const Sidebar = ({ toggleSidebar, isCollapsed, isMain }) => {
                         </h1>
                         <h2>최근일자 채팅 내역</h2>
                         {
-                            chatFolder.map((chatFolderDate, index) => {
+                            chatFolder
+                              .filter(chatFolderDate => chatFolderDate?.date !== todayDate) // 오늘 날짜 제외
+                              .map((chatFolderDate, index) => {
                                 return (
                                     <li key={index}>
                                         <h3 style={{cursor: "pointer"}}

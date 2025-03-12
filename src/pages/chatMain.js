@@ -392,6 +392,8 @@ const ChatMain = () => {
                 sendMessage("MESSAGE_TYPE", content);
             }
         } else {
+            // 문자/ 메일 유형 선택 후 요청 버튼 비활성화
+            if (requestType == "SENTENCE_GENERATION_TYPE") setShowRequestButton(false);
             sendMessage(requestType, content);
         }
     }
@@ -553,7 +555,7 @@ const ChatMain = () => {
                     }
                 </ScrollToBottom>
             </section>
-            <section className={`chat_input ${disabledButton ? "input-disabled" : ""}`}>
+            <section className={`chat_input ${showRequestButton ? "input-disabled" : ""}`}>
                 <textarea
                     id="chat-input-content"
                     typeof={"textarea"}

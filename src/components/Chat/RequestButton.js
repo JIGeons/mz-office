@@ -7,13 +7,28 @@ import writeMailBtn from "../../assets/images/chat/ico_mail.png";
 import writeMessageBtn from "../../assets/images/chat/ico_text.png";
 import parseIcon from "../../assets/images/chat/parse_ico.png";
 import writeIcon from "../../assets/images/chat/write_ico.png";
+import parseIconx2 from "../../assets/images/chat/parse_icox2.png";
+import writeIconx2 from "../../assets/images/chat/write_icox2.png";
+import parseIconx3 from "../../assets/images/chat/parse_icox3.png";
+import writeIconx3 from "../../assets/images/chat/write_icox3.png";
+
 import webReIcon from "../../assets/images/chat/ico_web_re.png";
+import webReIcon2 from "../../assets/images/chat/ico_web_re@2x.png";
+import webReIcon3 from "../../assets/images/chat/ico_web_re@3x.png";
 import webHomeIcon from "../../assets/images/chat/ico_web_home.png";
+import webHomeIcon2 from "../../assets/images/chat/ico_web_home@2x.png";
+import webHomeIcon3 from "../../assets/images/chat/ico_web_home@3x.png";
 import reIcon from "../../assets/images/chat/ico_re.png";
+import reIcon2 from "../../assets/images/chat/ico_mobile_re.png";
+import reIcon3 from "../../assets/images/chat/ico_mobile_re@2x.png";
 import homeIcon from "../../assets/images/chat/ico_home.png";
+import homeIcon2 from "../../assets/images/chat/ico_mobile_home.png";
+import homeIcon3 from "../../assets/images/chat/ico_mobile_home@2x.png";
 
 // Utils
 import { GenerateType, RequestType } from "../../utils/Enums";
+import incorrectImgx2 from "../../assets/images/voca/img_incorrect@x2.png";
+import incorrectImgx3 from "../../assets/images/voca/img_incorrect@x3.png";
 
 const RequestButton = ({ inquiryType, content, messageType, user, setRequestType }) => {
     const userAgent = navigator.userAgent;
@@ -50,8 +65,6 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
         if (inquiryType == "AI_REQUEST") {
             if (content == "RESET") setRequestType("RESET", content);
             else setRequestType("RESET", content);
-        } else if (inquiryType == "MORE_REQUEST") {
-            setRequestType(inquiryType, content);
         } else {
             setRequestType(inquiryType, content);
         }
@@ -63,14 +76,21 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
             { !inquiryType &&
                 <div className="request-parse-write">
                     <button className="request-parse-write-button"  onClick={() => requestButtonClick("REQUEST_TYPE", 'PARSE')}>
-                        <img src={ parseIcon } alt="parse_ico.png"/>
+                        <img
+                          src={ parseIcon }
+                          srcSet={`${parseIconx2} 2x, ${parseIconx3} 3x`}
+                          alt="parse_ico.png"/>
                         <div className="request-parse-write-text">
                             <h3>문구 해석</h3>
                             <p>사수가 뭐라고 하는지 이해가 안돼 :(</p>
                         </div>
                     </button>
                     <button className="request-parse-write-button" onClick={() => requestButtonClick("REQUEST_TYPE", 'GENERATE')} >
-                        <img className="write-ico" src={ writeIcon } alt="write_ico.png"/>
+                        <img
+                          className="write-ico"
+                          src={ writeIcon }
+                          srcSet={`${writeIconx2} 2x, ${writeIconx3} 3x`}
+                          alt="write_ico.png"/>
                         <div className="request-parse-write-text">
                             <h3>문장 작성</h3>
                             <p>타팀에 보낼 메일 및 문자를 부탁해!</p>
@@ -122,12 +142,22 @@ const RequestButton = ({ inquiryType, content, messageType, user, setRequestType
                 <div className="request-input-method">
                     {/* 챗봇 메인으로 */}
                     <button className={"chat-input-prev return-main"} onClick={() => requestButtonClick("AI_REQUEST", 'RESET')}>
-                        <img src={isMobile ? homeIcon : webHomeIcon} alt="homeIcon.png" />
+                        <img
+                          src={isMobile ? homeIcon : webHomeIcon}
+                          srcSet={isMobile ?
+                            `${homeIcon2} 2x, ${homeIcon3} 3x`
+                            : `${webHomeIcon2} 2x, ${webHomeIcon3} 3x`}
+                          alt="homeIcon.png" />
                         <p dangerouslySetInnerHTML={{__html: buttonType[0]}}></p>
                     </button>
                     {/* 더 문의 하기 */}
                     <button className={"chat-input-prev-none"} onClick={() => requestButtonClick("MORE_REQUEST", messageType)}>
-                        <img src={isMobile ? reIcon : webReIcon} alt="homeIcon.png" />
+                        <img
+                          src={isMobile ? reIcon : webReIcon}
+                          srcSet={isMobile ?
+                            `${reIcon2} 2x, ${reIcon3} 3x`
+                            : `${webReIcon2} 2x, ${webReIcon3} 3x`}
+                          alt="homeIcon.png" />
                         <p dangerouslySetInnerHTML={{__html: buttonType[1]}}></p>
                     </button>
                 </div>

@@ -5,6 +5,8 @@ import { RequestType } from "../../utils/Enums";
 
 // Images
 import important from "../../assets/images/chat/ico_Error.png";
+import important2 from "../../assets/images/chat/ico_guide@2x.png";
+import important3 from "../../assets/images/chat/ico_guide@2x.png";
 import step1 from "../../assets/images/chat/web_step1.png"
 import step2 from "../../assets/images/chat/web_step2.png"
 import step3 from "../../assets/images/chat/web_step3.png"
@@ -17,6 +19,8 @@ import mobileChatAiIcon from "../../assets/images/chat/ico_mobile_chat_ai.png";
 import "../../styles/components/chat.css"
 import ReactMarkdown from "react-markdown";
 import chatAiIcon from "../../assets/images/chat/chat_ai_icon.png";
+import writeIconx2 from "../../assets/images/chat/write_icox2.png";
+import writeIconx3 from "../../assets/images/chat/write_icox3.png";
 
 const Request = ({ type, contentType, messageType, step }) => {
     const userAgent = navigator.userAgent;
@@ -160,7 +164,11 @@ const Request = ({ type, contentType, messageType, step }) => {
             }
             {   (type == "INPUT_TEXT" || type == "AI_RESPONSE") &&
                 <div className = "request">
-                    <img className="notice-image" src={important} alt="important.png" />
+                    <img
+                      className="notice-image"
+                      src={important}
+                      srcSet={`${important2} 2x, ${important3} 3x`}
+                      alt="important.png" />
                     <div className="request-content">
                         <h2>{ title }</h2>
                     </div>
@@ -170,7 +178,11 @@ const Request = ({ type, contentType, messageType, step }) => {
                 <div className="request">
                     {   (type == "WITH_PREVIOUS" || type == "WITHOUT_PREVIOUS") &&
                         <>
-                            <img className="notice-image" src={important} alt="important.png" />
+                            <img
+                              className="notice-image"
+                              src={important}
+                              srcSet={`${important2} 2x, ${important3} 3x`}
+                              alt="important.png" />
                             <div className="request-content">
                                 <h2>{ title }</h2>
                             </div>
@@ -178,7 +190,11 @@ const Request = ({ type, contentType, messageType, step }) => {
                     }
                     {   type == "MESSAGE_TYPE" &&
                         <>
-                            <img className="notice-image" src={important} alt="important.png" />
+                            <img
+                              className="notice-image"
+                              src={important}
+                              srcSet={`${important2} 2x, ${important3} 3x`}
+                              alt="important.png" />
                             <div className="request-content">
                                 <h2>{ title }</h2>
                                 <h3>{ content } </h3>
@@ -194,7 +210,11 @@ const Request = ({ type, contentType, messageType, step }) => {
                         <div className="chat-response-content" dangerouslySetInnerHTML={{__html: content}}>
                         </div>
                         <div className = "request">
-                            <img className="notice-image" src={important} alt="important.png" />
+                            <img
+                              className="notice-image"
+                              src={important}
+                              srcSet={`${important2} 2x, ${important3} 3x`}
+                              alt="important.png" />
                             <div className="request-content">
                                 <h2>{ title }</h2>
                             </div>

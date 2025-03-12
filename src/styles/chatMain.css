@@ -81,10 +81,11 @@
 
 .chatting_date {
     width: 100%;
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -5px;
+    padding-right: 15px;
 }
 
 .chatting_date_content {
@@ -100,7 +101,6 @@
     align-items: center;
     justify-content: center;
     border-radius: 20px;
-    margin-bottom: 10px;
     padding: 7px 15px;
 }
 
@@ -178,16 +178,16 @@
 
     padding: 15px 0;
 }
-
 /* ✅ Chrome, Safari에서 스크롤바 숨기기 */
 .chat_input textarea::-webkit-scrollbar {
     display: none;
 }
-
-
 .chat_input textarea::placeholder {
     color: #8E9AA6;
     opacity: 1;
+}
+.input-disabled {
+    opacity: 30%;
 }
 
 .chat_sending {

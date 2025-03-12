@@ -42,6 +42,40 @@
     margin-bottom: 20px;
 }
 
+.speech-bubble {
+    position: relative;
+    padding: 10px 15px;
+    border-radius: 15px;
+    width: fit-content;
+    max-width: 300px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 15px;
+    color: #FFFFFF;
+
+    background: #1F2531;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #1F2531;
+}
+
+/* 가운데 하단 꼬리 */
+.speech-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -10px; /* 아래쪽으로 위치 조정 */
+    left: 50%; /* 왼쪽 기준 중앙 정렬 */
+    transform: translateX(-50%); /* 정확한 중앙 정렬 */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #1F2531; /* 꼬리 색상 */
+}
+
 .login_inner_fir .naver-login {
     width: 100%;
 

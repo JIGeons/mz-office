@@ -2,13 +2,20 @@ import React from 'react';
 
 // Image
 import noticeIcon from "../../assets/images/chat/ico_Error.png";
+import important2 from "../../assets/images/chat/ico_guide@2x.png";
+import important3 from "../../assets/images/chat/ico_guide.png";
+
 // CSS
 import "../../styles/components/chat.css"
 
 const ChatGuide = () => {
     return (
         <div className="chat-guide">
-            <img className="notice-image" src={ noticeIcon } alt="noticeIcon.png" />
+            <img
+              className="notice-image"
+              src={ noticeIcon }
+              srcSet={`${important2} 2x, ${important3} 3x`}
+              alt="noticeIcon.png" />
             <div className={"chat-guide-content"}>
                 <h1>문구 해석 또는 문장 <span>작성 유형</span>을 선택해주신 뒤에, 작성해주세요~</h1>
                 <h2>[ 문구 해석 가이드라인 ]</h2>

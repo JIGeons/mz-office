@@ -80,20 +80,25 @@
 
 .account-delete-check {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 
     font-family: Paperlogy, sans-serif;
     font-weight: 400;
     font-size: 18px;
     line-height: 26px;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     padding-top: 20px;
     margin-bottom: 30px;
 }
 
 .account-delete-check input {
+    margin-top: 7px;
     margin-right: 5px;
     width: 24px;
+}
+.account-delete-check p {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .clickable {

@@ -19,14 +19,23 @@ const ChatResponse = ({isGuide, content} ) => {
         isMobile = true;
     }
 
+    const replaceContent = (content) => {
+      return content
+        .replace(/\n\n/g, "\n\n&nbsp;\n") // 두 줄 띄우기
+        .replace(/\n/g, "  \n"); // 한 줄 띄우기 (마크다운에서 공백 두 개 + 개행)
+      return content;
+    }
+
     return (
       <div className="chat-response">
           <img className={"chat-ai-icon"} src={ isMobile ? mobileChatAiIcon : chatAiIcon } alt="content.png" />
           { isGuide && <ChatGuide /> }
           { content  &&
-              <div className="chat-response-content">
+              <div className="chat-response-content"
+
+              >
                   <ReactMarkdown>
-                      {content.replaceAll(/\n\n/g, "\n\n &nbsp; \n\n")}
+                    { replaceContent(content) }
                   </ReactMarkdown>
               </div>
           }

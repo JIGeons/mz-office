@@ -69,6 +69,7 @@ const Login = () => {
                     <img className="mz-logo" src={mzLogo} alt={"MZ-Office.logo"} />
                     <img className="mz-office" src={mzOfficeImage} alt="mz-office-image.png" />
                     <div className="naver-login">
+                        <div class="speech-bubble">3초만에 시작하기</div>
                         <NaverLoginButton />
                         {/*<button*/}
                         {/*    className="move-to-mz-chat-btn"*/}
@@ -124,8 +125,10 @@ const Login = () => {
                         </div>
                     </div>
                     <div className="naver-login">
-                        <NaverLoginButton />
-                        <p>Naver 로그인 시, <span style={{cursor: "pointer", textDecoration: "underline"}} onClick={() => { navigate("/terms-and-conditions") }}>이용약관</span> 및 <span style={{cursor: "pointer", textDecoration: "underline"}} onClick={() => {navigate("/privacy-policy")}}>개인정보 처리방침</span>에 동의하는 것으로 간주합니다.</p>
+                        <div className="speech-bubble">3초만에 시작하기</div>
+                        <NaverLoginButton/>
+                        <p>Naver 로그인 시,
+                            <span style={{cursor: "pointer", textDecoration: "underline"}} onClick={() => { navigate("/terms-and-conditions")}}>이용약관</span>및 <span style={{cursor: "pointer", textDecoration: "underline"}} onClick={() => {navigate("/privacy-policy")}}>개인정보 처리방침</span>에 동의하는 것으로 간주합니다.</p>
                     </div>
                 </section>
             }
