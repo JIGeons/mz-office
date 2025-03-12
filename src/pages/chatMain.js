@@ -210,7 +210,8 @@ const ChatMain = () => {
             // 연결이 정상 종료 되지 않은 경우. 다시 연결 요청 (채팅이 가능한 페이지에서만)
             if (!event.wasClean
                 && (location.pathname == "/chat" && paramChatId == "today")) {
-                dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "채팅방 연결 오류", dialogContent: "채팅방을 다시 연결 합니다.", positiveFunction: connectWebSocket }))
+                connectWebSocket();
+                // dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "채팅방 연결 오류", dialogContent: "채팅방을 다시 연결 합니다.", positiveFunction: connectWebSocket }))
             }
         };
 
@@ -218,7 +219,7 @@ const ChatMain = () => {
             console.log("WebSocket 오류: ", error);
         };
 
-        dispatch(constantActions.onHideDialog());
+        // dispatch(constantActions.onHideDialog());
         setSocket(ws);
 
         return ws;

@@ -176,7 +176,11 @@
     }
 
     .sidebar .naver-logout {
-        margin-bottom: 30px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-right: 15px;
     }
 
     .sidebar .naver-logout .naver-logout-button span {
