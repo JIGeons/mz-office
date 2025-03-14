@@ -47,7 +47,6 @@
 - Webpack (Custom 설정 적용) 
 - ESLint & Prettier
 
-<br/>
-## 추후 추가 개발 계획  
+## 추후 추가 개발 계획  <br/>
 - 3월 18일 **비사이드 온라인 해커톤 데모데이** 이후, 코드를 **Clean Code** 원칙에 맞게 리팩토링할 예정.  
 - 채팅 메시지 정보를 기반으로 적절한 컴포넌트를 렌더링하는 `selectChatComponentHandler`를 추가할 예정.  
