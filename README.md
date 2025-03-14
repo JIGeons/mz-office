@@ -1,74 +1,53 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# 비사이드 X NAVER CLOUD 502 온라인 해커톤 3등
+<img width="830" alt="스크린샷 2025-03-09 오후 4 14 43" src="https://github.com/user-attachments/assets/5f872f54-429b-4c12-a33d-1679a8aa4b5b" />
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+비록 우리 팀은 4명으로 구성되어 있었지만, 6명 이상의 팀들과의 경쟁에서도 뛰어난 협업과 팀워크를 발휘하여 3등을 차지할 수 있었습니다. <br/>
 
-## Available Scripts
+참여 인원 : 기획 1, 디자인 1, FE 1, BE 1 <br/>
 
-In the project directory, you can run:
 
-### `npm start`
+# 신입 사원을 위한 AI 서비스 “MZ오피스” 
+![KakaoTalk_Photo_2025-03-02-23-49-09](https://github.com/user-attachments/assets/8adfdd85-c2df-49c3-89b0-ae425e532bcd)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**[🔗서비스 소개 바로가기](https://dahye-backend-developer.my.canva.site/mz-office)**
 
-### `npm test`
+### 기획 배경
+- 최근 신입 사원이 직장 내에서 문장력, 문해력이 부족하여 메일/문자 작성을 잘 못한다는 통계자료를 통해 Pain Point를 잡고 이러한 불편사항을 해소하기 위해 기획된 서비스입니다!
+  
+### 서비스 소개
+- 서비스 명 : MZ오피스
+- 한 줄 설명 : MZ세대를 위한 문자/메일 작성을 도와주는 챗봇 시스템
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 주요 타겟 
+- 20~30대 사원
 
-### `npm run build`
+### 핵심 기능
+1. 문자 작성 요청
+2. 메일 작성 요청
+3. 문구 해석 요청
+4. 비즈니스 용어 단어장
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠 기술 스택 🛠  
+### 🚀 Frontend  
+- React (19.0.0)  
+- CRA (Create React App)  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 📦 State Management  
+- Redux Toolkit
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 🎨 Styling
+- Custom CSS
+- Tailwind CSS
 
-### `npm run eject`
+### 🔌 API Communication  
+- Axios  
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 🛠 Development Tools  
+- Webpack (Custom 설정 적용) 
+- ESLint & Prettier
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# mz-office
->>>>>>> f299c0d40a670ab56bc71499748ddce3cefcb759
+<br >
+## 추후 추가 개발 계획  
+- 3월 18일 **비사이드 온라인 해커톤 데모데이** 이후, 코드를 **Clean Code** 원칙에 맞게 리팩토링할 예정.  
+- 채팅 메시지 정보를 기반으로 적절한 컴포넌트를 렌더링하는 `selectChatComponentHandler`를 추가할 예정.  
