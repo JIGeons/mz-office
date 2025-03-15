@@ -26,9 +26,9 @@
 }
 
 .navigation-bar ul {
-    min-height: 250px;
+    min-height: 100px;
     list-style: none;
-    margin-top: 20%;
+    margin-top: 50px;
     color: #FFFFFF;
     position: relative; /* 글자 위치 고정 */
     white-space: nowrap; /* 줄바꿈 방지 */
@@ -87,7 +87,7 @@
 
     font-family: 'Paperlogy', sans-serif;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 17.67px;
     letter-spacing: 0.5px;
     padding-top: 15px;
@@ -98,13 +98,18 @@
 }
 
 .sidebar .naver-logout .naver-logout-button {
+    width: 100%;
+
     display: flex;
     align-items: center;
-    width: 100%;
-    margin-bottom: 15px;
+
+    margin-bottom: 30px;
+    cursor: pointer;
     white-space: nowrap; /* 줄바꿈 방지 */
 }
 .sidebar .naver-logout .naver-logout-button span {
+    font-weight: 600 !important;
+    font-size: 15px;
     margin-left: 5px;
     white-space: nowrap; /* 줄바꿈 방지 */
 }
@@ -114,4 +119,75 @@
     color: #889BFF !important;
     text-decoration: underline;
     white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+/* 모바일 전용 스타일 */
+@media screen and (max-width: 767px) {
+    .sidebar-toggle {
+        position: sticky !important;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .sidebar-toggle img {
+        width: 26px;
+        height: 26px;
+    }
+
+    .navigation-bar {
+        padding: 15px 0 15px 0 !important;
+    }
+
+    .chat-ul {
+        margin-bottom: 60px;
+    }
+    .navigation-bar ul {
+        margin-top: 0;
+    }
+    .navigation-bar ul h1 {
+        font-size: 20px !important;
+        letter-spacing: -0.02em;
+    }
+
+    .navigation-bar ul h2 {
+        font-family: "Pretendard", sans-serif !important;
+        font-size: 16px !important;
+        letter-spacing: -0.02em;
+    }
+
+    .navigation-bar ul li {
+        height: 45px !important;
+        padding: 0 20px;
+        border-top: 1px solid #22222E;
+        border-bottom: 1px solid #22222E;
+    }
+    .navigation-bar ul li h3 {
+        font-family: "Pretendard", sans-serif !important;
+        font-weight: 400;
+        font-size: 15px !important;
+        color: #FFFFFF;
+    }
+    .navigation-bar ul li img {
+        width: 26px !important;
+        height: 26px !important;
+    }
+
+    .sidebar .naver-logout {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-right: 15px;
+    }
+
+    .sidebar .naver-logout .naver-logout-button span {
+        font-weight: 500 !important;
+    }
+
+    .sidebar .naver-logout .naver-account-delete {
+        color: #4F4F5F !important;
+    }
 }

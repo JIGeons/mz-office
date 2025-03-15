@@ -78,3 +78,38 @@
     align-items: flex-end;
     justify-content: space-between;
 }
+
+/* 모바일 전용 스타일 */
+@media screen and (max-width: 767px) {
+    .footer {
+        height: 248px;
+
+        flex-direction: column;
+        align-items: flex-start;
+
+        position: inherit;
+
+        background-color: #141420;
+
+        padding: 0 20px !important;
+    }
+
+    .footer-left-text h3 {
+        margin-right: 47px;
+    }
+
+    .footer-right {
+        align-items: flex-start;
+        justify-content: flex-start !important;
+        margin-top: 20px;
+    }
+    .footer-right div {
+        align-items: flex-start;
+    }
+    .footer-right h4 {
+        margin-bottom: 10px;
+    }
+    .footer-right p {
+        margin-top: 10px;
+    }
+}

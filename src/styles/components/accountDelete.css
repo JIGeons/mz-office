@@ -45,8 +45,8 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: start;
+    justify-content: flex-start;
+    align-items: flex-start;
     overflow-y: scroll;
     padding: 0 15px;
 }
@@ -80,18 +80,25 @@
 
 .account-delete-check {
     display: flex;
+    align-items: flex-start;
+
     font-family: Paperlogy, sans-serif;
     font-weight: 400;
     font-size: 18px;
     line-height: 26px;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     padding-top: 20px;
     margin-bottom: 30px;
 }
 
 .account-delete-check input {
+    margin-top: 7px;
     margin-right: 5px;
     width: 24px;
+}
+.account-delete-check p {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .clickable {
@@ -103,4 +110,38 @@
     width: 100%;
     height: 1px;
     background-color: #D9D9D9;
+}
+
+/* 모바일 전용 스타일 */
+@media screen and (max-width: 767px) {
+    .account-delete {
+        width: auto;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #1F2531;
+    }
+    .account-delete-modal {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .account-delete-description {
+        /* 스크롤바 스타일 적용 */
+        scrollbar-width: thin; /* Firefox용 */
+        scrollbar-color: #8E8E8E #E7E7E7; /* 스크롤 색상 (스크롤바, 배경) */
+    }
+    /* Webkit 기반 브라우저 (Chrome, Safari 등) */
+    .account-delete-description::-webkit-scrollbar {
+        width: 2px; /* 스크롤바 너비 */
+    }
+    .account-delete-description::-webkit-scrollbar-thumb {
+        background-color: #8E8E8E; /* 스크롤바 색상 */
+    }
+    .account-delete-description::-webkit-scrollbar-track {
+        background-color: #E7E7E7; /* 스크롤바 트랙 (배경) 색상 */
+    }
 }

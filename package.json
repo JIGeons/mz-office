@@ -4,6 +4,7 @@
   "private": true,
   "hompage": "/",
   "dependencies": {
+    "@fontsource/titan-one": "^5.2.5",
     "@reduxjs/toolkit": "^2.5.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -25,7 +26,9 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
+    "remark-gfm": "^4.0.1",
     "socket.io-client": "^4.8.1",
+    "swiper": "^11.2.5",
     "url-loader": "^4.1.1",
     "web-vitals": "^2.1.4"
   },

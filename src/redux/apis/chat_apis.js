@@ -1,4 +1,5 @@
 // 로그인 관련 apis 파일
+import axios from "axios";
 import axiosInstance from "../AxiosInstance";
 import serverUrl from "../../utils/ServerUrl";
 

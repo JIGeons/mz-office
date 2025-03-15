@@ -23,9 +23,6 @@ const GenerateType = (type) => {
         case "WORK_REQUEST":
             messageType = "업무 요청";
             break;
-        case "FOLLOW_UP":
-            messageType = "팔로우업";
-            break;
         case "FEEDBACK_REQUEST":
             messageType = "피드백 요청";
             break;
@@ -53,7 +50,7 @@ const RequestType = (type) => {
     let requestType = type;
 
     switch (type) {
-        case "EMAIL":
+        case "MAIL":
             requestType = "메일";
             break;
         case "MESSAGE":
@@ -67,4 +64,25 @@ const RequestType = (type) => {
     return requestType;
 }
 
-export { GenerateType, RequestType };
+const Day = (day) => {
+    switch (day) {
+        case 0:
+            return "일요일";
+        case 1:
+            return "월요일";
+        case 2:
+            return "화요일";
+        case 3:
+            return "수요일";
+        case 4:
+            return "목요일";
+        case 5:
+            return "금요일";
+        case 6:
+            return "토요일";
+        default:
+            return null;
+    }
+}
+
+export { GenerateType, RequestType, Day };

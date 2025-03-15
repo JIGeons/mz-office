@@ -1,23 +1,40 @@
-import React, {useState} from "react";
-import {useDispatch} from "react-redux";
+import React, {useContext, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
 
 // CSS
 import "../styles/components/accountDelete.css";
 
 // Actions
+import * as AuthActions from "../redux/modules/AuthSlice";
 import * as constantActions from "../redux/modules/ConstantSlice";
 
 const AccountDelete = () => {
     const dispatch = useDispatch();
 
+    // Component State
     const [isChecked, setIsChecked] = useState(false);
 
+    // Redux State
+    const { sessionData } = useSelector((state) => state.auth);
+
+    useEffect(() => {
+
+        if (sessionData?.code == "SUCCESS") {
+            localStorage.removeItem("userData");
+            localStorage.removeItem("naver-auth-state");
+            localStorage.removeItem("chatId");
+
+            dispatch(AuthActions.clearAuthState());
+            window.location.href = "/login";
+        }
+
+    }, [sessionData])
     const handleChange = (event) => {
         setIsChecked(event.target.checked);
     };
 
     const handleDeleteAccount = () => {
-        console.log("ㅊㅔ크박스 확인: ", isChecked);
+        dispatch(AuthActions.unlinkNaver());
     }
 
     return (
@@ -42,11 +59,11 @@ const AccountDelete = () => {
                 <div className="divider"></div>
                 <div className="account-delete-check">
                     <input type="checkbox" checked={isChecked} onChange={handleChange} />
-                    <h7>유의사항을 확인하였으며, 탈퇴에 동의합니다.</h7>
+                    <p><span style={{marginRight: "5px"}}>유의사항을 확인하였으며, </span> <span>탈퇴에 동의합니다.</span></p>
                 </div>
                 <button className={isChecked ? "clickable" : ""}
                         disabled={!isChecked}
-                        onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "", dialogContent: "정말 탈퇴하시겠습니까?\n탈퇴 시, 탈퇴 전의 데이터는 돌릴 수 없습니다.", positiveFunction: handleDeleteAccount }))}
+                        onClick={() => dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM_CANCEL", dialogTitle: "정말 탈퇴하시겠습니까?", dialogContent: "탈퇴 시, 탈퇴 전의 데이터는 돌릴 수 없습니다.", positiveFunction: handleDeleteAccount }))}
                 >
                     확인
                 </button>

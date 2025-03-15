@@ -1,15 +1,21 @@
 @charset "UTF-8";
 
 html {
-    font-size: 0.625em;
-    height: 100%;
+    width: 100%;
+
+    --vh: 1vh;
 }
 
 body {
-    height: 100%;
+    width: 100%;
     line-height: 1;
     font-family: 'Pretendard', sans-serif;
     font-weight: bold;
+    font-size: 0.625em;
+}
+
+button {
+    cursor: pointer;
 }
 
 /* ✅ 전체 레이아웃을 Flexbox로 설정 */
@@ -85,4 +91,116 @@ body {
     text-decoration: underline;
     color: #4A5262;
     padding: 10px 0 15px 0;
+}
+
+/* 모바일 전용 스타일 */
+@media screen and (max-width: 767px) {
+    #root {
+        width: 100%;
+        height: 100dvh !important;
+        height: calc(var(--vh, 1vh) * 100) !important; /* --vh가 정의되지 않았을 경우 1vh로 대체 */
+    }
+    .container {
+        width: 100%;
+        height: 100%;
+
+        background: black;
+
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto; /* ✅ 스크롤 가능하지만 필요할 때만 표시 */
+        scrollbar-width: none; /* ✅ 파이어폭스에서 스크롤바 숨김 */
+    }
+    .container::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* ✅ Sidebar가 보일 때 (컨텐츠 너비 조절) */
+    .sidebar-collapsed .content {
+        width: 100%;
+        height: calc(100% - 60px);
+    }
+
+    .sidebar {
+        width: 100% !important;
+        height: 100% !important;
+
+        background: black;
+
+        text-align: left;
+        color: white;
+
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        padding: 15px;
+        transform: translateX(0);
+        transition: width 0.3s ease-in-out;
+
+        z-index: 10;
+
+        overflow: hidden;
+    }
+    .sidebar.collapsed {
+        width: 60px !important;
+
+        left: -100px !important;
+
+        transform: translateX(0);
+        transition: width 0.3s ease-in-out
+    }
+
+    /* ✅ 컨텐츠 영역 (기본: Sidebar 없는 상태) */
+    .content {
+        width: 100%;
+        height: 100%;
+
+        background: black;
+        margin-left: 0px !important;
+        transition: margin-left 0.3s ease-in-out;
+    }
+
+    .content-with-sidebar {
+        height: calc(100% - 60px);
+        flex: 1;
+    }
+
+    .content-full {
+        margin-left: 0px;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* =============== Mobile Header =============== */
+    .mobile-header {
+        width: 100%;
+        height: 60px !important;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: sticky;
+
+        background: black;
+
+        padding: 17px 0;
+
+        z-index: 100;
+    }
+    .header-menu-icon {
+        width: 26px;
+        height: 26px;
+        position: absolute;
+        top: 13px;
+        left: 15px;
+    }
+    .header-logo {
+        width: 132px;
+        height: 15px;
+    }
 }

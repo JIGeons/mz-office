@@ -115,3 +115,10 @@
     background-color: #ddd;
     margin: 20px 0;
 }
+
+/* 모바일 전용 스타일 */
+@media screen and (max-width: 767px) {
+    .privacy-policy-container {
+        background: #FFFFFF;
+    }
+}

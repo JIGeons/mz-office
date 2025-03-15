@@ -8,11 +8,15 @@ import * as constantActions from "../redux/modules/ConstantSlice";
 
 // Images
 import vocaImage from "../assets/images/voca/voca_img.png";
+import correctImg from "../assets/images/voca/img_correct.png";
+import incorrectImg from "../assets/images/voca/img_incorrect.png";
+import correctImgx2 from "../assets/images/voca/img_correct@x2.png";
+import correctImgx3 from "../assets/images/voca/img_correct@x3.png";
+import incorrectImgx2 from "../assets/images/voca/img_incorrect@x2.png";
+import incorrectImgx3 from "../assets/images/voca/img_incorrect@x3.png";
 
 // CSS
 import "../styles/vocabulary.css";
-import rightIcon from "../assets/images/voca/answer_icon.png";
-import wrongIcon from "../assets/images/voca/wrong_icon.png";
 
 const Vocabulary = () => {
     const dispatch = useDispatch();
@@ -24,13 +28,14 @@ const Vocabulary = () => {
     // Component State
     const [ quiz, setQuiz ] = useState(null);
     const [ word, setWord ] = useState(null);
-    const [ quizSentence, setQuizSentence ] = useState(null);
-    const [ answerButton, setAnswerButton ] = useState([]);
+    // const [ quizSentence, setQuizSentence ] = useState(null);
+    // const [ answerButton, setAnswerButton ] = useState([]);
     const [ onShowAnswer, setOnShowAnswer ] = useState(false);
     const [ _, forceUpdate ] = useReducer(x => x + 1, 0);
 
     // useRef
     const selectedAnswerRef = useRef(null);
+    const showModalRef = useRef(false);
 
 
     useEffect(() => {
@@ -39,7 +44,7 @@ const Vocabulary = () => {
     }, []);
 
     useEffect(() => {
-        if (vocaQuiz.code == "SUCCESS") {
+        if (vocaQuiz?.code == "SUCCESS") {
             setQuiz(vocaQuiz.content);
 
             const quiz = {...vocaQuiz.content };
@@ -67,16 +72,31 @@ const Vocabulary = () => {
             setQuiz(quiz);
         }
 
-        if (vocaWord.code == "SUCCESS") {
+        if (vocaWord?.code == "SUCCESS") {
             setWord(vocaWord.content);
         }
     }, [ vocaQuiz, vocaWord ])
 
     // 정답을 확인하고 Dialog를 띄우는 메서드
     const handleAnswerCheck = (index) => {
+        console.log("정답 버튼 클릭!");
         selectedAnswerRef.current = index;
-        setOnShowAnswer(true);
+        showModalRef.current = true;
+        // setOnShowAnswer(true);
 
+        forceUpdate();    // 강제 렌더링
+    }
+
+    const handleConfirmButton = () => {
+        // 정답을 맞추면 새로운 퀴즈 요청
+        if (selectedAnswerRef.current == quiz.answerIndex) {
+            selectedAnswerRef.current = null;
+            dispatch(vocaActions.getVocaQuiz());
+            console.log("정답입니다!");
+        }
+        console.log("정답 확인 dialog OFF");
+        // setOnShowAnswer(false);
+        showModalRef.current = false;
         forceUpdate();    // 강제 렌더링
     }
 
@@ -126,27 +146,35 @@ const Vocabulary = () => {
             </div>
 
             {/* 정답 확인 모달 */}
-            {   onShowAnswer &&
-                <modal className="dialog-modal">
+            {   showModalRef.current &&
+                <section className="dialog-modal">
                     <div className="dialog_inner">
                         {   quiz.answerIndex == selectedAnswerRef.current ?
                             <div className="dialog_content">
-                                <img className="dialog_icon" src={ rightIcon } alt="rightIcon.png" />
+                                <img
+                                    className="dialog_icon"
+                                    src={ correctImg }
+                                    srcSet={`${correctImgx2} 2x, ${correctImgx3} 3x`}
+                                    alt="rightIcon.png" />
                                 <h3 className="dialog-answer-content">정답입니다!</h3>
                             </div>
                             :   <div className="dialog_content">
-                                    <img className="dialog_icon" src={ wrongIcon } alt="rightIcon.png" />
+                                    <img
+                                        className="dialog_icon"
+                                        src={ incorrectImg }
+                                        srcSet={`${incorrectImgx2} 2x, ${incorrectImgx3} 3x`}
+                                        alt="rightIcon.png" />
                                     <h3 className="dialog-answer-content">오답입니다.</h3>
                                     <h3 className="dialog-answer-content">다시 선택해 주세요!</h3>
                                 </div>
                         }
                         <button
                             className="dialog_answer_button"
-                            onClick={() => setOnShowAnswer(false)}>
+                            onClick={() => handleConfirmButton()}>
                             확인
                         </button>
                     </div>
-                </modal>
+                </section>
             }
         </div>
     );

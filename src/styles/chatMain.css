@@ -45,7 +45,7 @@
     font-size: 45px;
     line-height: 50px;
     letter-spacing: calc(45px * -0.02);
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .mz-logo-text .mz-logo-text-description p {
@@ -77,6 +77,36 @@
     align-items: flex-end;
 
     overflow: hidden;
+}
+
+.chatting_date {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 15px;
+}
+
+.chatting_date_content {
+    font-family: 'Paperlogy', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0;
+
+    color: #FFFFFF;
+    background-color: #414245;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 7px 15px;
+}
+
+.chatting_date_content img {
+    width: 17px;
+    margin-right: 5px;
 }
 
 .chatting_content_scroll {
@@ -148,39 +178,16 @@
 
     padding: 15px 0;
 }
-
 /* ✅ Chrome, Safari에서 스크롤바 숨기기 */
 .chat_input textarea::-webkit-scrollbar {
     display: none;
 }
-
-/*!* 스크롤바 전체 영역 *!*/
-/*.chat_input textarea::-webkit-scrollbar {*/
-/*    width: 9px; !* 스크롤바 너비 *!*/
-/*}*/
-
-/*!* 스크롤바 트랙(배경) *!*/
-/*.chat_input textarea::-webkit-scrollbar-track {*/
-/*    background: #E7E7E7;*/
-/*    border-radius: 10px;*/
-/*}*/
-
-/*!* 스크롤바 핸들(막대) *!*/
-/*.chat_input textarea::-webkit-scrollbar-thumb {*/
-/*    background-color: #C7C7C7; !* 스크롤바 색상 *!*/
-/*    border-radius: 10px;*/
-/*    border: 2px solid #f0f0f0;*/
-/*}*/
-
-/*!* 스크롤바 핸들 호버 효과 *!*/
-/*.chat_input textarea::-webkit-scrollbar-thumb:hover {*/
-/*    background-color: #5f2d8c;*/
-/*}*/
-
-
-.chat_input input::placeholder {
+.chat_input textarea::placeholder {
     color: #8E9AA6;
     opacity: 1;
+}
+.input-disabled {
+    opacity: 30%;
 }
 
 .chat_sending {
@@ -197,4 +204,97 @@
 .chat_input img {
     width: 33px;
     height: 33px;
+}
+
+/* 모바일 전용 스타일 */
+@media screen and (max-width: 767px) {
+    .chat-main {
+        width: 100%;
+        padding: 0 20px;
+        background-color: black;
+    }
+
+    .mz-logo-white {
+        width: 100%;
+    }
+
+    .mz-logo-white img {
+        width: 132px;
+        margin-bottom: 20px;
+    }
+
+    .mz-logo-text {
+        width: 100%;
+    }
+
+    .mz-logo-text-description {
+        width: 100%;
+        white-space: pre-line;
+        display: flex;
+        align-items: flex-start;
+        text-align: left;
+        margin-bottom: 10px;
+    }
+
+    .mz-logo-text-description h2 {
+        font-family: "Paperlogy", sans-serif;
+        font-weight: 300;
+        font-size: 20px;
+        line-height: 30px;
+        letter-spacing: -0.02em;
+
+        background: linear-gradient(to bottom, #F369DA, #50FBFF); /* 핑크 → 블루 */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block; /* background-clip을 적용하려면 필요 */
+    }
+
+
+    .mz-logo-text-description h2 span {
+        font-weight: 700;
+    }
+
+    .chatting_main {
+        width: 100%;
+
+        background-color: black;
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    .chatting_content_scroll {
+        width: 100%;
+        padding: 0;
+    }
+
+    .chat_input {
+        width: 100%;
+        height: 45px;
+
+        border: 1px solid #4865FF;
+        padding: 0 6px 0 20px;
+        margin-top: 10px;
+    }
+    .input-disabled {
+        border: 1px solid #D0D4D7;
+    }
+
+    .chat_input textarea {
+        height: 40px;
+        font-family: "Pretendard", sans-serif;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 30px;
+        letter-spacing: -0.02em;
+
+        color: #30343D !important;
+
+        padding: 5px 0;
+    }
+
+    .chat_input textarea::placeholder {
+        color: #BCC0C3 !important;
+        opacity: 1;
+    }
 }

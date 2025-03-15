@@ -12,6 +12,9 @@ const initialState = {
       positiveButtonText: null,
       negativeButtonText: null,
     },
+    modal: {
+        isShowingModal: false,
+    },
     socket: {
         data: null,
     },
@@ -80,9 +83,26 @@ const constantSlice = createSlice({
                 negativeButtonText: null,
             };
         },
+
+        onShowModal: (state, action) => {
+            state.modal = {
+                isShowingModal: true,
+            };
+        },
+        onHideModal: (state) => {
+            state.modal = {
+                isShowingModal: false,
+            };
+        },
     },
     extraReducers: (builder) => {},
 });
 
-export const { clearConstantState, onShowDialog, onHideDialog } = constantSlice.actions;
+export const {
+    clearConstantState,
+    onShowDialog,
+    onHideDialog,
+    onShowModal,
+    onHideModal,
+} = constantSlice.actions;
 export default constantSlice.reducer;
