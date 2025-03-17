@@ -344,12 +344,14 @@ const Root = () => {
 
                 <div className={`content ${!isMain ? "content-with-sidebar" : "content-full"} ${ !isNonFooter ? "none-footer" : ""}`}>
                     <Routes>
+                        {/* 존재하지 않는 경로일 경우 NotFound 페이지 표시 */}
+                        <Route path="*" element={ <NotFound /> } />
+
                         {/* 🚀 처음 진입 시, sessionStorage에 저장된 경로가 있다면 해당 경로로 리디렉트 */}
                         {redirectPath && <Route path="*" element={<Navigate to={redirectPath} replace />} />}
 
                         {/* 로그인 정보가 없는 경우 /login 페이지로 이동 */}
                         <Route path="/" element={ isMain && <Navigate to={"/login"} replace /> } />
-                        <Route path="*" element={ <NotFound /> } />
 
                         {/* ✅ 로그인 페이지 (비로그인 상태에서도 접근 가능) */}
                         <Route path="/login" element={ <Login /> } />

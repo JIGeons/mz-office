@@ -219,7 +219,7 @@ const ChatMain = () => {
             console.log("WebSocket 오류: ", error);
         };
 
-        // dispatch(constantActions.onHideDialog());
+        dispatch(constantActions.onHideDialog());
         setSocket(ws);
 
         return ws;
