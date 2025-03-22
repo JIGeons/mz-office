@@ -102,7 +102,7 @@
 
 - **NCP Global Edge의 SPA 대응 한계**를 극복하기 위해,  
   NCP 서버 + 로드밸런서 + Nginx 기반의 배포 구조로 전환  
-- **Nginx 설정 (`try_files $uri /index.html`)**을 통해  
+- **Nginx 설정** (`try_files $uri /index.html`)을 통해  
   React SPA의 클라이언트 사이드 라우팅 문제 해결  
 - **로드밸런서를 활용한 SSL 인증서 적용**,  
   80 → 443 포트 리다이렉션으로 보안성 및 신뢰도 강화  
