@@ -111,6 +111,15 @@
 
 ---
 
+## ⚙️ GitHub Actions 기반 프론트엔드 CI/CD 자동화 구축
+- GitHub Actions에서 main 브랜치에 push 시 자동 빌드 및 배포 실행
+- .env.production에 필요한 환경변수는 GitHub Secrets로 안전하게 주입
+- appleboy/scp-action을 활용해 NCP 서버로 dist 파일을 SSH 기반 업로드
+- 배포 전 자동 백업, 실패 시 복원, 성공 시 백업 정리 포함
+- 운영자의 개입 없이도 안정적인 정적 파일 배포 흐름 구성
+
+---
+
 ## 📈 추후 개발 계획
 
 - 3월 18일 **비사이드 온라인 해커톤 데모데이** 이후,  
