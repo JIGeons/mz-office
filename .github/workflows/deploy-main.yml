@@ -73,6 +73,7 @@ jobs:
       # 8. 배포 실패 시 복원
       - name: Restore from backup if deploy fails
         if: failure()
+        id: restore # ✅ ID를 꼭 지정해야 steps.restore로 접근 가능
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }} "\
             if [ -d ~/backups ]; then \
@@ -90,7 +91,7 @@ jobs:
 
       # 9. 성공 시 백업 정리
       - name: Remove backups after successful deployment
-        if: success()
+        if: ${{ success() || steps.restore.outcome == 'success' }}
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }} "\
             rm -rf ~/backups && \
