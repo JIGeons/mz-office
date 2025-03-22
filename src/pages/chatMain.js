@@ -84,22 +84,54 @@ const ChatMain = () => {
     const [isMobile, setIsMobile] = useState(false);
     // const [chatId, setChatId] = useState(null);
 
-    // Redux State
-    const chatState = useSelector((state) => state.chat);
-    const { todayChatList, chatDetail } = useSelector((state) => state.chat);
-
     // useRef로 sessionList, socketMessage Ref 정의
     const sessionListRef = useRef([{...initialSession}]);
     const socketMessageRef = useRef({...initialSocketMessage});
     const chatIdRef = useRef(null);
     const chatContainerRef = useRef(null);
+    const socketRef = useRef(null);
+
+    // Redux State
+    const chatState = useSelector((state) => state.chat);
+    const { todayChatList, chatDetail } = useSelector((state) => state.chat);
 
     const [_, setRender] = useState(0);    // 강제 리렌더링용 state
 
+    // component mount시 단 한번만 실행
     useEffect(() => {
         // ✅ 모바일 기기 확인 후 강제 리디렉트
         if (mobileRegex.test(userAgent)) {
             setIsMobile(true);
+        }
+
+        const queryPrams = new URLSearchParams(location.search);
+        const paramDate = queryPrams.get("date");
+
+        // 오늘 날짜의 채팅인 경우에만 웹 소캣 연결
+        if (paramDate == todayDate) {
+            // 웹 소켓 연결 실행
+            let ws;
+
+            const startWebSocket = async () => {
+                try {
+                    const ws = await connectWebSocket();
+                    socketRef.current = ws;
+
+                } catch (error) {
+                    console.error("❌ WebSocket 재연결 실패: ", error);
+                    dispatch(constantActions.onShowDialog({
+                        dialogType: "ALERT",
+                        dialogTitle: "서버 연결 실패",
+                        dialogContent: "서버와의 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+                    }));
+                }
+            }
+
+            startWebSocket();
+
+            return () => {
+                if (ws) ws.close();
+            }
         }
     }, []);
 
@@ -125,20 +157,6 @@ const ChatMain = () => {
 
                 return ;
             }
-        }
-
-        // 오늘 날짜의 채팅인 경우에만 웹 소캣 연결
-        if (paramDate == todayDate) {
-            // 웹 소켓 연결 실행
-            const ws = connectWebSocket();
-
-            // 컴포넌트가 언마운트될 때 WebSocket 연결 종료
-            return () => {
-                ws.close();
-            }
-
-            console.log("===================================");
-            console.log("ChatMain 컴포넌트 마운트");
         }
     }, [paramChatId, paramDate]);
 
@@ -181,49 +199,37 @@ const ChatMain = () => {
 
     // ✅ 1. 웹 소켓 연결을 처리하는 함수
     const connectWebSocket = () => {
-        const storageUserData = JSON.parse(localStorage.getItem("userData"));
-        // console.log(`Socket URL: ${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
-        const ws = new WebSocket(`${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
+        return new Promise((resolve, reject) => {
+            const storageUserData = JSON.parse(localStorage.getItem("userData"));
+            const ws = new WebSocket(`${SocketUrl}?token=Bearer ${storageUserData.accessToken}`);
 
-        ws.onopen = () => {
-            console.log("WebSocket 연결 성공");
-        };
+            ws.onopen = () => {
+                console.log("✅ WebSocket 연결 성공");
+                dispatch(constantActions.onHideDialog());
+                setSocket(ws);
+                resolve(ws);
+            };
 
-        ws.onmessage = (event) => {
-            handleWebSocketMessage(event);
-        };
+            ws.onmessage = (event) => {
+                handleWebSocketMessage(event);
+            };
 
-        ws.onclose = (event) => {
-            console.log("WebSocket 연결 종료");
-            console.log("🔴 종료 코드:", event.code);
-            console.log("🔴 종료 이유:", event.reason);
-            console.log("🔴 연결이 정상 종료되었나?", event.wasClean ? "✅ 예" : "❌ 아니요");
+            ws.onclose = (event) => {
+                console.log("🔴 WebSocket 연결 종료", event);
 
-            // 토큰 인증 실패 - 로그인 페이지로 이동
-            if (event.code == 4001) {
-                localStorage.clear();   // 로컬스토리지 초기화
-                persistor.purge();      // redux 초기화
-                location.reload();
-                return ;
-            }
+                if (event.code === 4001) {
+                    localStorage.clear();
+                    persistor.purge();
+                    location.reload();
+                }
+            };
 
-            // 연결이 정상 종료 되지 않은 경우. 다시 연결 요청 (채팅이 가능한 페이지에서만)
-            if (!event.wasClean
-                && (location.pathname == "/chat" && paramChatId == "today")) {
-                connectWebSocket();
-                // dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "채팅방 연결 오류", dialogContent: "채팅방을 다시 연결 합니다.", positiveFunction: connectWebSocket }))
-            }
-        };
-
-        ws.onerror = (error) => {
-            console.log("WebSocket 오류: ", error);
-        };
-
-        dispatch(constantActions.onHideDialog());
-        setSocket(ws);
-
-        return ws;
+            ws.onerror = (error) => {
+                console.log("❌ WebSocket 오류: ", error);
+            };
+        });
     };
+
 
     // ✅ 2. WebSocket 메시지 처리 함수
     const handleWebSocketMessage = (event) => {
@@ -247,7 +253,6 @@ const ChatMain = () => {
         const deepSessionList = JSON.parse(JSON.stringify(sessionListRef.current));
         console.log("### deepSessionList: ", deepSessionList);
         const lastSession = deepSessionList.length == 0 ? initialSession : deepSessionList[deepSessionList.length - 1];
-        // const lastSession = deepSessionList[deepSessionList.length - 1];
 
         // 채팅으로 질문을 해야하는 과정에서는 버튼 비활성화
         if (socketMessageRef.current.content == "PARSE"
@@ -352,6 +357,28 @@ const ChatMain = () => {
         }
     }
 
+    const handlerReConnectWebSocket = async (inquiryType, content) => {
+        try {
+            // socket이 close되지 않은 상태인 경우 소캣을 닫고 재연결
+            if (socket && socket.readyState !== WebSocket.CLOSED) {
+                socket.close();
+            }
+
+            const ws = await connectWebSocket(); // 연결 성공까지 기다림
+            socketRef.current = ws;
+
+            sendMessage(inquiryType, content);   // 연결 성공 후 안전하게 메시지 전송
+        } catch (error) {
+            console.error("❌ WebSocket 재연결 실패: ", error);
+            dispatch(constantActions.onShowDialog({
+                dialogType: "ALERT",
+                dialogTitle: "서버 연결 실패",
+                dialogContent: "서버와의 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+            }));
+        }
+    };
+
+
     // 🔹 Enter 키 입력 이벤트 추가
     const handlerOnKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -400,13 +427,12 @@ const ChatMain = () => {
 
     // 메시지 전송 함수
     const sendMessage = (inquiryType, content) => {
-        if (!socket || socket.readyState !== WebSocket.OPEN) {
-            console.log("\n\n\n### readyState: ", socket.readyState);
-            dispatch(constantActions.onShowDialog({ dialogType: "CONFIRM", dialogTitle: "채팅방 연결 오류", dialogContent: "채팅방을 다시 연결 합니다.", positiveFunction: connectWebSocket }));
+        if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+            handlerReConnectWebSocket(inquiryType, content);
             return;
         }
 
-        if (socket) {
+        if (socketRef.current) {
             console.log("inquiryType: ", inquiryType, " content: ", content);
 
             // 소캣 메세지 set
@@ -425,7 +451,7 @@ const ChatMain = () => {
             }
 
             console.log("### socketMessageRef.current: ", JSON.stringify(socketMessageRef.current));
-            socket.send(JSON.stringify(socketMessageRef.current));  // 서버로 메시지 전송
+            socketRef.current.send(JSON.stringify(socketMessageRef.current));  // 서버로 메시지 전송
         }
     };
 
