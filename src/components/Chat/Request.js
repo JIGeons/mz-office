@@ -11,16 +11,19 @@ import step1 from "../../assets/images/chat/web_step1.png"
 import step2 from "../../assets/images/chat/web_step2.png"
 import step3 from "../../assets/images/chat/web_step3.png"
 import mobileStep1 from "../../assets/images/chat/mobile_step1.png";
+import mobileStep1x2 from "../../assets/images/chat/mobile_step1x2.png";
+import mobileStep1x3 from "../../assets/images/chat/mobile_step1x3.png";
 import mobileStep2 from "../../assets/images/chat/mobile_step2.png";
+import mobileStep2x2 from "../../assets/images/chat/mobile_step2x2.png";
+import mobileStep2x3 from "../../assets/images/chat/mobile_step2x3.png";
 import mobileStep3 from "../../assets/images/chat/mobile_step3.png";
+import mobileStep3x2 from "../../assets/images/chat/mobile_step3x2.png";
+import mobileStep3x3 from "../../assets/images/chat/mobile_step3x3.png";
 import mobileChatAiIcon from "../../assets/images/chat/ico_mobile_chat_ai.png";
 
 // CSS
 import "../../styles/components/chat.css"
-import ReactMarkdown from "react-markdown";
 import chatAiIcon from "../../assets/images/chat/chat_ai_icon.png";
-import writeIconx2 from "../../assets/images/chat/write_icox2.png";
-import writeIconx3 from "../../assets/images/chat/write_icox3.png";
 
 const Request = ({ type, contentType, messageType, step }) => {
     const userAgent = navigator.userAgent;
@@ -62,15 +65,23 @@ const Request = ({ type, contentType, messageType, step }) => {
     }
 
     let stepImage = null;
+    let stepImage2 = null;
+    let stepImage3 = null;
     switch ( step ) {
         case "step_1":
             stepImage = isMobile ? mobileStep1 : step1;
+            stepImage2 = isMobile ? mobileStep1x2 : step1;
+            stepImage3 = isMobile ? mobileStep1x3 : step1;
             break;
         case "step_2":
             stepImage = isMobile ? mobileStep2 : step2;
+            stepImage2 = isMobile ? mobileStep2x2 : step1;
+            stepImage3 = isMobile ? mobileStep2x3 : step1;
             break;
         case "step_3":
             stepImage = isMobile ? mobileStep3 : step3;
+            stepImage2 = isMobile ? mobileStep3x2 : step1;
+            stepImage3 = isMobile ? mobileStep3x3 : step1;
             break;
         default:
             break;
@@ -151,7 +162,11 @@ const Request = ({ type, contentType, messageType, step }) => {
         <>
         {   step &&
             <div className="request-step">
-                <img className={"request-step-img"} src={ stepImage } alt="stepImage.png" />
+                <img
+                  className={"request-step-img"}
+                  src={ stepImage }
+                  srcSet={ isMobile ? `${stepImage2} 2x, ${stepImage3} 3x` : '' }
+                  alt="stepImage.png" />
             </div>
         }
         <div className="request-component">
