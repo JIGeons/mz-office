@@ -38,7 +38,6 @@
 
 ### 🎨 Styling
 - Custom CSS
-- Tailwind CSS
 
 ### 🔌 API Communication  
 - Axios  
@@ -46,6 +45,12 @@
 ### 🛠 Development Tools  
 - Webpack (Custom 설정 적용) 
 - ESLint & Prettier
+
+### 🖥 Backend & Infra  
+- WebSocket (Node.js 기반 커스텀 서버)  
+- Nginx  
+- NCP (Naver Cloud Platform)  
+- VPC 설정 및 로드밸런서 Timeout 설정
 
 ## 추후 추가 개발 계획  <br/>
 - 3월 18일 **비사이드 온라인 해커톤 데모데이** 이후, 코드를 **Clean Code** 원칙에 맞게 리팩토링할 예정.  
