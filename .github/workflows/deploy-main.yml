@@ -67,7 +67,7 @@ jobs:
           key: ${{ secrets.NCP_SSH_KEY }}
           source: "dist/"
           target: "/var/www/mz-office"
-          overwrite: true
+          rm: true
           debug: true # 로그에 ssh계정, 포트 등 출력하는 debug 모드 활성화
             
       # 8. 배포 실패 시 복원
