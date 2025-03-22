@@ -78,7 +78,7 @@ jobs:
             if [ -d ~/backups ]; then \
               latest=\$(ls -td ~/backups/mz-office-backup-* | head -n 1) && \
               if [ -n \"\$latest\" ]; then \
-                rm -rf /var/www/mz-office && \
+                rm -rf /var/www/mz-office/* && \
                 cp -r \$latest /var/www/mz-office && \
                 echo '✅ Restored from:' \$latest; \
               else \
