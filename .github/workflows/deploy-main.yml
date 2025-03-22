@@ -44,5 +44,5 @@ jobs:
           key: ${{ secrets.NCP_SSH_KEY }}
           source: "dist/"
           target: "/var/www/mz-office"
-          rm: true
+          overwrite: true
           debug: true # 로그에 ssh계정, 포트 등 출력하는 debug 모드 활성화
