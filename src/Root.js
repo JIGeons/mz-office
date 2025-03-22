@@ -17,7 +17,6 @@ import {
     NaverCallback,
     Vocabulary,
     MobileVocabulary,
-    Mobile,
     AccountDelete,
     PrivacyPolicy,
     TermsAndConditions,
