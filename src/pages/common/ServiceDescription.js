@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
 // CSS
-import "../styles/serviceDescription.css";
+import "../../styles/serviceDescription.css";
 import {useDispatch} from "react-redux";
-import * as constantActions from "../redux/modules/ConstantSlice";
+import * as constantActions from "../../redux/modules/ConstantSlice";
 
 const ServiceDescription = () => {
     const dispatch = useDispatch();

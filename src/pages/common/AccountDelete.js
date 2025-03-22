@@ -2,11 +2,11 @@ import React, {useContext, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 
 // CSS
-import "../styles/components/accountDelete.css";
+import "../../styles/components/accountDelete.css";
 
 // Actions
-import * as AuthActions from "../redux/modules/AuthSlice";
-import * as constantActions from "../redux/modules/ConstantSlice";
+import * as AuthActions from "../../redux/modules/AuthSlice";
+import * as constantActions from "../../redux/modules/ConstantSlice";
 
 const AccountDelete = () => {
     const dispatch = useDispatch();

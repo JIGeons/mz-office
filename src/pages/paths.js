@@ -14,10 +14,10 @@ import MobileVocabulary from "./mobile/MobileVocabulary";
 // 모바일로 접근 시 막는 페이지
 import Mobile from "./Mobile";
 
-import AccountDelete from "./AccountDelete";
-import PrivacyPolicy from "./PrivacyPolicy";
-import TermsAndConditions from "./TermsAndConditions";
-import ServiceDescription from "./ServiceDescription";
+import AccountDelete from "./common/AccountDelete";
+import PrivacyPolicy from "./common/PrivacyPolicy";
+import TermsAndConditions from "./common/TermsAndConditions";
+import ServiceDescription from "./common/ServiceDescription";
 
 export {
     Login,

@@ -324,6 +324,7 @@ const Root = () => {
 
     //  사이드바 토글 기능
     const toggleSidebar = () => {
+        console.log("여기가 두번 실행되니?");
         setIsCollapsed(!isCollapsed);
     };
 

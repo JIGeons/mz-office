@@ -1,6 +1,6 @@
 import React from 'react';
 
-import "../styles/privacyPolicy.css";
+import "../../styles/privacyPolicy.css";
 
 const TermsAndConditions = () => {
     return (
