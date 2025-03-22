@@ -66,12 +66,9 @@ const Root = () => {
 
     // Redux 상태 가져오기
     const { userData } = useSelector((state) => state.auth);
-    const { todayChatList, recentChatList, chatDetil } = useSelector((state) => state.chat);
+    const { todayChatList, recentChatList, chatDetail } = useSelector((state) => state.chat);
     const constant = useSelector((state) => state.constant);
     const { modal } = useSelector((state) => state.constant, shallowEqual);
-
-    // 오늘 날짜 불러오기
-    const todayDate = getTodayDate();
 
     // 컴포넌트 마운트 시 실행 (componentDidMount)
     useEffect(() => {
