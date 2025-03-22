@@ -79,7 +79,7 @@ jobs:
               latest=\$(ls -td ~/backups/mz-office-backup-* | head -n 1) && \
               if [ -n \"\$latest\" ]; then \
                 rm -rf /var/www/mz-office/* && \
-                cp -r \$latest /var/www/mz-office && \
+                cp -r \$latest/* /var/www/mz-office/dist && \
                 echo '✅ Restored from:' \$latest; \
               else \
                 echo '⚠️ No backup found to restore.'; \
