@@ -19,12 +19,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Git Checkout
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2. Install dependencies
       - name: Install dependencies
         run: npm ci
 
+      # 3. 환경변수 주입
       - name: Create .env.production
         run: |
           echo "REACT_APP_MZ_OFFICE_WEB_URL=${{ secrets.REACT_APP_MZ_OFFICE_WEB_URL }}" >> .env.production
@@ -33,9 +36,29 @@ jobs:
           echo "REACT_APP_NAVER_CLIENT_SECRET=${{ secrets.REACT_APP_NAVER_CLIENT_SECRET }}" >> .env.production
           echo "REACT_APP_SERVICE_DESCRIPTION_URL=${{ secrets.REACT_APP_SERVICE_DESCRIPTION_URL }}" >> .env.production
 
+      # 4. 프로젝트 빌드
       - name: Build project
         run: npm run build
 
+      # 5. SSH Key 저장
+      - name: Save SSH Key
+        run: |
+          echo "${{ secrets.NCP_SSH_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      # 6. 기존 파일 백업 (배포 전)
+      - name: Backup existing deployment to home directory
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }} "\
+            if [ -d /var/www/mz-office ]; then \
+              mkdir -p ~/backups && \
+              cp -r /var/www/mz-office ~/backups/mz-office-backup-$(date +%Y%m%d%H%M%S); \
+              echo '🛡 Backup completed.'; \
+            else \
+              echo 'ℹ️ No existing deployment found. Skipping backup.'; \
+            fi"
+
+      # 7. 실제 배포
       - name: Deploy via SCP to NCP server
         uses: appleboy/scp-action@master
         with:
@@ -46,3 +69,29 @@ jobs:
           target: "/var/www/mz-office"
           overwrite: true
           debug: true # 로그에 ssh계정, 포트 등 출력하는 debug 모드 활성화
+            
+      # 8. 배포 실패 시 복원
+      - name: Restore from backup if deploy fails
+        if: failure()
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }} "\
+            if [ -d ~/backups ]; then \
+              latest=\$(ls -td ~/backups/mz-office-backup-* | head -n 1) && \
+              if [ -n \"\$latest\" ]; then \
+                rm -rf /var/www/mz-office && \
+                cp -r \$latest /var/www/mz-office && \
+                echo '✅ Restored from:' \$latest; \
+              else \
+                echo '⚠️ No backup found to restore.'; \
+              fi \
+            else \
+              echo '⚠️ No backups directory found.'; \
+            fi"
+
+      # 9. 성공 시 백업 정리
+      - name: Remove backups after successful deployment
+        if: success()
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }} "\
+            rm -rf ~/backups && \
+            echo '🧹 Removed all backup files after successful deployment.'"
