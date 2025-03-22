@@ -80,22 +80,32 @@
 
 ## 🛠 기술 스택
 
-| 구분 | 기술 | 설명 |
-|------|------|------|
-| 🚀 Frontend | React (19.0.0) | CRA 기반의 프론트엔드 구현 |
-|  | Create React App | 프로젝트 초기 설정 |
-| 📦 State Management | Redux Toolkit | 전역 상태 관리 |
-| 🎨 Styling | Custom CSS | 컴포넌트별 CSS 커스터마이징 |
-| 🔌 API 통신 | Axios | 서버와의 비동기 통신 처리 |
-| 🛠 개발 도구 | Webpack (Custom) | 빌드 및 번들링 환경 설정 |
-|  | ESLint & Prettier | 코드 스타일 및 정적 분석 도구 |
-| ☁️ 인프라 | NCP (Naver Cloud Platform) | 서버 및 배포 인프라 운영 |
-|  | Nginx | 정적 파일 서빙 및 SPA 라우팅 설정 |
-|  | WebSocket (Node.js) | 실시간 채팅 서버 구축 |
-|  | VPC + 로드밸런서 | 안정적인 인프라 구성 및 Timeout 설정 |
-| ⚙️ CI/CD | GitHub Actions | 자동 빌드 및 배포 파이프라인 구성 |
-|  | Secrets + SCP | 환경변수 보안 관리 및 서버 배포 자동화 |
+### 🚀 Frontend  
+- React (19.0.0)  
+- CRA (Create React App)
 
+### 📦 State Management  
+- Redux Toolkit
+
+### 🎨 Styling  
+- Custom CSS
+
+### 🔌 API Communication  
+- Axios
+
+### 🛠 Development Tools  
+- Webpack (Custom 설정 적용)  
+- ESLint & Prettier
+
+### ☁️ Infra 구성
+- WebSocket (Node.js 기반 커스텀 서버)  
+- Nginx  
+- NCP (Naver Cloud Platform)  
+- VPC 설정 및 로드밸런서 Timeout 설정
+
+### ⚙️ CI/CD  
+- GitHub Actions 기반의 자동 빌드 및 배포 파이프라인 구축  
+- Secrets 및 SCP를 활용한 안전한 서버 배포 구성
 
 ---
 
