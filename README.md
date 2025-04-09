@@ -12,7 +12,7 @@
 
 # 💼 신입 사원을 위한 AI 서비스 “MZ오피스”
 
-<img width="800" alt="MZ오피스 데모 이미지" src="https://github.com/user-attachments/assets/8adfdd85-c2df-49c3-89b0-ae425e532bcd" />
+<img width="800" alt="MZ오피스 데모 이미지" src="https://github.com/user-attachments/assets/dec144d2-d6f1-4fa9-9d6c-da81d9cee4dc" />
 
 ### 🔗 [서비스 소개 바로가기](https://dahye-backend-developer.my.canva.site/mz-office)
 
