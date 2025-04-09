@@ -1,7 +1,7 @@
 # 🏆 [비사이드 X NAVER CLOUD 502 포텐데이 온라인 해커톤]  
-### 프로토타입 부문 3등 · 데모데이 최종 우수상 수상  
+### 데모데이 최종 우수상 수상 · 프로토타입 부문 3등
 
-<img width="830" alt="수상 이미지" src="https://github.com/user-attachments/assets/5f872f54-429b-4c12-a33d-1679a8aa4b5b" />
+<img width="830" alt="수상 이미지" src="https://github.com/user-attachments/assets/c9dc3ed6-4b49-4564-961e-f44fe8f98f4a" />
 
 4명으로 구성된 소규모 팀이었지만, 팀원 간의 긴밀한 협업과 빠른 의사결정으로  
 6인 이상 팀들과의 경쟁에서 두각을 나타내며 **프로토타입 3등**, **데모데이 최종 우수상**을 수상하였습니다.  
