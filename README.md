@@ -68,32 +68,14 @@
 
 ## 🛠 기술 스택
 
-### 🚀 Frontend  
-- React (19.0.0)  
-- CRA (Create React App)
+| 분류             | 기술 스택                                                                   |
+|-----------------|---------------------------------------------------------------------------|
+| **Frontend**    | React 19.x                                                                |
+| **Language**    | JavaScript(ES6+), HTML5/CSS                                               |
+| **Public Cloud**| NCP (Naver Cloud Platform)                                                |
+| **DevOps**      | Nginx, GitHub Actions                                                     |
+| **Others**      | Redux, WebSocket, Webpack                                                 |
 
-### 📦 State Management  
-- Redux Toolkit
-
-### 🎨 Styling  
-- Custom CSS
-
-### 🔌 API Communication  
-- Axios
-
-### 🛠 Development Tools  
-- Webpack (Custom 설정 적용)  
-- ESLint & Prettier
-
-### ☁️ Infra 구성
-- WebSocket (Node.js 기반 커스텀 서버)  
-- Nginx  
-- NCP (Naver Cloud Platform)  
-- VPC 설정 및 로드밸런서 Timeout 설정
-
-### ⚙️ CI/CD  
-- GitHub Actions 기반의 자동 빌드 및 배포 파이프라인 구축  
-- Secrets 및 SCP를 활용한 안전한 서버 배포 구성
 
 ---
 
